@@ -41,7 +41,7 @@ function MemosLogo(props: Props) {
               compact ? cn(scale.title, scale.weight, "tracking-[-0.01em]") : "text-lg font-medium",
             )}
           >
-            {title}
+            {title} V2
           </span>
         )}
       </div>
