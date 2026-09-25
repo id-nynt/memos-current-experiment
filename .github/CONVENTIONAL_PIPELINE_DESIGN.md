@@ -36,6 +36,14 @@ Change log: 2026-09-25 — explicit experiment-only previous-image input replace
 unavailable tag-discovery input; no smoke test is skipped or weakened. New healthy
 S0 validation is authorized once, with S1-S5 remaining disabled.
 
+Validation: the single new S0 at control `67c4731e67ee1ff0a8cc8d3cbfd7459a23ffe667`
+passed in GitHub run [36118890913](https://github.com/id-nynt/memos-current-experiment/actions/runs/36118890913).
+All 16 jobs succeeded, including upstream build/upgrade smoke and the Windows
+self-hosted deployment. Both environments verified the same frozen v2 image;
+the 600-second follow-up and raw evidence checks passed. Explicit reset then
+restored verified v1 with data backups retained. No additional policy fix, fault
+scenario, historical-tag publication or Release-workflow setting change was needed.
+
 ## Original pipeline and provenance
 
 This table records the original upstream structure; the current minimal adaptation
