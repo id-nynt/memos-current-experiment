@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -54,6 +55,12 @@ class OwnershipTests(unittest.TestCase):
         for scenario in ('S3', 'S4', 'S5', 'unknown'):
             with self.assertRaises(ValueError):
                 fixture.validate(scenario)
+
+    def test_unapproved_scenario_never_reaches_docker(self):
+        with patch.object(manage, 'preflight') as preflight:
+            with self.assertRaises(ValueError):
+                manage.run(SimpleNamespace(scenario='S3'))
+            preflight.assert_not_called()
 
     def test_releases_are_distinct_and_frozen(self):
         self.assertNotEqual(manage.RELEASES['v1']['application_sha'], manage.RELEASES['v2']['application_sha'])

@@ -291,6 +291,7 @@ def github_run(release, trial, scenario, directory, finished):
         time.sleep(3)
     if not run_id:
         raise RuntimeError('Dispatch uncorrelated; reconcile GitHub before reset')
+    finished['run_id'] = run_id
     save(directory / 'dispatch.json', dict(github_run_id=run_id, control_sha=sha, timestamp=now()))
     ghdir = directory / 'github'
     ghdir.mkdir()
@@ -304,6 +305,7 @@ def github_run(release, trial, scenario, directory, finished):
         time.sleep(5)
     else:
         raise RuntimeError('120-minute observation cap: run unresolved, not cancelled; reconcile manually')
+    finished['native_terminal'] = run['updatedAt']
     pages = json.loads(command('gh', 'api', '--paginate', '--slurp',
                        f'repos/{repo}/actions/runs/{run_id}/jobs?filter=all&per_page=100'))
     jobs = [j for page in pages for j in page['jobs']]
@@ -381,7 +383,8 @@ def run(args):
                 with (directory / 'controller.log').open('w', encoding='utf-8') as log:
                     finished['exit_code'] = deploy(args.release, trial, args.scenario,
                         env=dict(os.environ, LOCAL_CD_EVIDENCE_POINTER=str(pointer)), stdout=log, stderr=subprocess.STDOUT)
-            finished['native_terminal'] = now()
+            finished.setdefault('native_terminal', now())
+            finished['operator_terminal'] = now()
         except Exception as exc:
             finished.update(error=str(exc), exit_code=None)
 
@@ -415,11 +418,18 @@ def run(args):
     # Preserve contract-v1 terminal semantics; follow-up is separate evidence.
     result = summarize(config, directory, meta, pipeline_samples or samples)
     save(directory / 'common-measurement.json', result)
-    window = [s for s in samples if (instant(samples[-1]['timestamp']) - instant(s['timestamp'])).total_seconds() <= 30]
-    coverage = (len(window) >= 3 and all((instant(b['timestamp']) - instant(a['timestamp'])).total_seconds() <= 15
-                                       for a, b in zip(window, window[1:])))
+    evaluation_time = instant(now())
+    window = [s for s in samples if (evaluation_time - instant(s['timestamp'])).total_seconds() <= 30]
+    coverage = (len(window) >= 3
+                and (evaluation_time - instant(window[0]['timestamp'])).total_seconds() >= 15
+                and (evaluation_time - instant(window[-1]['timestamp'])).total_seconds() <= 5
+                and all((instant(b['timestamp']) - instant(a['timestamp'])).total_seconds() <= 15
+                        for a, b in zip(window, window[1:])))
+    endpoint_health = all(s['healthy'] for s in window) if coverage and args.mode == 'github' else None
     save(directory / 'evaluation.json', dict(scope=args.mode, followup_seconds=600 if args.mode == 'github' else 0,
-         endpoint_health=all(s['healthy'] for s in window) if coverage and args.mode == 'github' else None,
+         endpoint_time=evaluation_time.isoformat(), endpoint_health=endpoint_health,
+         candidate_delivered_at_endpoint=(endpoint_health and samples[-1]['application_sha'] == config['application_sha']
+             and samples[-1]['image_id'] == config['image_identity']) if endpoint_health is not None else None,
          observation_coverage=coverage, terminal_health=result['final_health'],
          fault_not_reached=args.scenario != 'S0' and not any('deterministic_failure' in p.read_text(encoding='utf-8-sig')
                  for p in directory.rglob('*.jsonl'))))
