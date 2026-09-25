@@ -1,0 +1,12 @@
+{
+  "owner": "memos-current-experiment",
+  "repository": "id-nynt/memos-current-experiment",
+  "runner_name": "memos-current-windows",
+  "runner_label": "memos-local",
+  "staging_port": 5541,
+  "production_port": 5542,
+  "projects": ["memos-current-experiment-staging", "memos-current-experiment-production"],
+  "policy_baseline": "7c6312c1950999ce875b3aa88174fdb03f3478c1",
+  "release_manifest": "scripts/local-cd/frozen-releases.json",
+  "measurement_contract": "scripts/experiment-measurement/contract.json"
+}

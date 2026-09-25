@@ -10,6 +10,11 @@ on:
       trial_id:
         type: string
         required: true
+      scenario:
+        type: choice
+        options: [S0, S1, S2]
+        default: S0
+        required: true
 permissions:
   contents: read
 concurrency:
@@ -26,10 +31,14 @@ jobs:
         env:
           RELEASE: ${{ inputs.release }}
           TRIAL_ID: ${{ inputs.trial_id }}
+          SCENARIO: ${{ inputs.scenario }}
         run: |
           python3 - <<'PY'
           import json, os, re
           assert re.fullmatch(r'[A-Za-z0-9_.-]+', os.environ['TRIAL_ID'])
+          scenarios = json.load(open('experiment/scenarios.json'))
+          assert scenarios[os.environ['SCENARIO']]['enabled'], 'Scenario not approved/enabled'
+          assert os.environ['SCENARIO'] == 'S0' or os.environ['RELEASE'] == 'v2'
           release = json.load(open('scripts/local-cd/frozen-releases.json'))['releases'][os.environ['RELEASE']]
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('sha=' + release['application_sha'] + '\n')
@@ -49,8 +58,22 @@ jobs:
     uses: ./.github/workflows/proto-linter.yml
     with:
       release_sha: ${{ needs.release.outputs.sha }}
-  upgrade:
+  fixture:
     needs: [release, backend, frontend, proto]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Explicit deterministic CI fixture
+        env:
+          SCENARIO: ${{ inputs.scenario }}
+        run: python3 experiment/fixture.py --scenario "$SCENARIO" --boundary ci --receipt fault-events.jsonl
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: fixture-${{ inputs.trial_id }}
+          path: fault-events.jsonl
+  upgrade:
+    needs: [release, fixture]
     uses: ./.github/workflows/upgrade-smoke.yml
     with:
       release_sha: ${{ needs.release.outputs.sha }}
@@ -62,9 +85,7 @@ jobs:
       RELEASE: ${{ inputs.release }}
       RELEASE_SHA: ${{ needs.release.outputs.sha }}
       TRIAL_ID: ${{ inputs.trial_id }}
-      LOCAL_CD_STATE_DIRECTORY: ${{ vars.LOCAL_CD_STATE_DIRECTORY }}
-      LOCAL_CD_STAGING_PORT: ${{ vars.LOCAL_CD_STAGING_PORT || '5441' }}
-      LOCAL_CD_PRODUCTION_PORT: ${{ vars.LOCAL_CD_PRODUCTION_PORT || '5442' }}
+      SCENARIO: ${{ inputs.scenario }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -72,7 +93,7 @@ jobs:
           persist-credentials: false
       - name: Deliver frozen image through conventional stages
         shell: powershell
-        run: ./scripts/local-cd/deploy.ps1 -Commit $env:RELEASE_SHA -FrozenRelease $env:RELEASE -TrialId $env:TRIAL_ID
+        run: ./scripts/local-cd/deploy.ps1 -Experiment -Commit $env:RELEASE_SHA -FrozenRelease $env:RELEASE -TrialId $env:TRIAL_ID -Scenario $env:SCENARIO
       - uses: actions/upload-artifact@v6
         if: always()
         with:

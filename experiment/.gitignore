@@ -1,0 +1,4 @@
+/results/
+/.venv/
+/machine.json
+__pycache__/

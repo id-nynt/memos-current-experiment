@@ -9,7 +9,9 @@ param(
     [int]$ProductionPort = $(if ($env:LOCAL_CD_PRODUCTION_PORT) { [int]$env:LOCAL_CD_PRODUCTION_PORT } else { 5232 }),
     [ValidateSet('', 'v1', 'v2')][string]$FrozenRelease = '',
     [ValidatePattern('^[A-Za-z0-9_.-]+$')][string]$TrialId = 'local',
-    [switch]$CheckOnly
+    [switch]$CheckOnly,
+    [switch]$Experiment,
+    [ValidateSet('S0', 'S1', 'S2')][string]$Scenario = 'S0'
 )
 
 Set-StrictMode -Version Latest
@@ -25,6 +27,19 @@ if ($FrozenRelease -and !$PSBoundParameters.ContainsKey('ProductionPort') -and !
 $ports = @($StagingPort, $ProductionPort)
 $dataSuffix = 'data'
 $nativeEvents = $null
+if ($Experiment) {
+    if (!$FrozenRelease) { throw 'Experiment mode requires a frozen release' }
+    $experimentConfig = Get-Content (Join-Path $repo 'experiment/config.json') -Raw | ConvertFrom-Json
+    $scenarioConfig = Get-Content (Join-Path $repo 'experiment/scenarios.json') -Raw | ConvertFrom-Json
+    if (!$scenarioConfig.$Scenario.enabled) { throw "Scenario $Scenario is not enabled" }
+    if ($Scenario -eq 'S1') { throw 'S1 must fail in the GitHub CI fixture, before deployment' }
+    if ($Scenario -ne 'S0' -and $FrozenRelease -ne 'v2') { throw 'Faults may target only v2' }
+    $projects = @($experimentConfig.projects)
+    $StagingPort = $experimentConfig.staging_port
+    $ProductionPort = $experimentConfig.production_port
+    $ports = @($StagingPort, $ProductionPort)
+    $StateDirectory = Join-Path $env:LOCALAPPDATA 'memos-current-experiment'
+} elseif ($Scenario -ne 'S0') { throw 'Fault scenarios require explicit experiment mode' }
 
 function Write-Event {
     param([string]$Name, [hashtable]$Fields = @{})
@@ -268,6 +283,10 @@ try {
         Write-Json (Join-Path $releaseDirectory 'release.json') $record
 
         Write-Host 'Deploying staging'
+        if ($Experiment -and $Scenario -eq 'S2') {
+            Write-Event 'deterministic_failure' @{ boundary = 'staging'; scenario = $Scenario }
+            throw 'S2 fixture: staging adapter failed before its first Docker mutation'
+        }
         Write-Event 'deployment_start' @{ environment = 'staging'; application_sha = $Commit; image_id = $image }
         Invoke-Compose 0 @('up', '--detach', '--no-build', '--pull', 'never', 'memos') | Write-Host
         Write-Event 'deployment_end' @{ environment = 'staging'; application_sha = $Commit; image_id = $image }

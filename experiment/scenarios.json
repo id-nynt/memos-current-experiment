@@ -1,0 +1,9 @@
+{
+  "revision": 1,
+  "S0": {"enabled": true, "description": "Healthy frozen release deployment"},
+  "S1": {"enabled": false, "description": "Deterministic extra CI fixture after successful upstream quality jobs", "reason": "Awaiting explicit scenario approval"},
+  "S2": {"enabled": false, "description": "Failure immediately before first staging Docker mutation", "reason": "Awaiting explicit scenario approval"},
+  "S3": {"enabled": false, "description": "Memo-route 503 for 60 seconds", "reason": "Runtime injector and neutral readiness hook not installed"},
+  "S4": {"enabled": false, "description": "Memo-route 503 for 900 seconds", "reason": "Runtime injector and neutral readiness hook not installed"},
+  "S5": {"enabled": false, "description": "Memo-route 503 at [0,60) and [120,240) seconds", "reason": "Runtime injector and neutral readiness hook not installed"}
+}
