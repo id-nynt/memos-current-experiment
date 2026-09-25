@@ -96,7 +96,8 @@ def summarize(config, directory, meta, samples):
                        else {'controller_started', 'controller_finished'} <= names)
     retries = sum(e.get('event') == 'entity_execution_started' and int(e.get('attempt', 1)) > 1 for e in native)
     reobservations = sum(e.get('event') in ('telemetry_measurement', 'health_observation') and e.get('round', 1) > 1 for e in native)
-    executed = 'rollback_executed' in names or any(e.get('event') == 'entity_execution_started' and e.get('entity') == 'rollback' for e in native)
+    selected = bool(names & {'rollback_selected', 'bdi_recovery_decision', 'repair_started'})
+    executed = bool(names & {'rollback_executed', 'repair_started'}) or any(e.get('event') == 'entity_execution_started' and e.get('entity') == 'rollback' for e in native)
     interventions = read(directory / 'human-interventions.json') if (directory / 'human-interventions.json').exists() else None
     return {
         'contract_version': 1, 'approach': config['approach'], 'scenario': config['scenario'], 'trial_id': config['trial_id'],
@@ -110,7 +111,7 @@ def summarize(config, directory, meta, samples):
         'candidate_delivered': (bool(final.get('healthy') and final.get('application_sha') == config['application_sha']
                                     and final.get('image_id') == config['image_identity']) if samples else None),
         'retry_count': retries if native_complete else None, 'reobservation_count': reobservations if native_complete else None,
-        'recovery_rollback_selected': True if 'rollback_selected' in names else (False if native_complete else None),
+        'recovery_rollback_selected': True if selected else (False if native_complete else None),
         'recovery_rollback_executed': True if executed else (False if native_complete else None),
         'github_workflow_count': len(runs) if remote_complete else None,
         'github_job_count': sum(bool(j.get('startedAt')) and j.get('conclusion') != 'skipped' for r in runs.values() for j in r['jobs']) if remote_complete else None,
