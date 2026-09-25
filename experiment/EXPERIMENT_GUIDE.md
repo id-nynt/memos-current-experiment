@@ -1,10 +1,10 @@
 # Conventional experiment: operator guide
 
 This is the operational source of truth for this repository. Run PowerShell commands
-from its root. **S0–S2 completed validation; S3 was attempted but its runtime fixture
-was invalid. S4–S5 have not been executed.** READY below means setup-ready, not an
-observed experimental result. The local S3 adapter fix still requires publication
-and a separately authorized live validation.
+from its root. **S0–S3 completed validation; S4–S5 have not been executed.**
+The two earlier invalid S3 attempts remain preserved. READY below means setup-ready,
+not an observed experimental result. S3 live validation used published harness
+`b7db614d3d1ed2d425e9275b422760f062b177b4`.
 Do not launch a trial until its harness revision is committed and published.
 
 ## Frozen inputs
@@ -80,7 +80,7 @@ evidence. The commands below are templates, not authorization to repeat a scenar
 | S0 | None | Normal pipeline; 600s post-terminal follow-up | `./experiment/trial.ps1 run --scenario S0 --trial S0-001 --no-interventions` | Native/GitHub/health | YES; prior S0 validated |
 | S1 | Deterministic extra CI gate exits 42 | After genuine backend/frontend/proto pass; before upgrade/deploy | `./experiment/trial.ps1 run --scenario S1 --trial S1-001 --no-interventions` | CI fixture artifact + skipped downstream jobs | Validated; expected pipeline failure |
 | S2 | Existing staging adapter throws | Before first staging Docker mutation, after upgrade smoke | `./experiment/trial.ps1 run --scenario S2 --trial S2-001 --no-interventions` | Native deterministic_failure + unchanged v1 | Validated; expected pipeline failure |
-| S3 | Production v2 memo HTTP 503 | `[0,60)` seconds from t0 | `./experiment/trial.ps1 run --scenario S3 --trial S3-001 --no-interventions` | Fault receipts, HTTP workload, native probes | Invalid attempt; corrected adapter awaits live validation |
+| S3 | Production v2 memo HTTP 503 | `[0,60)` seconds from t0 | `./experiment/trial.ps1 run --scenario S3 --trial S3-001 --no-interventions` | Fault receipts, HTTP workload, native probes | Validated; pipeline success, healthy v2 retained |
 | S4 | Persistent production v2 memo HTTP 503 | `[0,900)`; measurement endpoint t0+600 | `./experiment/trial.ps1 run --scenario S4 --trial S4-001 --no-interventions` | Endpoint before independent 900s expiry | YES; not executed |
 | S5 | Degradation, recovery, recurrence, recovery | 503 `[0,60)` and `[120,240)`; healthy otherwise | `./experiment/trial.ps1 run --scenario S5 --trial S5-001 --no-interventions` | Every clock boundary and post-terminal health | YES; not executed |
 
@@ -237,3 +237,36 @@ checks. Use a fresh timestamped trial ID. Preserve the invalid S3 evidence as-is
 neither recollection nor this correction can supply its missing runtime observations.
 The same adapter serves S4/S5. Controller, application images, schedules, thresholds,
 retry budgets and recovery behavior remain frozen.
+
+### S3 runner interruption and live validation (2026-09-25)
+
+Trial `S3-20260925-221852`, run
+[36134278423](https://github.com/id-nynt/memos-current-experiment/actions/runs/36134278423),
+was invalid: the runner received `UserCancelled` at `2026-09-25T12:30:23Z`, before
+the production fault hook. The scheduled task exited with `0xC000013A`, consistent
+with console interruption. The operator reported likely closing PowerShell; the
+logs do not identify the initiating process. No sleep or reboot event was found
+around that time. The task already had unlimited execution time and battery-stop
+disabled. Its diagnostic logs were preserved under
+`experiment/results/runner-recovery-20260925-225725/` before restarting the existing
+hidden `MemosCurrentActionsRunner` task. No controller or runner configuration
+change was required.
+
+Keep the runner and trial processes running until evidence collection and reset
+finish. Do not close their PowerShell hosts or press Ctrl+C. Before restarting an
+offline runner, reconcile any dispatched run and preserve diagnostic logs; never
+restart a busy runner. Use the existing scheduled task and verify online/idle
+status with the documented prerequisite checks. Do not enable automatic trial
+retries to compensate for interruption.
+
+The separately authorized fresh trial `S3-20260925-225819`, run
+[36138116562](https://github.com/id-nynt/memos-current-experiment/actions/runs/36138116562),
+passed on published harness `b7db614d3d1ed2d425e9275b422760f062b177b4`:
+all 16 jobs succeeded, fixture/evidence validation passed, and v2 was delivered
+and retained healthy at the 600-second endpoint. Synchronization took 0.056354s;
+101 injected responses fell within `[0,60)`, with the expiry receipt at 60.0284425s.
+The final pre-cleanup state was healthy v2 in both environments; reset verified
+healthy v1 in both. The pre-trial runner restart was disclosed using `trial.ps1 note`;
+no manual rescue occurred during measurement. All 185 trial evidence hashes and
+the lifecycle hash verified. Earlier evidence remains unchanged. This guide update
+is subsequent documentation, not part of that trial's frozen harness identity.
