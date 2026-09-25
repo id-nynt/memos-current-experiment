@@ -1,0 +1,15 @@
+{
+  "revision": "67c4731e67ee1ff0a8cc8d3cbfd7459a23ffe667",
+  "normalization": "CRLF to LF only",
+  "files": {
+    "scripts/local-cd/deploy.ps1": "20ae350ac9134c82602fbd10d9e94feb54ad8e5e4a39f76a328ea9c02a03421d",
+    "scripts/local-cd/compose.yaml": "2cd2d3f7877600e39790867ce9befabc8a727066889791d56b2c362c2f78a958",
+    "scripts/local-cd/frozen-releases.json": "928fbfe715411dc17c1e0369accdcc7d7af24b167bd4e30f2f506cb7150007be",
+    "experiment/config.json": "692862af627d942abb7b3ae2cd3060950847761dbd90078467b49728a130fad2",
+    ".github/workflows/backend-tests.yml": "d53970a9e22e680f4e8aaa9adad75827c89d2f7f9ed9a5b3788798f4b6a3dfec",
+    ".github/workflows/frontend-tests.yml": "e02b95c3fe3ad7eb89d472b306786b0dc211ff4471606e53cf89fb817310ae09",
+    ".github/workflows/proto-linter.yml": "d00e0e9d7108d5a1100896e57abcef2682e6ceb9335a09fa8983821ffe9129ae",
+    ".github/workflows/upgrade-smoke.yml": "3728556d3bacba72e262d54bd9e7b1a992e9dc2a0342c955e021829f6693ea47",
+    ".github/workflows/local-cd.yml": "3a5b9fb9de5436bccfc763e2c334d620210ce29bb98dbdaf01979d4f76a0e502"
+  }
+}

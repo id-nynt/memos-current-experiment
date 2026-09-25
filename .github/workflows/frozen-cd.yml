@@ -12,7 +12,7 @@ on:
         required: true
       scenario:
         type: choice
-        options: [S0, S1, S2]
+        options: [S0, S1, S2, S3, S4, S5]
         default: S0
         required: true
 permissions:
@@ -87,6 +87,7 @@ jobs:
       RELEASE_SHA: ${{ needs.release.outputs.sha }}
       TRIAL_ID: ${{ inputs.trial_id }}
       SCENARIO: ${{ inputs.scenario }}
+      MEMOS_EXPERIMENT_ROOT: ${{ vars.MEMOS_EXPERIMENT_ROOT }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -94,7 +95,9 @@ jobs:
           persist-credentials: false
       - name: Deliver frozen image through conventional stages
         shell: powershell
-        run: ./scripts/local-cd/deploy.ps1 -Experiment -Commit $env:RELEASE_SHA -FrozenRelease $env:RELEASE -TrialId $env:TRIAL_ID -Scenario $env:SCENARIO
+        run: |
+          python experiment/runtime_fixture.py
+          exit $LASTEXITCODE
       - uses: actions/upload-artifact@v6
         if: always()
         with:

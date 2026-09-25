@@ -1,5 +1,8 @@
 # Conventional experiment
 
+Operational source of truth: [EXPERIMENT_GUIDE.md](EXPERIMENT_GUIDE.md), including
+S0?S5 commands, external fixtures, evidence, reset and interruption recovery.
+
 This directory owns execution for `id-nynt/memos-current-experiment`. Run commands
 from the repository root on Windows. Only this repository, installed tools, Docker
 and this repository's GitHub API are used. No parent-folder tooling is required.
@@ -90,31 +93,25 @@ checks both live containers, image/SHA/VERSION, URL, health and sentinel; it doe
 not trust only `accepted.json`. Healthy v1 is not v2 delivery.
 
 GitHub runs correlate exact unique title and control SHA. All job attempts, logs,
-artifacts and run IDs are retained. Passive health sampling continues 600 seconds
-after completion; a separate client sends one sentinel request per second without
+artifacts and run IDs are retained. For S0?S2, passive health sampling continues 600 seconds
+after completion; runtime scenarios use the guide?s fixed t0-based horizon; a separate client sends one sentinel request per second without
 overlap (3-second timeout). Native decisions never consume these observations.
 The remote observation cap is 120 minutes; unresolved work is recorded, not silently
 cancelled. Rehearsals omit extended follow-up and are not full-pipeline measurements.
 
 ## Scenarios and unchanged policy
 
-`scenarios.json` is the fail-closed allowlist. S0 is enabled. Implemented S1/S2
-fixtures remain disabled pending approval of the proposed scenarios:
+S0?S5 are configured in `scenarios.json`. S1/S2 use the existing deterministic
+hooks. S3?S5 use an external memo-route HTTP 503 fixture with fixed clock schedules,
+not controller decisions. Run the complete lifecycle through `trial.ps1`; see
+[EXPERIMENT_GUIDE.md](EXPERIMENT_GUIDE.md) for exact commands and prerequisites.
+No S1?S5 trial was executed during fixture setup.
 
-- S1: deterministic extra CI failure after successful upstream backend/frontend/
-  proto jobs, before upgrade/deployment eligibility. GitHub mode only.
-- S2: deterministic failure immediately before the first staging Docker mutation.
-  Production is untouched; every attempt fails at that boundary.
-- S3/S4/S5: disabled; their prescribed HTTP 503 injector and neutral production
-  readiness boundary are not installed. Container stops/sleeps are not substitutes.
-
-Once explicitly enabled in an approved revision, select `--scenario S1` or `S2`.
-A scenario label never fabricates exposure evidence. No runtime-fault trial is
-claimed executable. The local protocol still labels these conditions as proposals.
-
-The conventional controller retains 180-second verification, 3-second rechecks,
+`frozen-control.json` checks the deployment script and baseline configuration
+against the validated S0 revision. Its 180-second verification, 3-second rechecks,
 5-second HTTP timeouts, staging-first ordering, stopped production backup, same-image
-promotion and manual recovery. No retry, rollback or reconsideration policy is added.
+promotion and manual recovery remain unchanged. Runtime fixture state lives inside
+its unique result directory; port 5543 is reserved for the runtime fixture backend.
 
 ## Reset and evidence
 

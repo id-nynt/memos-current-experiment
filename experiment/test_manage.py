@@ -71,15 +71,16 @@ class OwnershipTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'offline'):
                 manage.no_remote_work()
 
-    def test_runtime_scenarios_fail_closed(self):
-        for scenario in ('S3', 'S4', 'S5', 'unknown'):
-            with self.assertRaises(ValueError):
-                fixture.validate(scenario)
+    def test_only_declared_scenarios_enabled(self):
+        for scenario in ('S0', 'S1', 'S2', 'S3', 'S4', 'S5'):
+            fixture.validate(scenario)
+        with self.assertRaises(ValueError):
+            fixture.validate('unknown')
 
-    def test_unapproved_scenario_never_reaches_docker(self):
+    def test_runtime_rehearsal_never_reaches_docker(self):
         with patch.object(manage, 'preflight') as preflight:
-            with self.assertRaises(ValueError):
-                manage.run(SimpleNamespace(scenario='S3'))
+            with self.assertRaisesRegex(RuntimeError, 'GitHub runner adapter'):
+                manage.run(SimpleNamespace(scenario='S3', release='v2', mode='rehearsal'))
             preflight.assert_not_called()
 
     def test_releases_are_distinct_and_frozen(self):

@@ -1,6 +1,7 @@
 """Repository-owned conventional preparation, execution and passive evidence CLI."""
 import argparse
 import contextlib
+import datetime as dt
 import hashlib
 import json
 import os
@@ -19,6 +20,7 @@ HERE = ROOT / 'experiment'
 sys.path.insert(0, str(ROOT / 'scripts/experiment-measurement'))
 from measure_trial import now, read, save, sample, summarize, instant
 from fixture import validate
+import runtime_fixture
 
 CFG = read(HERE / 'config.json')
 RELEASES = read(ROOT / CFG['release_manifest'])['releases']
@@ -98,6 +100,7 @@ def verify(release=None):
 
 
 def preflight():
+    runtime_fixture.frozen_check()
     if os.name != 'nt':
         raise RuntimeError('This conventional runner requires Windows')
     for name in ('git', 'docker', 'powershell', 'tar', 'gh'):
@@ -305,6 +308,11 @@ def github_run(release, trial, scenario, directory, finished):
         raise RuntimeError('Dispatch uncorrelated; reconcile GitHub before reset')
     finished['run_id'] = run_id
     save(directory / 'dispatch.json', dict(github_run_id=run_id, control_sha=sha, timestamp=now()))
+    collect_run(run_id, directory, finished)
+
+
+def collect_run(run_id, directory, finished):
+    repo = CFG['repository']
     ghdir = directory / 'github'
     ghdir.mkdir()
     deadline = time.monotonic() + 7200
@@ -348,6 +356,9 @@ def run(args):
         raise RuntimeError('Fault scenarios require v2')
     if args.scenario == 'S1' and args.mode != 'github':
         raise RuntimeError('S1 requires real GitHub quality jobs, not a local rehearsal')
+    runtime = args.scenario in runtime_fixture.SCHEDULES
+    if runtime and args.mode != 'github':
+        raise RuntimeError('Runtime fixtures require the GitHub runner adapter')
     preflight()
     no_remote_work()
     if args.release == 'v2':
@@ -357,9 +368,7 @@ def run(args):
         if read(STATE / 'baseline.json').get('used_by'):
             raise RuntimeError('Baseline already used by a trial; reset before the next attempt')
     trial = args.trial
-    if not trial or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-' for c in trial):
-        raise ValueError('Use a unique alphanumeric trial ID')
-    directory = RESULTS / trial
+    directory = runtime_fixture.trial_directory(ROOT, trial)
     directory.mkdir(parents=True, exist_ok=False)
     config = measurement(release=args.release, trial=trial, scenario=args.scenario,
                          mode='github' if args.mode == 'github' else 'local')
@@ -374,6 +383,9 @@ def run(args):
     save(directory / 'launch.json', meta)
     finished = {}
     stop_workload = threading.Event()
+    injector = runtime_fixture.Fixture(directory, args.scenario, config, sample) if runtime else None
+    if injector:
+        injector.arm()
 
     def workload():
         credential = read(config['credential_file'])
@@ -405,8 +417,8 @@ def run(args):
         except Exception as exc:
             finished.update(error=str(exc), exit_code=None)
 
-    traffic = threading.Thread(target=workload)
-    worker = threading.Thread(target=controller)
+    traffic = threading.Thread(target=workload, daemon=True)
+    worker = threading.Thread(target=controller, daemon=True)
     traffic.start(); worker.start()
     samples = []
     pipeline_samples = None
@@ -421,24 +433,35 @@ def run(args):
                     meta.update(pipeline_end=now() if finished.get('exit_code') is not None else None,
                                 exit_code=finished.get('exit_code'))
                     pipeline_samples = list(samples)
-                    endpoint = time.monotonic() + (600 if args.mode == 'github' and meta['pipeline_end'] else 0)
-                if endpoint is not None and time.monotonic() >= endpoint:
+                    endpoint = ((injector.started + 600) if injector and injector.started is not None else
+                                time.monotonic() + (600 if args.mode == 'github' and meta['pipeline_end'] else 0))
+                # S4 retains its predeclared 900-second safety expiry. Its outcome
+                # endpoint is still t0+600; later expiry is not controller recovery.
+                finish_at = max(endpoint or float('inf'), injector.started + runtime_fixture.SCHEDULES[args.scenario][-1][1]
+                                if injector and injector.started is not None else 0)
+                if endpoint is not None and time.monotonic() >= finish_at:
                     break
                 time.sleep(2)
     finally:
         stop_workload.set(); traffic.join()
+        if injector:
+            save(directory / 'final-state-before-cleanup.json',
+                 {env: sample(measurement(env)) for env in ('staging', 'production')})
+            injector.close()
     native_evidence(directory, pointer)
     config['github_run_ids'] = [finished['run_id']] if finished.get('run_id') else []
-    if args.no_interventions:
-        save(directory / 'human-interventions.json', [])
+    interventions = [read(p) for p in sorted((directory / 'interventions').glob('*.json'))]
+    if interventions or args.no_interventions:
+        save(directory / 'human-interventions.json', interventions)
     save(directory / 'launch.json', {**meta, **finished})
     # Preserve contract-v1 terminal semantics; follow-up is separate evidence.
     result = summarize(config, directory, meta, pipeline_samples or samples)
     if (directory / 'github/collection-warning.json').exists():
         result['evidence_complete'] = False
     save(directory / 'common-measurement.json', result)
-    evaluation_time = instant(now())
-    window = [s for s in samples if (evaluation_time - instant(s['timestamp'])).total_seconds() <= 30]
+    evaluation_time = (instant(injector.t0) + dt.timedelta(seconds=600)
+                       if injector and injector.t0 else instant(now()))
+    window = [s for s in samples if 0 <= (evaluation_time - instant(s['timestamp'])).total_seconds() <= 30]
     coverage = (len(window) >= 3
                 and (evaluation_time - instant(window[0]['timestamp'])).total_seconds() >= 15
                 and (evaluation_time - instant(window[-1]['timestamp'])).total_seconds() <= 5
@@ -447,15 +470,40 @@ def run(args):
     endpoint_health = all(s['healthy'] for s in window) if coverage and args.mode == 'github' else None
     save(directory / 'evaluation.json', dict(scope=args.mode, followup_seconds=600 if args.mode == 'github' else 0,
          endpoint_time=evaluation_time.isoformat(), endpoint_health=endpoint_health,
-         candidate_delivered_at_endpoint=(endpoint_health and samples[-1]['application_sha'] == config['application_sha']
-             and samples[-1]['image_id'] == config['image_identity']) if endpoint_health is not None else None,
+         candidate_delivered_at_endpoint=(endpoint_health and window[-1]['application_sha'] == config['application_sha']
+             and window[-1]['image_id'] == config['image_identity']) if endpoint_health is not None else None,
          observation_coverage=coverage, terminal_health=result['final_health'],
-         fault_not_reached=args.scenario != 'S0' and not any('deterministic_failure' in p.read_text(encoding='utf-8-sig')
+         fault_not_reached=args.scenario != 'S0' and not any(any(name in p.read_text(encoding='utf-8-sig') for name in ('deterministic_failure', 'injected_response'))
                  for p in directory.rglob('*.jsonl'))))
+    save(directory / 'raw-result.json', raw_result(directory, config, result, samples, injector))
     save(directory / 'hashes.json', {p.relative_to(directory).as_posix(): digest(p)
                                    for p in directory.rglob('*') if p.is_file()})
     print('Evidence: ' + str(directory))
     return finished.get('exit_code') if finished.get('exit_code') is not None else 2
+
+
+def raw_result(directory, config, common, samples, injector):
+    """Factual inventory only. No cross-approach scoring or success prediction."""
+    from measure_trial import events
+    records = list(events(directory, common['pipeline_start']))
+    jobs = read(directory / 'github/jobs-all-attempts.json') if (directory / 'github/jobs-all-attempts.json').exists() else []
+    evaluation = read(directory / 'evaluation.json')
+    endpoint = instant(evaluation['endpoint_time'])
+    at_endpoint = [s for s in samples if instant(s['timestamp']) <= endpoint]
+    final = at_endpoint[-1] if at_endpoint else {}
+    return dict(**common, frozen_controller=runtime_fixture.frozen_check()['revision'],
+                harness_identity=identity(), endpoint=evaluation, endpoint_observation=final,
+                candidate_retained=(final.get('application_sha') == config['application_sha'] and
+                                    final.get('image_id') == config['image_identity']) if final else None,
+                deployment_events=[e for e in records if e.get('event') in ('deployment_start', 'deployment_end')],
+                fault_events=[e for e in records if e.get('event') in ('deterministic_failure', 'fault_started', 'fault_boundary', 'fault_ended')],
+                native_probe_rounds=sum(e.get('event') == 'health_observation' for e in records),
+                external_health_sample_count=len(samples),
+                fixture_valid=(bool(injector.t0) and not injector.error and
+                               (directory / 'fixture-hook.json').exists() and
+                               0 <= read(directory / 'fixture-hook.json')['synchronization_seconds'] <= 2) if injector else None,
+                jobs=jobs, raw_evidence_path=str(directory),
+                note='Null is unknown; endpoint retention does not imply health or pipeline acceptance.')
 
 
 def images(action, path):

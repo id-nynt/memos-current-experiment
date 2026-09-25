@@ -1,5 +1,27 @@
 # Validation record
 
+## External fixture setup — 2026-09-25 (no trials executed)
+
+- 27 unit tests passed: frozen controller hashes, existing ownership protections,
+  route/release scope, exact schedule boundaries, mocked HTTP 503 and v1 forwarding,
+  credential-safe receipts, Docker adapter passthrough/failure and stale observer,
+  duplicate trial/path protection. These tests do not activate live scenarios.
+- Python compilation, actionlint, PowerShell AST, read-only Compose expansion and
+  Windows PowerShell → Docker adapter → real `docker version` passed. The adapter
+  receipt is `results/fixture-setup-validation-20260925/adapter-readonly.json`.
+- Docker Linux/amd64, Compose 2.39.2, exact frozen v1/v2 images and online/idle
+  dedicated runner verified without deployment/reset. The override changes only
+  the production host port to 5543; instance URL remains public port 5542.
+- Deployment policy/config and upstream CI match validated S0 revision
+  `67c4731e67ee1ff0a8cc8d3cbfd7459a23ffe667`; frozen checks enforce this identity.
+- Protected S0 `S0-github-validation-20260925-002`: all 175 inventory hashes verified;
+  its directory was not changed. No S1–S5 or new S0 execution occurred.
+- Before execution, commit/publish the harness and configure `MEMOS_EXPERIMENT_ROOT`
+  as described in [EXPERIMENT_GUIDE.md](EXPERIMENT_GUIDE.md). Static readiness is not
+  a claim that fault trials have passed end to end.
+
+## Historical validation records
+
 Validated on Windows/Docker Desktop, 2026-09-25:
 
 - 11 ownership, identity, disabled-scenario and policy-regression tests passed.

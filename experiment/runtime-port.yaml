@@ -1,0 +1,7 @@
+# External fixture plumbing only. The application's public instance URL remains
+# 5542, and its image, data, network, restart and health settings are unchanged.
+# Requires Docker Compose >= 2.24.4 (!override support).
+services:
+  memos:
+    ports: !override
+      - "127.0.0.1:5543:5230"

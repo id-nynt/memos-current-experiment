@@ -1,7 +1,7 @@
 ﻿# Conventional experiment execution
 
 Current setup, run, reset, scenario status, evidence and ownership instructions are
-maintained in [experiment/README.md](../../experiment/README.md).
+maintained in [experiment/EXPERIMENT_GUIDE.md](../../experiment/EXPERIMENT_GUIDE.md).
 
 Repository: `id-nynt/memos-current-experiment`. Execution is independent of the master
 repository. This replaces the historical guide's parent-script, shared virtual

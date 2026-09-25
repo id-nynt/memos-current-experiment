@@ -270,3 +270,18 @@ Validation completed locally:
   and push these additions, register the runner, set port variables to 5241/5242
   to continue these instances, and use the same persistent state directory.
   No full upstream test suite or destructive production recovery was run locally.
+
+
+### 2026-09-25 ? external scenario harness (no policy change)
+
+The operational source is [EXPERIMENT_GUIDE.md](../experiment/EXPERIMENT_GUIDE.md).
+Controller revision `67c4731e67ee1ff0a8cc8d3cbfd7459a23ffe667` is frozen by
+`experiment/frozen-control.json`. The deployment script, baseline Compose file,
+application/config pins and upstream CI files are unchanged. The experiment-only
+`frozen-cd.yml` exposes S3?S5 and invokes an external runner adapter. S1/S2 enable
+already-present fixture hooks. Runtime scenarios alter only production port plumbing
+and inject fixed-duration memo-route 503 responses after neutral initial readiness;
+no controller decision, timeout, retry budget or recovery behavior is changed.
+The readiness synchronization and passive follow-up are separately recorded fixture
+instrumentation. New operator lifecycle/raw-evidence helpers reset only outside the
+measurement window. S1?S5 execution remains pending; successful S0 evidence is retained.
