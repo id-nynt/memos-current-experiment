@@ -24,6 +24,11 @@ Frozen source tags and image IDs are pinned in
 [frozen-releases.json](../scripts/local-cd/frozen-releases.json). A rebuilt image
 with a different ID is not a substitute. Transfer exact images independently:
 
+The remote also needs the upstream stable tag `v0.31.0` at
+`2b2192d4e153bd04f1d325b60fd880cf00d68b01` for the unchanged upgrade smoke script.
+The first GitHub S0 exposed that missing input; its publication is pending approval
+(the historical tag can trigger a Release workflow). See the validation record.
+
 ```powershell
 # Once on a machine that has the frozen images:
 ./experiment/run.ps1 images export "$env:LOCALAPPDATA/memos-current-experiment/images"
