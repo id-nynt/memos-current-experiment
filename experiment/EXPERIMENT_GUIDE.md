@@ -1,8 +1,10 @@
 # Conventional experiment: operator guide
 
 This is the operational source of truth for this repository. Run PowerShell commands
-from its root. **Fixtures are implemented and unit/static checked; S1–S5 have not
-been executed.** READY below means setup-ready, not an observed experimental result.
+from its root. **S0–S2 completed validation; S3 was attempted but its runtime fixture
+was invalid. S4–S5 have not been executed.** READY below means setup-ready, not an
+observed experimental result. The local S3 adapter fix still requires publication
+and a separately authorized live validation.
 Do not launch a trial until its harness revision is committed and published.
 
 ## Frozen inputs
@@ -69,15 +71,16 @@ fixture → existing upgrade/build smoke → frozen-image staging/verification �
 production backup → same-image production/verification → accepted receipt.
 Frozen-image preparation is outside measured time; shared immutable images are reused.
 
-Use a **new trial ID every time**, including after interruption. These commands
-are instructions for later execution; none was run while setting up the fixtures.
+Use a **new trial ID for each authorized new trial**. After interruption, reconcile
+and recollect the original run first; do not dispatch a replacement for missing
+evidence. The commands below are templates, not authorization to repeat a scenario.
 
 | Scenario | Fault | Trigger/timing | Command | Evidence | Ready? |
 | --- | --- | --- | --- | --- | --- |
 | S0 | None | Normal pipeline; 600s post-terminal follow-up | `./experiment/trial.ps1 run --scenario S0 --trial S0-001 --no-interventions` | Native/GitHub/health | YES; prior S0 validated |
-| S1 | Deterministic extra CI gate exits 42 | After genuine backend/frontend/proto pass; before upgrade/deploy | `./experiment/trial.ps1 run --scenario S1 --trial S1-001 --no-interventions` | CI fixture artifact + skipped downstream jobs | YES; not executed |
-| S2 | Existing staging adapter throws | Before first staging Docker mutation, after upgrade smoke | `./experiment/trial.ps1 run --scenario S2 --trial S2-001 --no-interventions` | Native deterministic_failure + unchanged v1 | YES; not executed |
-| S3 | Production v2 memo HTTP 503 | `[0,60)` seconds from t0 | `./experiment/trial.ps1 run --scenario S3 --trial S3-001 --no-interventions` | Fault receipts, HTTP workload, native probes | YES; not executed |
+| S1 | Deterministic extra CI gate exits 42 | After genuine backend/frontend/proto pass; before upgrade/deploy | `./experiment/trial.ps1 run --scenario S1 --trial S1-001 --no-interventions` | CI fixture artifact + skipped downstream jobs | Validated; expected pipeline failure |
+| S2 | Existing staging adapter throws | Before first staging Docker mutation, after upgrade smoke | `./experiment/trial.ps1 run --scenario S2 --trial S2-001 --no-interventions` | Native deterministic_failure + unchanged v1 | Validated; expected pipeline failure |
+| S3 | Production v2 memo HTTP 503 | `[0,60)` seconds from t0 | `./experiment/trial.ps1 run --scenario S3 --trial S3-001 --no-interventions` | Fault receipts, HTTP workload, native probes | Invalid attempt; corrected adapter awaits live validation |
 | S4 | Persistent production v2 memo HTTP 503 | `[0,900)`; measurement endpoint t0+600 | `./experiment/trial.ps1 run --scenario S4 --trial S4-001 --no-interventions` | Endpoint before independent 900s expiry | YES; not executed |
 | S5 | Degradation, recovery, recurrence, recovery | 503 `[0,60)` and `[120,240)`; healthy otherwise | `./experiment/trial.ps1 run --scenario S5 --trial S5-001 --no-interventions` | Every clock boundary and post-terminal health | YES; not executed |
 
@@ -203,10 +206,34 @@ policy, upstream CI and successful S0 evidence are unchanged.
 Local validation: 27 unit tests passed, Python compilation, actionlint, PowerShell
 parse, read-only Compose expansion, and a real read-only PowerShell → adapter →
 Docker version call passed. Runner was online/idle and both frozen images verified.
-The root-path GitHub variable is not yet configured and the new harness is not yet
-published. No S1–S5 workflow, deployment, reset or live
-fault is part of setup validation. Re-run unit checks with:
+Those checks were setup validation, not live fault validation. Re-run unit checks with:
 
 ```powershell
 ./experiment/.venv/Scripts/python.exe -m unittest discover -s experiment -p 'test_*.py' -v
 ```
+
+### S3 adapter correction (2026-09-25)
+
+Harness `0da3d2fd0f4b2363254f8b5ef02b029c7822e265` was published and the root-path
+variable configured before trials S0-20260925-202920, S1-20260925-205029,
+S2-20260925-210717 and S3-20260925-212647. S0–S2 passed lifecycle validation.
+S3 run [36129487476](https://github.com/id-nynt/memos-current-experiment/actions/runs/36129487476)
+failed at production startup: the frozen controller passed `up --detach --no-build
+--pull never memos`, but the external adapter accepted only `-d`. Its rejection
+occurred after the production backup stop and before Docker production startup.
+Consequently no `fixture-up.json`, t0, synchronization hook or injected responses
+were produced. Runtime endpoint coverage could not be established. The verified
+v1 reset passed; the invalid trial remains preserved and S4/S5 were not dispatched.
+
+The adapter now accepts both detach spellings and preserves the original arguments.
+The regression test extracts the production command from the frozen controller
+and checks override insertion and successful hook receipt with mocked Docker.
+All 28 unit tests pass, including frozen-file and schedule checks. This is local
+validation only; it does not establish live S3 recovery or valid fault timing.
+
+Before another authorized runtime trial, commit and publish the corrected harness,
+verify remote `main` equals local HEAD, and run both documented read-only prerequisite
+checks. Use a fresh timestamped trial ID. Preserve the invalid S3 evidence as-is;
+neither recollection nor this correction can supply its missing runtime observations.
+The same adapter serves S4/S5. Controller, application images, schedules, thresholds,
+retry budgets and recovery behavior remain frozen.

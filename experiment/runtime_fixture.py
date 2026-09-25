@@ -237,7 +237,10 @@ def adapted_arguments(arguments, override):
               and arguments[arguments.index('--project-name') + 1] == PROJECT
               and 'up' in arguments)
     if target:
-        if arguments[-6:] != ['up', '-d', '--no-build', '--pull', 'never', 'memos']:
+        # The frozen controller spells detach long-form; preserve its arguments.
+        if (arguments[-6:] not in (
+                ['up', '--detach', '--no-build', '--pull', 'never', 'memos'],
+                ['up', '-d', '--no-build', '--pull', 'never', 'memos'])):
             raise RuntimeError('Unexpected production up command; fixture refuses adaptation')
         arguments = [arguments[0], '--file', arguments[arguments.index('--file') + 1],
                      '--file', str(override)] + arguments[arguments.index('--project-name'):]

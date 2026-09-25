@@ -1,6 +1,7 @@
 """Fixture-only unit tests. No Docker, GitHub dispatch, or live application faults."""
 import json
 import io
+import re
 from pathlib import Path
 import tempfile
 from types import SimpleNamespace
@@ -13,6 +14,28 @@ import trial
 
 
 class FixtureTests(unittest.TestCase):
+    def controller_production_arguments(self):
+        source = (rf.ROOT / 'scripts/local-cd/deploy.ps1').read_text(encoding='utf-8-sig')
+        commands = re.findall(r"Invoke-Compose 1 @\(([^\r\n]+)\)", source)
+        commands = [re.findall(r"'([^']*)'", command) for command in commands]
+        up = [command for command in commands if command and command[0] == 'up']
+        self.assertEqual(len(up), 1)
+        return ['compose', '--file', 'base.yaml', '--project-name', rf.PROJECT] + up[0]
+
+    def test_frozen_controller_command_reaches_runtime_hook(self):
+        args = self.controller_production_arguments()
+        with tempfile.TemporaryDirectory() as temp:
+            directory = Path(temp)
+            rf.atomic(directory / 'fixture-start.json', {'ready_at': rf.stamp()})
+            with patch.dict(rf.os.environ, MEMOS_FIXTURE_DIRECTORY=temp, MEMOS_REAL_DOCKER='docker.exe'), \
+                 patch.object(rf.subprocess, 'run', return_value=SimpleNamespace(returncode=0)) as docker:
+                self.assertEqual(rf.docker_adapter(args), 0)
+            docker.assert_called_once_with(['docker.exe', 'compose', '--file', 'base.yaml',
+                                           '--file', str(rf.HERE / 'runtime-port.yaml')] + args[3:])
+            self.assertTrue((directory / 'fixture-up.json').exists())
+            hook = rf.read(directory / 'fixture-hook.json')
+            self.assertTrue(0 <= hook['synchronization_seconds'] <= 2)
+
     def proxy_handler(self, directory):
         """Build the HTTP handler with mock server/clock/readiness; no sockets."""
         (directory / 'fixture-up.json').write_text('{}')
@@ -86,10 +109,11 @@ class FixtureTests(unittest.TestCase):
 
     def test_adapter_only_modifies_production_up(self):
         prefix = ['compose', '--file', 'base.yaml', '--project-name', rf.PROJECT]
-        original = prefix + ['up', '-d', '--no-build', '--pull', 'never', 'memos']
-        adapted, changed = rf.adapted_arguments(original, 'fixture.yaml')
-        self.assertTrue(changed)
-        self.assertEqual(adapted, ['compose', '--file', 'base.yaml', '--file', 'fixture.yaml'] + original[3:])
+        for detach in ('--detach', '-d'):
+            original = prefix + ['up', detach, '--no-build', '--pull', 'never', 'memos']
+            adapted, changed = rf.adapted_arguments(original, 'fixture.yaml')
+            self.assertTrue(changed)
+            self.assertEqual(adapted, ['compose', '--file', 'base.yaml', '--file', 'fixture.yaml'] + original[3:])
         for args in (prefix + ['stop', '--timeout', '30', 'memos'], ['inspect', 'container'],
                      ['compose', '--file', 'base.yaml', '--project-name', 'foreign'] + original[-6:]):
             self.assertEqual(rf.adapted_arguments(args, 'fixture.yaml'), (args, False))
