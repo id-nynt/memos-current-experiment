@@ -12,6 +12,7 @@ import sys
 import threading
 import time
 import urllib.request
+import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 HERE = ROOT / 'experiment'
@@ -268,6 +269,17 @@ def native_evidence(directory, pointer):
             shutil.copy2(source / name, directory / name)
 
 
+def extract_logs(archive, target):
+    """Preserve GitHub's full archive, including reusable-workflow job logs."""
+    target = Path(target).resolve()
+    with zipfile.ZipFile(archive) as bundle:
+        if not bundle.namelist() or bundle.testzip() is not None:
+            raise ValueError('Empty or corrupt GitHub log archive')
+        if not all((target / name).resolve().is_relative_to(target) for name in bundle.namelist()):
+            raise ValueError('GitHub log archive path escapes evidence directory')
+        bundle.extractall(target)
+
+
 def github_run(release, trial, scenario, directory, finished):
     repo = CFG['repository']
     sha = command('git', 'rev-parse', 'HEAD')
@@ -315,8 +327,13 @@ def github_run(release, trial, scenario, directory, finished):
     try:
         logs = command('gh', 'run', 'view', str(run_id), '--repo', repo, '--log')
         (ghdir / 'logs.txt').write_text(logs, encoding='utf-8')
+        archive = ghdir / 'raw-logs.zip'
+        with archive.open('wb') as output:
+            subprocess.run(['gh', 'api', f'repos/{repo}/actions/runs/{run_id}/logs'],
+                           cwd=ROOT, stdout=output, check=True)
+        extract_logs(archive, ghdir / 'raw-logs')
         command('gh', 'run', 'download', str(run_id), '--repo', repo, '--dir', ghdir / 'artifacts')
-    except subprocess.CalledProcessError:
+    except (subprocess.CalledProcessError, OSError, zipfile.BadZipFile, ValueError):
         save(ghdir / 'collection-warning.json', {'reason': 'Logs or artifacts unavailable; retained metadata'})
     for name in ('native-events.jsonl', 'release.json'):
         paths = list((ghdir / 'artifacts').rglob(name)) if (ghdir / 'artifacts').exists() else []
@@ -417,6 +434,8 @@ def run(args):
     save(directory / 'launch.json', {**meta, **finished})
     # Preserve contract-v1 terminal semantics; follow-up is separate evidence.
     result = summarize(config, directory, meta, pipeline_samples or samples)
+    if (directory / 'github/collection-warning.json').exists():
+        result['evidence_complete'] = False
     save(directory / 'common-measurement.json', result)
     evaluation_time = instant(now())
     window = [s for s in samples if (evaluation_time - instant(s['timestamp'])).total_seconds() <= 30]

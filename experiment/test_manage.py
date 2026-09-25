@@ -4,6 +4,7 @@ from pathlib import Path
 import tempfile
 from types import SimpleNamespace
 import unittest
+import zipfile
 from unittest.mock import patch
 
 import fixture
@@ -11,6 +12,25 @@ import manage
 
 
 class OwnershipTests(unittest.TestCase):
+    def test_full_log_archive_extracts_nested_job_logs(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            archive = root / 'logs.zip'
+            with zipfile.ZipFile(archive, 'w') as bundle:
+                bundle.writestr('reusable-job/step.txt', 'raw job output')
+            manage.extract_logs(archive, root / 'output')
+            self.assertEqual((root / 'output/reusable-job/step.txt').read_text(), 'raw job output')
+
+    def test_log_archive_cannot_escape_evidence(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            archive = root / 'logs.zip'
+            with zipfile.ZipFile(archive, 'w') as bundle:
+                bundle.writestr('../outside.txt', 'must not be written')
+            with self.assertRaisesRegex(ValueError, 'escapes evidence'):
+                manage.extract_logs(archive, root / 'output')
+            self.assertFalse((root / 'outside.txt').exists())
+
     def test_foreign_volume_is_refused(self):
         with patch.object(manage, 'command', return_value=json.dumps([{'Labels': {'com.docker.compose.project': 'foreign'}}])):
             with self.assertRaisesRegex(RuntimeError, 'foreign volume'):
