@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "pair": "20260924-visible-header",
+  "platform": "linux/amd64",
+  "releases": {
+    "v1": {
+      "application_sha": "2b5a8be2c2f9cf81599393a227890fb2424a5f03",
+      "tree": "65d334d6e9e67c0b7262096a7e1c4abcb368daa5",
+      "version": "local-2b5a8be2c2f9cf81599393a227890fb2424a5f03",
+      "image_id": "sha256:610a28ab259d8d966851a5318258bdb3dc904a4be1af79c8ec61f3ecd9c281dc",
+      "tag": "memos-aligned:v1-20260925"
+    },
+    "v2": {
+      "application_sha": "db695ea0d54cfce6925f07a4715cb42eb6fd8f20",
+      "tree": "edcac42ea04e37749c5d003c8dbb14c75d174ef6",
+      "version": "local-db695ea0d54cfce6925f07a4715cb42eb6fd8f20",
+      "image_id": "sha256:d08139aec853b76733232f768cab6f771d8ae5055ac48d1b9c27619c67f1e701",
+      "tag": "memos-aligned:v2-20260925"
+    }
+  }
+}

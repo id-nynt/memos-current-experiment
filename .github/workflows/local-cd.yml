@@ -1,0 +1,119 @@
+name: Local CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+# One local machine/data set. Never interrupt a deployment with a newer push.
+concurrency:
+  group: memos-local-cd
+  cancel-in-progress: false
+
+jobs:
+  ci-gate:
+    name: Verify upstream CI for exact SHA
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/github-script@v8
+        with:
+          script: |
+            const required = ['backend-tests.yml', 'frontend-tests.yml', 'proto-linter.yml'];
+            const deadline = Date.now() + 30 * 60 * 1000;
+            while (Date.now() < deadline) {
+              let ready = true;
+              for (const workflow_id of required) {
+                const { data } = await github.rest.actions.listWorkflowRuns({
+                  ...context.repo, workflow_id, branch: 'main', event: 'push',
+                  head_sha: context.sha, per_page: 100
+                });
+                const run = data.workflow_runs
+                  .filter(r => r.head_sha === context.sha && r.head_repository?.full_name === `${context.repo.owner}/${context.repo.repo}`)
+                  .sort((a, b) => b.run_number - a.run_number)[0];
+                if (!run || run.status !== 'completed') {
+                  ready = false;
+                  continue;
+                }
+                if (run.conclusion !== 'success') {
+                  throw new Error(`${workflow_id}: ${run.conclusion}: ${run.html_url}`);
+                }
+                const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun, {
+                  ...context.repo, run_id: run.id, filter: 'latest', per_page: 100
+                });
+                if (!jobs.length || jobs.some(job => job.conclusion !== 'success')) {
+                  throw new Error(`${workflow_id}: not every upstream job succeeded`);
+                }
+                core.info(`${workflow_id}: ${run.html_url} (${context.sha})`);
+              }
+              if (ready) return;
+              await new Promise(resolve => setTimeout(resolve, 20000));
+            }
+            throw new Error(`Required CI was not successful within 30 minutes for ${context.sha}`);
+
+  upgrade-smoke:
+    name: Existing upstream upgrade smoke
+    needs: ci-gate
+    uses: ./.github/workflows/upgrade-smoke.yml
+
+  deploy-local:
+    name: Build, stage, and deploy locally
+    needs: [ci-gate, upgrade-smoke]
+    runs-on: [self-hosted, Windows, memos-local]
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: powershell
+    env:
+      LOCAL_CD_STATE_DIRECTORY: ${{ vars.LOCAL_CD_STATE_DIRECTORY }}
+      LOCAL_CD_STAGING_PORT: ${{ vars.LOCAL_CD_STAGING_PORT || '5231' }}
+      LOCAL_CD_PRODUCTION_PORT: ${{ vars.LOCAL_CD_PRODUCTION_PORT || '5232' }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Verify Docker prerequisites
+        run: ./scripts/local-cd/deploy.ps1 -Commit $env:GITHUB_SHA -CheckOnly
+
+      - uses: pnpm/action-setup@v4.2.0
+        with:
+          version: 11.0.1
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: Build frontend release assets
+        working-directory: web
+        run: |
+          pnpm install --frozen-lockfile
+          if ($LASTEXITCODE -ne 0) { throw 'pnpm install failed' }
+          pnpm release
+          if ($LASTEXITCODE -ne 0) { throw 'pnpm release failed' }
+
+      - name: Reject superseded candidate
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { data } = await github.rest.git.getRef({ ...context.repo, ref: 'heads/main' });
+            if (data.object.sha !== context.sha) throw new Error('Candidate is no longer the main tip; deploy the newer run');
+
+      - name: Build image, verify staging, back up and verify production
+        run: ./scripts/local-cd/deploy.ps1 -Commit $env:GITHUB_SHA
+
+      - name: Upload deployment diagnostics and release record
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: local-cd-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/memos-local-cd-report/${{ github.run_id }}-${{ github.run_attempt }}/*
+          if-no-files-found: ignore
+          retention-days: 14

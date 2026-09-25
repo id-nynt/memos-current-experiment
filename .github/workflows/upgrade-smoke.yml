@@ -10,6 +10,11 @@ name: Upgrade Smoke
 
 on:
   workflow_call:
+    inputs:
+      release_sha:
+        type: string
+        required: false
+        default: ""
   workflow_dispatch:
   pull_request:
     branches: [main]
@@ -35,8 +40,8 @@ concurrency:
   # Keep this distinct from a caller's concurrency group when the workflow is
   # invoked from release.yml; sharing a group with cancel-in-progress would
   # cancel the parent release workflow.
-  group: ${{ github.workflow }}-upgrade-smoke-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-upgrade-smoke-${{ github.ref }}-${{ inputs.release_sha || github.sha }}
+  cancel-in-progress: ${{ inputs.release_sha == '' }}
 
 env:
   GO_VERSION: "1.27.0"
@@ -54,6 +59,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
 
       - name: Setup Go
         uses: actions/setup-go@v6
@@ -80,6 +87,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
+          ref: ${{ inputs.release_sha || github.sha }}
           # release_smoke_test.sh resolves the previous stable release from Git
           # tags, so it needs full history and tags.
           fetch-depth: 0
@@ -109,6 +117,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
 
       - name: Run entrypoint tests
         run: ./scripts/entrypoint_test.sh

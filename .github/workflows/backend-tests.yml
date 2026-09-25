@@ -1,6 +1,12 @@
 name: Backend Tests
 
 on:
+  workflow_call:
+    inputs:
+      release_sha:
+        type: string
+        required: false
+        default: ""
   push:
     branches: [main]
   pull_request:
@@ -11,8 +17,8 @@ on:
       - "**.go"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-backend-tests-${{ github.ref }}-${{ inputs.release_sha || github.sha }}
+  cancel-in-progress: ${{ inputs.release_sha == '' }}
 
 env:
   GO_VERSION: "1.27.0"
@@ -24,6 +30,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
       
       - name: Setup Go
         uses: actions/setup-go@v6
@@ -53,6 +61,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
       
       - name: Setup Go
         uses: actions/setup-go@v6

@@ -1,6 +1,12 @@
 name: Proto Linter
 
 on:
+  workflow_call:
+    inputs:
+      release_sha:
+        type: string
+        required: false
+        default: ""
   push:
     branches: [main]
   pull_request:
@@ -9,8 +15,8 @@ on:
       - "proto/**"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-proto-linter-${{ github.ref }}-${{ inputs.release_sha || github.sha }}
+  cancel-in-progress: ${{ inputs.release_sha == '' }}
 
 jobs:
   lint:
@@ -20,6 +26,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
+          ref: ${{ inputs.release_sha || github.sha }}
           fetch-depth: 0
 
       - name: Setup buf

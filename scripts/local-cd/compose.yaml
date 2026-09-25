@@ -1,0 +1,20 @@
+# Always invoke with an explicit project: memos-local-staging or memos-local-production.
+services:
+  memos:
+    image: ${MEMOS_IMAGE:?Set the immutable local image ID}
+    pull_policy: never
+    restart: unless-stopped
+    stop_grace_period: 30s
+    environment:
+      MEMOS_DRIVER: sqlite
+      MEMOS_DATA: /var/opt/memos
+      MEMOS_PORT: "5230"
+      MEMOS_INSTANCE_URL: http://127.0.0.1:${MEMOS_HOST_PORT:?Set the environment port}
+    ports:
+      - "127.0.0.1:${MEMOS_HOST_PORT}:5230"
+    volumes:
+      - data:/var/opt/memos
+
+volumes:
+  data:
+    name: ${MEMOS_DATA_VOLUME:?Set the isolated data volume}

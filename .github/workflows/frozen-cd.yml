@@ -1,0 +1,81 @@
+name: Frozen Memos experiment CD
+run-name: conventional-${{ inputs.trial_id }}
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        type: choice
+        options: [v1, v2]
+        required: true
+      trial_id:
+        type: string
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: memos-local-cd
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.release.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v6
+      - id: release
+        env:
+          RELEASE: ${{ inputs.release }}
+          TRIAL_ID: ${{ inputs.trial_id }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re
+          assert re.fullmatch(r'[A-Za-z0-9_.-]+', os.environ['TRIAL_ID'])
+          release = json.load(open('scripts/local-cd/frozen-releases.json'))['releases'][os.environ['RELEASE']]
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('sha=' + release['application_sha'] + '\n')
+          PY
+  backend:
+    needs: release
+    uses: ./.github/workflows/backend-tests.yml
+    with:
+      release_sha: ${{ needs.release.outputs.sha }}
+  frontend:
+    needs: release
+    uses: ./.github/workflows/frontend-tests.yml
+    with:
+      release_sha: ${{ needs.release.outputs.sha }}
+  proto:
+    needs: release
+    uses: ./.github/workflows/proto-linter.yml
+    with:
+      release_sha: ${{ needs.release.outputs.sha }}
+  upgrade:
+    needs: [release, backend, frontend, proto]
+    uses: ./.github/workflows/upgrade-smoke.yml
+    with:
+      release_sha: ${{ needs.release.outputs.sha }}
+  deploy:
+    needs: [release, upgrade]
+    runs-on: [self-hosted, Windows, memos-local]
+    timeout-minutes: 60
+    env:
+      RELEASE: ${{ inputs.release }}
+      RELEASE_SHA: ${{ needs.release.outputs.sha }}
+      TRIAL_ID: ${{ inputs.trial_id }}
+      LOCAL_CD_STATE_DIRECTORY: ${{ vars.LOCAL_CD_STATE_DIRECTORY }}
+      LOCAL_CD_STAGING_PORT: ${{ vars.LOCAL_CD_STAGING_PORT || '5441' }}
+      LOCAL_CD_PRODUCTION_PORT: ${{ vars.LOCAL_CD_PRODUCTION_PORT || '5442' }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Deliver frozen image through conventional stages
+        shell: powershell
+        run: ./scripts/local-cd/deploy.ps1 -Commit $env:RELEASE_SHA -FrozenRelease $env:RELEASE -TrialId $env:TRIAL_ID
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: frozen-cd-${{ inputs.trial_id }}
+          path: ${{ runner.temp }}/memos-local-cd-report/${{ github.run_id }}-${{ github.run_attempt }}/*
+          retention-days: 90
