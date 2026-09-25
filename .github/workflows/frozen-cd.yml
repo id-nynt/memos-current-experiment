@@ -77,6 +77,7 @@ jobs:
     uses: ./.github/workflows/upgrade-smoke.yml
     with:
       release_sha: ${{ needs.release.outputs.sha }}
+      previous_image: neosmemo/memos:0.31.0
   deploy:
     needs: [release, upgrade]
     runs-on: [self-hosted, Windows, memos-local]

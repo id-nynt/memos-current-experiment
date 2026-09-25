@@ -1,12 +1,45 @@
 # Conventional local pipeline
 
 Baseline: `05a2c6db7a3e926c9142a635f42f7af0f078c81d` (2026-09-25 inspection).
-The supplied checkout's remote is `id-nynt/memos-experiment`. "Upstream" below
-means the existing files at that baseline. No existing upstream files are changed.
+The original supplied checkout used `id-nynt/memos-experiment`; this conventional
+repository now uses `id-nynt/memos-current-experiment`. "Upstream" below means the
+existing files at that baseline. The original design is retained below, with the
+current experiment-specific adaptation documented here.
+
+## Frozen experiment upgrade baseline (2026-09-25)
+
+The first GitHub S0 failed after building the smoke candidate because this dedicated
+repository has no ancestral stable-release tags. The upstream smoke script normally
+uses those tags to select a previous image. Its applicable upstream baseline is
+`v0.31.0` (`2b2192d4e153bd04f1d325b60fd880cf00d68b01`), mapped to
+`neosmemo/memos:0.31.0`. Publishing that tag could trigger its historical Release
+workflow, so the experiment instead supplies the script's existing environment
+override explicitly.
+
+- **UPSTREAM MINIMALLY ADAPTED:** `.github/workflows/upgrade-smoke.yml` adds optional
+  reusable-workflow input `previous_image` (default empty), wired only to
+  `MEMOS_SMOKE_PREVIOUS_IMAGE` on the existing release-smoke step. All jobs, checks,
+  commands, dependencies, timeouts and normal tag-discovery behavior remain intact.
+- **NEW LOCAL CD:** `.github/workflows/frozen-cd.yml` supplies
+  `previous_image: neosmemo/memos:0.31.0` for the experiment's upgrade call only.
+- **UPSTREAM UNCHANGED by this fix:** backend/frontend/proto checks, the smoke and
+  release-version scripts, Dockerfile, `release.yml`, and every other upstream job.
+
+An empty override continues to invoke upstream tag discovery. Release, PR, manual
+upgrade-smoke and ordinary local-CD callers do not supply the new input. No tag is
+created/pushed and no Release workflow setting is changed. This is baseline-input
+wiring, not a change to conventional gating, retry, health or recovery policy.
+The smoke job still builds/tests its candidate image; deployment still promotes
+the separately frozen immutable experiment image through staging and production.
+
+Change log: 2026-09-25 — explicit experiment-only previous-image input replaces the
+unavailable tag-discovery input; no smoke test is skipped or weakened. New healthy
+S0 validation is authorized once, with S1-S5 remaining disabled.
 
 ## Original pipeline and provenance
 
-All workflows/jobs in this table are **UPSTREAM UNCHANGED**.
+This table records the original upstream structure; the current minimal adaptation
+to `upgrade-smoke.yml` is classified above.
 
 | Workflow | Trigger | Jobs and dependencies |
 | --- | --- | --- |
@@ -39,7 +72,7 @@ Existing Backend Tests + Frontend Tests + Proto Linter (exact main SHA)
 ```
 
 All original triggers, jobs, checks, and publishing destinations remain unchanged.
-No files/jobs are **UPSTREAM MINIMALLY ADAPTED**. Local CD neither waits for nor
+The experiment-only input adaptation is documented above. Local CD neither waits for nor
 uses the public canary/release publishers, so it needs no Docker Hub credentials.
 
 | New file | Classification / reason |

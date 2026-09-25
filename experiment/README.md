@@ -22,12 +22,15 @@ No Windows password is stored. Use `-Python C:/path/to/python.exe` if needed.
 
 Frozen source tags and image IDs are pinned in
 [frozen-releases.json](../scripts/local-cd/frozen-releases.json). A rebuilt image
-with a different ID is not a substitute. Transfer exact images independently:
+with a different ID is not a substitute.
 
-The remote also needs the upstream stable tag `v0.31.0` at
-`2b2192d4e153bd04f1d325b60fd880cf00d68b01` for the unchanged upgrade smoke script.
-The first GitHub S0 exposed that missing input; its publication is pending approval
-(the historical tag can trigger a Release workflow). See the validation record.
+The experiment passes `MEMOS_SMOKE_PREVIOUS_IMAGE=neosmemo/memos:0.31.0` to the
+upstream release-image smoke test through its optional workflow input. This avoids
+requiring a historical tag in this remote while preserving every smoke check.
+Other callers retain automatic stable-tag discovery. See
+[the design note](../.github/CONVENTIONAL_PIPELINE_DESIGN.md).
+
+Transfer exact images independently:
 
 ```powershell
 # Once on a machine that has the frozen images:
