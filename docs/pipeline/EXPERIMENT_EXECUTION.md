@@ -21,8 +21,8 @@ conventional control revision and harness hashes separately.
 | S1 | `S1-20260925-205029` | Recorded in trial evidence | Valid expected pipeline failure | `experiment/results/S1-20260925-205029/` |
 | S2 | `S2-20260925-210717` | Recorded in trial evidence | Valid expected pipeline failure | `experiment/results/S2-20260925-210717/` |
 | S3 | `S3-20260925-225819` | [36138116562](https://github.com/id-nynt/memos-current-experiment/actions/runs/36138116562) | Completed validation; v2 delivered and retained | `experiment/results/S3-20260925-225819/` |
-| S4 | Pending | Pending | Not dispatched | Pending |
-| S5 | Pending | Pending | Not dispatched | Pending |
+| S4 | `S4-20260925-233058` | [36141506932](https://github.com/id-nynt/memos-current-experiment/actions/runs/36141506932) | Valid expected pipeline failure; persistent fault prevented candidate delivery | `experiment/results/S4-20260925-233058/` |
+| S5 | `S5-20260925-235630` | [36144254396](https://github.com/id-nynt/memos-current-experiment/actions/runs/36144254396) | Completed validation; v2 delivered and retained after recurring fault schedule | `experiment/results/S5-20260925-235630/` |
 
 Earlier S3 attempts remain preserved as invalid/interrupted evidence:
 `S3-20260925-212647` had no valid runtime fixture after the adapter rejected the
@@ -31,14 +31,29 @@ runner cancellation before the production fault hook. Neither is replaced or edi
 
 ## Next authorized steps
 
-S4 and S5 must run sequentially with fresh timestamped trial IDs using
+S4 and S5 were run sequentially with fresh timestamped trial IDs using
 `experiment/trial.ps1`, preserving the frozen controller, application images,
-schedules, thresholds, retry budgets and reset behavior. Continue only if each
-trial completes evidence collection and reset verification.
+schedules, thresholds, retry budgets and reset behavior. Each trial completed
+evidence collection and reset verification.
 
-Before dispatching S4, the repository must again satisfy the guide prerequisites:
+Before dispatching any further trial, the repository must again satisfy the guide prerequisites:
 tracked files clean, local `HEAD` published to `origin/main`, `MEMOS_EXPERIMENT_ROOT`
 pointing at this checkout, runner online and idle, Docker/frozen images/seed verified,
-and the documented read-only checks passing. The current S3 documentation update is
-subsequent to the validated S3 harness identity and must be reviewed, committed and
-published before another trial can be launched under the guide's exact-HEAD rule.
+and the documented read-only checks passing.
+
+## S4/S5 completion notes
+
+S4 `S4-20260925-233058` ran on published harness
+`4acfe79fd5889623325e9b82fa2cd337409c88f3`. The GitHub workflow failed as a
+measured outcome under the persistent `[0,900)` production memo 503 schedule.
+Fixture validity, fault exposure, endpoint observation coverage and evidence
+collection all passed. The endpoint at `t0+600` was unhealthy and the candidate
+was not delivered. Reset restored and verified v1. All 184 trial evidence hashes
+and the lifecycle hash verified.
+
+S5 `S5-20260925-235630` ran on the same published harness. The GitHub workflow
+completed successfully under the `[0,60)` and `[120,240)` recurring fault schedule.
+Fixture validity, fault exposure, endpoint observation coverage and evidence
+collection all passed. The endpoint at `t0+600` was healthy and the candidate was
+delivered and retained. Reset restored and verified v1. All 184 trial evidence
+hashes and the lifecycle hash verified.
