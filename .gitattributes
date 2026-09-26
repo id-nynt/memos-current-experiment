@@ -1,0 +1,3 @@
+# Canonical paired contract/helper must retain identical bytes across Windows/WSL.
+experiment/rq1-s4r-s5r.json text eol=lf
+experiment/paired_rq1.py text eol=lf

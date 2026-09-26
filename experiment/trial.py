@@ -120,7 +120,7 @@ def main():
     sub = parser.add_subparsers(dest='command', required=True)
     for name in ('run', 'check'):
         p = sub.add_parser(name)
-        p.add_argument('--scenario', choices=['S0', 'S1', 'S2', 'S3', 'S4', 'S5'], required=True)
+        p.add_argument('--scenario', choices=['S0', 'S1', 'S2', 'S3', 'S4', 'S5', 'S4R', 'S5R'], required=True)
         if name == 'run':
             p.add_argument('--trial', required=True)
             p.add_argument('--no-interventions', action='store_true')

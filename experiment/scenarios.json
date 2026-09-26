@@ -1,9 +1,35 @@
 {
   "revision": 2,
-  "S0": {"enabled": true, "description": "Healthy frozen release deployment"},
-  "S1": {"enabled": true, "description": "Deterministic extra CI fixture after successful upstream quality jobs"},
-  "S2": {"enabled": true, "description": "Failure immediately before first staging Docker mutation"},
-  "S3": {"enabled": true, "description": "Memo-route 503 for 60 seconds"},
-  "S4": {"enabled": true, "description": "Memo-route 503 for 900 seconds; endpoint at 600 seconds"},
-  "S5": {"enabled": true, "description": "Memo-route 503 at [0,60) and [120,240) seconds; healthy otherwise"}
+  "S0": {
+    "enabled": true,
+    "description": "Healthy frozen release deployment"
+  },
+  "S1": {
+    "enabled": true,
+    "description": "Deterministic extra CI fixture after successful upstream quality jobs"
+  },
+  "S2": {
+    "enabled": true,
+    "description": "Failure immediately before first staging Docker mutation"
+  },
+  "S3": {
+    "enabled": true,
+    "description": "Memo-route 503 for 60 seconds"
+  },
+  "S4": {
+    "enabled": true,
+    "description": "Memo-route 503 for 900 seconds; endpoint at 600 seconds"
+  },
+  "S5": {
+    "enabled": true,
+    "description": "Memo-route 503 at [0,60) and [120,240) seconds; healthy otherwise"
+  },
+  "S4R": {
+    "enabled": true,
+    "description": "Paired revised scenario; separate live approval required"
+  },
+  "S5R": {
+    "enabled": true,
+    "description": "Paired revised scenario; separate live approval required"
+  }
 }

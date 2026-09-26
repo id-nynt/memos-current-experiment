@@ -270,3 +270,15 @@ healthy v1 in both. The pre-trial runner restart was disclosed using `trial.ps1 
 no manual rescue occurred during measurement. All 185 trial evidence hashes and
 the lifecycle hash verified. Earlier evidence remains unchanged. This guide update
 is subsequent documentation, not part of that trial's frozen harness identity.
+
+
+## S4R / S5R: prepared, not executed
+
+Revised scenarios are implemented in this working source only. Historical S0-S5
+results, definitions and pinned controls remain unchanged. Do not select these
+scenarios against an old published control. Read the workspace
+[implementation readiness report](../../docs/S4R_S5R_IMPLEMENTATION_READINESS.md)
+before publication or healthy validation. Separate live approval is still required.
+S4R uses [0,900); S5R uses [0,60) and [70,190). The paired contract and helper
+shipped in this repository must match the canonical workspace contract byte-for-byte.
+No controller lifetime or decision policy has been extended.

@@ -26,6 +26,8 @@ PROJECT = 'memos-current-experiment-production'
 PUBLIC_PORT = 5542
 BACKEND_PORT = 5543
 SCHEDULES = {'S3': [(0, 60)], 'S4': [(0, 900)], 'S5': [(0, 60), (120, 240)]}
+import paired_rq1 as paired
+SCHEDULES.update({k: [tuple(x) for x in v['fault_intervals_seconds']] for k, v in paired.contract()['scenarios'].items()})
 HOP = {'connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization',
        'te', 'trailer', 'transfer-encoding', 'upgrade', 'content-length'}
 
@@ -106,6 +108,8 @@ class Fixture:
         atomic(self.directory / 'fixture-arm.json', dict(scenario=self.scenario, trial_id=self.directory.name,
                control_sha=self.config['control_sha'], pid=os.getpid(), created_at=stamp(),
                public_port=PUBLIC_PORT, backend_port=BACKEND_PORT, schedule=SCHEDULES[self.scenario]))
+        if paired.revised(self.scenario):
+            atomic(self.directory / 'paired-contract.json', dict(contract=paired.contract(), sha256=paired.digest()))
         self.event('fixture_armed')
         self.thread = threading.Thread(target=self.serve, daemon=True)
         self.thread.start()
@@ -129,6 +133,7 @@ class Fixture:
                     body = b'Fixture upstream unavailable'
                     headers = []
                     connection = None
+                    elapsed, memo = -1, False
                     try:
                         # Identity on each memo request keeps the rule release-scoped,
                         # including restarts. Never infer identity from controller events.
@@ -173,6 +178,12 @@ class Fixture:
                         self.end_headers()
                         if self.command != 'HEAD':
                             self.wfile.write(body)
+                        if paired.revised(fixture.scenario):
+                            fixture.event('response_delivered', status=status,
+                                          route='memo' if memo else 'other', method=self.command,
+                                          user_agent=self.headers.get('User-Agent', '')[:200],
+                                          elapsed_seconds=elapsed,
+                                          note='Transport evidence only; correlate client and native probe before attributing receipt')
                     except (BrokenPipeError, ConnectionResetError):
                         pass
 
@@ -221,6 +232,12 @@ class Fixture:
             atomic(self.directory / 'fixture-error.json', {'timestamp': stamp(), 'error': str(exc)})
 
     def close(self):
+        if paired.revised(self.scenario) and self.started is not None:
+            expiry = self.started + SCHEDULES[self.scenario][-1][1]
+            if time.monotonic() < expiry:
+                self.event('cleanup_waits_for_schedule_expiry')
+            while time.monotonic() < expiry:
+                time.sleep(max(0, min(.1, expiry - time.monotonic())))
         self.stop.set()
         if self.thread:
             self.thread.join(timeout=15)

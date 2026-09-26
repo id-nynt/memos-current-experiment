@@ -1,0 +1,41 @@
+{
+  "revision": "rq1-paired-r1",
+  "scenarios": {
+    "S4R": {
+      "fault_intervals_seconds": [
+        [
+          0,
+          900
+        ]
+      ],
+      "expiry_seconds": 900
+    },
+    "S5R": {
+      "fault_intervals_seconds": [
+        [
+          0,
+          60
+        ],
+        [
+          70,
+          190
+        ]
+      ],
+      "expiry_seconds": 190
+    }
+  },
+  "v1": "2b5a8be2c2f9cf81599393a227890fb2424a5f03",
+  "v2": "db695ea0d54cfce6925f07a4715cb42eb6fd8f20",
+  "v2_image": "sha256:d08139aec853b76733232f768cab6f771d8ae5055ac48d1b9c27619c67f1e701",
+  "target": "authorized trial production v2; all methods on /api/v1/memos and subpaths",
+  "t0": "independent identity/readiness/authenticated sentinel success, before native post-deployment verification",
+  "activation_ack_max_seconds": 2,
+  "endpoint_seconds": 600,
+  "endpoint_window_seconds": 30,
+  "endpoint_coverage_seconds": 25,
+  "sample_interval_seconds": 2,
+  "workload": "authenticated sentinel read every 1 second without overlap; timeout 3 seconds",
+  "owner": "operator harness only; normal clearance after scheduled expiry and remote termination",
+  "lifetime": "unchanged native controller lifetime",
+  "status": "Prepared; live execution requires separate approval"
+}

@@ -463,7 +463,7 @@ def run(args):
                        if injector and injector.t0 else instant(now()))
     window = [s for s in samples if 0 <= (evaluation_time - instant(s['timestamp'])).total_seconds() <= 30]
     coverage = (len(window) >= 3
-                and (evaluation_time - instant(window[0]['timestamp'])).total_seconds() >= 15
+                and (evaluation_time - instant(window[0]['timestamp'])).total_seconds() >= (25 if args.scenario in ('S4R', 'S5R') else 15)
                 and (evaluation_time - instant(window[-1]['timestamp'])).total_seconds() <= 5
                 and all((instant(b['timestamp']) - instant(a['timestamp'])).total_seconds() <= 15
                         for a, b in zip(window, window[1:])))
@@ -475,6 +475,15 @@ def run(args):
          observation_coverage=coverage, terminal_health=result['final_health'],
          fault_not_reached=args.scenario != 'S0' and not any(any(name in p.read_text(encoding='utf-8-sig') for name in ('deterministic_failure', 'injected_response'))
                  for p in directory.rglob('*.jsonl'))))
+    if args.scenario in ('S4R', 'S5R'):
+        import paired_rq1 as paired
+        native_path = directory / 'native-events.jsonl'
+        native = [json.loads(x) for x in native_path.read_text(encoding='utf-8-sig').splitlines() if x.strip()] if native_path.exists() else []
+        ends = [x['timestamp'] for x in native if x.get('event') == 'pipeline_end']
+        probes = [x for x in native if x.get('event') == 'health_observation' and x.get('environment') == 'production']
+        save(directory / 'active-opportunity.json', paired.opportunity(
+            instant(injector.t0).timestamp() if injector and injector.t0 else None,
+            ends[-1] if ends else None, probes, args.scenario))
     save(directory / 'raw-result.json', raw_result(directory, config, result, samples, injector))
     save(directory / 'hashes.json', {p.relative_to(directory).as_posix(): digest(p)
                                    for p in directory.rglob('*') if p.is_file()})
@@ -536,7 +545,7 @@ def main():
     image_parser.add_argument('path')
     run_parser = sub.add_parser('run')
     run_parser.add_argument('--release', choices=['v1', 'v2'], default='v2')
-    run_parser.add_argument('--scenario', choices=['S0', 'S1', 'S2', 'S3', 'S4', 'S5'], default='S0')
+    run_parser.add_argument('--scenario', choices=['S0', 'S1', 'S2', 'S3', 'S4', 'S5', 'S4R', 'S5R'], default='S0')
     run_parser.add_argument('--mode', choices=['rehearsal', 'github'], default='rehearsal')
     run_parser.add_argument('--trial', required=True)
     run_parser.add_argument('--no-interventions', action='store_true')

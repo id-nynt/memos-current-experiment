@@ -12,7 +12,7 @@ on:
         required: true
       scenario:
         type: choice
-        options: [S0, S1, S2, S3, S4, S5]
+        options: [S0, S1, S2, S3, S4, S5, S4R, S5R]
         default: S0
         required: true
 permissions:
