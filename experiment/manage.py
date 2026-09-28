@@ -354,8 +354,8 @@ def run(args):
     validate(args.scenario)
     if args.scenario != 'S0' and args.release != 'v2':
         raise RuntimeError('Fault scenarios require v2')
-    if args.scenario == 'S1' and args.mode != 'github':
-        raise RuntimeError('S1 requires real GitHub quality jobs, not a local rehearsal')
+    if args.scenario in ('S1', 'S6') and args.mode != 'github':
+        raise RuntimeError('CI fault scenarios require real GitHub quality jobs, not a local rehearsal')
     runtime = args.scenario in runtime_fixture.SCHEDULES
     if runtime and args.mode != 'github':
         raise RuntimeError('Runtime fixtures require the GitHub runner adapter')
@@ -473,7 +473,7 @@ def run(args):
          candidate_delivered_at_endpoint=(endpoint_health and window[-1]['application_sha'] == config['application_sha']
              and window[-1]['image_id'] == config['image_identity']) if endpoint_health is not None else None,
          observation_coverage=coverage, terminal_health=result['final_health'],
-         fault_not_reached=args.scenario != 'S0' and not any(any(name in p.read_text(encoding='utf-8-sig') for name in ('deterministic_failure', 'injected_response'))
+         fault_not_reached=args.scenario != 'S0' and not any(any(name in p.read_text(encoding='utf-8-sig') for name in ('deterministic_failure', 'injected_response', 'transient_dependency_failure'))
                  for p in directory.rglob('*.jsonl'))))
     if args.scenario in ('S4R', 'S5R'):
         import paired_rq1 as paired
@@ -505,7 +505,7 @@ def raw_result(directory, config, common, samples, injector):
                 candidate_retained=(final.get('application_sha') == config['application_sha'] and
                                     final.get('image_id') == config['image_identity']) if final else None,
                 deployment_events=[e for e in records if e.get('event') in ('deployment_start', 'deployment_end')],
-                fault_events=[e for e in records if e.get('event') in ('deterministic_failure', 'fault_started', 'fault_boundary', 'fault_ended')],
+                fault_events=[e for e in records if e.get('event') in ('deterministic_failure', 'fault_started', 'fault_boundary', 'fault_ended', 'transient_dependency_failure', 'transient_condition_cleared')],
                 native_probe_rounds=sum(e.get('event') == 'health_observation' for e in records),
                 external_health_sample_count=len(samples),
                 fixture_valid=(bool(injector.t0) and not injector.error and
@@ -545,7 +545,7 @@ def main():
     image_parser.add_argument('path')
     run_parser = sub.add_parser('run')
     run_parser.add_argument('--release', choices=['v1', 'v2'], default='v2')
-    run_parser.add_argument('--scenario', choices=['S0', 'S1', 'S2', 'S3', 'S4', 'S5', 'S4R', 'S5R'], default='S0')
+    run_parser.add_argument('--scenario', choices=['S0', 'S1', 'S2', 'S3', 'S4', 'S5', 'S4R', 'S5R', 'S6'], default='S0')
     run_parser.add_argument('--mode', choices=['rehearsal', 'github'], default='rehearsal')
     run_parser.add_argument('--trial', required=True)
     run_parser.add_argument('--no-interventions', action='store_true')

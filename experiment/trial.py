@@ -70,7 +70,7 @@ def run(args):
         receipt['collection_complete'] = ((directory / 'github/raw-logs.zip').exists()
             and not (directory / 'github/collection-warning.json').exists()
             and (directory / 'github/jobs-all-attempts.json').exists()
-            and (args.scenario == 'S1' or ((directory / 'native-events.jsonl').exists()
+            and (args.scenario in ('S1', 'S6') or ((directory / 'native-events.jsonl').exists()
                  and (directory / 'release.json').exists()
                  and 'pipeline_end' in (directory / 'native-events.jsonl').read_text(encoding='utf-8-sig')))
             and bool(result['github_run_ids']) and result['endpoint']['observation_coverage'])
@@ -120,7 +120,7 @@ def main():
     sub = parser.add_subparsers(dest='command', required=True)
     for name in ('run', 'check'):
         p = sub.add_parser(name)
-        p.add_argument('--scenario', choices=['S0', 'S1', 'S2', 'S3', 'S4', 'S5', 'S4R', 'S5R'], required=True)
+        p.add_argument('--scenario', choices=['S0', 'S1', 'S2', 'S3', 'S4', 'S5', 'S4R', 'S5R', 'S6'], required=True)
         if name == 'run':
             p.add_argument('--trial', required=True)
             p.add_argument('--no-interventions', action='store_true')

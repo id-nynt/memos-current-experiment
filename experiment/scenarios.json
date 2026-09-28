@@ -1,5 +1,9 @@
 {
   "revision": 2,
+  "S6": {
+    "enabled": true,
+    "description": "One-request isolated test dependency HTTP 503, automatic clearance; no conventional retry added"
+  },
   "S0": {
     "enabled": true,
     "description": "Healthy frozen release deployment"

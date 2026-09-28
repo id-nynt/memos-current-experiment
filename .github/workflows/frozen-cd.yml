@@ -12,7 +12,7 @@ on:
         required: true
       scenario:
         type: choice
-        options: [S0, S1, S2, S3, S4, S5, S4R, S5R]
+        options: [S0, S1, S2, S3, S4, S5, S4R, S5R, S6]
         default: S0
         required: true
 permissions:
@@ -67,11 +67,27 @@ jobs:
         env:
           SCENARIO: ${{ inputs.scenario }}
         run: python3 experiment/fixture.py --scenario "$SCENARIO" --boundary ci --receipt fault-events.jsonl
+      - name: Measure transient dependency
+        id: s6
+        if: inputs.scenario == 'S6'
+        env:
+          TRIAL_ID: ${{ inputs.trial_id }}
+          RELEASE_SHA: ${{ needs.release.outputs.sha }}
+        run: python3 experiment/s6_fixture.py
+      - name: Fail the test on the observed unavailable dependency
+        if: steps.s6.outputs.result == 'transient_failure'
+        run: exit 42
       - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: fixture-${{ inputs.trial_id }}
           path: fault-events.jsonl
+      - uses: actions/upload-artifact@v6
+        if: always() && inputs.scenario == 'S6'
+        with:
+          name: s6-fixture-${{ inputs.trial_id }}
+          path: s6-evidence/
+          if-no-files-found: error
   upgrade:
     needs: [release, fixture]
     uses: ./.github/workflows/upgrade-smoke.yml
