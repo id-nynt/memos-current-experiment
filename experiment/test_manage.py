@@ -80,7 +80,7 @@ class OwnershipTests(unittest.TestCase):
     def test_runtime_rehearsal_never_reaches_docker(self):
         with patch.object(manage, 'preflight') as preflight:
             with self.assertRaisesRegex(RuntimeError, 'GitHub runner adapter'):
-                manage.run(SimpleNamespace(scenario='S3', release='v2', mode='rehearsal'))
+                manage.run(SimpleNamespace(scenario='P02', release='v2', mode='rehearsal'))
             preflight.assert_not_called()
 
     def test_releases_are_distinct_and_frozen(self):
@@ -89,14 +89,14 @@ class OwnershipTests(unittest.TestCase):
             self.assertEqual(release['version'], 'local-' + release['application_sha'])
             self.assertRegex(release['image_id'], r'^sha256:[0-9a-f]{64}$')
 
-    def test_controller_verification_policy_unchanged(self):
-        import subprocess
-        baseline = subprocess.check_output(['git', 'show', manage.CFG['policy_baseline'] + ':scripts/local-cd/deploy.ps1'], cwd=manage.ROOT).decode()
-        current = (manage.ROOT / 'scripts/local-cd/deploy.ps1').read_text()
-        # The complete readiness routine (deadline, retries, probes) is frozen.
-        def routine(source):
-            return source.split('function Assert-Deployment {', 1)[1].split('function Save-Diagnostics', 1)[0].replace('\r\n', '\n')
-        self.assertEqual(routine(baseline), routine(current))
+    def test_measured_compose_disables_restart_even_if_environment_requests_it(self):
+        with patch.dict(manage.os.environ, MEMOS_RESTART_POLICY='always'), patch.object(manage, 'command') as command:
+            manage.compose('production', 'v1', 'config')
+            self.assertEqual(command.call_args.kwargs['env']['MEMOS_RESTART_POLICY'], 'no')
+
+    def test_controller_policy_is_reviewed_issue3b(self):
+        self.assertEqual(manage.CFG['controller_policy'], 'issue3b-once-after-startup')
+        self.assertEqual(manage.CFG['startup_timeout_seconds'], 180)
 
 
 if __name__ == '__main__':

@@ -24,6 +24,9 @@ def save(path, value):
 
 def sample(config):
     result = {'timestamp': now(), 'healthy': False, 'application_sha': None, 'image_id': None}
+    check_started = now()
+    check_clock = time.monotonic()
+    measurement_stage = "credential"
     try:
         credential = read(config['credential_file'])
         def get(path, authorized=False):
@@ -32,8 +35,10 @@ def sample(config):
                 request.add_header('Authorization', 'Bearer ' + credential['token'])
             with urllib.request.urlopen(request, timeout=3) as response:
                 return response.read()
+        measurement_stage = "docker"
         container = json.loads(subprocess.check_output(['docker', 'inspect', config['production_container']], timeout=5))[0]
         result['image_id'] = container['Image']
+        measurement_stage = "service"
         profile = json.loads(get('/api/v1/instance/profile'))
         result.update(application_sha=profile.get('commit'), version=profile.get('version'), instance_url=profile.get('instanceUrl'))
         health = get('/healthz').decode().strip()
@@ -46,6 +51,10 @@ def sample(config):
                                  and sentinel.get('content') == credential['sentinel_content'])
     except Exception as exc:
         result['error_type'] = type(exc).__name__
+        result['measurement_error'] = measurement_stage != 'service'
+    result.update(measurement_version=2, check_started_at=check_started, check_completed_at=now(),
+                  check_seconds=time.monotonic() - check_clock,
+                  measurement_error=result.get('measurement_error', False))
     return result
 
 

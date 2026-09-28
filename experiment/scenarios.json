@@ -2,7 +2,7 @@
   "revision": 2,
   "S6": {
     "enabled": true,
-    "description": "One-request isolated test dependency HTTP 503, automatic clearance; no conventional retry added"
+    "description": "M002 ci_retry; fixed Phase 8 profile"
   },
   "S0": {
     "enabled": true,
@@ -35,5 +35,517 @@
   "S5R": {
     "enabled": true,
     "description": "Paired revised scenario; separate live approval required"
+  },
+  "P00": {
+    "enabled": true,
+    "description": "Healthy reference"
+  },
+  "P02": {
+    "enabled": true,
+    "description": "Persistent production error"
+  },
+  "P03": {
+    "enabled": true,
+    "description": "Short transient production error"
+  },
+  "P04": {
+    "enabled": true,
+    "description": "Long transient reconsideration opportunity"
+  },
+  "P05": {
+    "enabled": true,
+    "description": "Production relapse"
+  },
+  "P06": {
+    "enabled": true,
+    "description": "Repeated intermittent error"
+  },
+  "P07": {
+    "enabled": true,
+    "description": "Delayed persistent"
+  },
+  "P08": {
+    "enabled": true,
+    "description": "Delayed temporary"
+  },
+  "P09": {
+    "enabled": true,
+    "description": "Post-acceptance late fault"
+  },
+  "P10": {
+    "enabled": true,
+    "description": "Error threshold 4 percent"
+  },
+  "P11": {
+    "enabled": true,
+    "description": "Error threshold 5 percent"
+  },
+  "P12": {
+    "enabled": true,
+    "description": "Error threshold 6 percent"
+  },
+  "P13": {
+    "enabled": true,
+    "description": "Worsening errors"
+  },
+  "P14": {
+    "enabled": true,
+    "description": "Improving errors"
+  },
+  "P15": {
+    "enabled": true,
+    "description": "Persistent staging error"
+  },
+  "P16": {
+    "enabled": true,
+    "description": "Temporary staging error"
+  },
+  "P17": {
+    "enabled": true,
+    "description": "Staging relapse"
+  },
+  "P18": {
+    "enabled": true,
+    "description": "Latency 250 ms"
+  },
+  "P19": {
+    "enabled": true,
+    "description": "Latency 500 ms"
+  },
+  "P20": {
+    "enabled": true,
+    "description": "Latency 800 ms"
+  },
+  "P21": {
+    "enabled": true,
+    "description": "Severe latency"
+  },
+  "P22": {
+    "enabled": true,
+    "description": "Client timeout"
+  },
+  "P23": {
+    "enabled": true,
+    "description": "Mixed error and latency"
+  },
+  "P24": {
+    "enabled": true,
+    "description": "Temporary telemetry loss"
+  },
+  "P25": {
+    "enabled": true,
+    "description": "Persistent telemetry loss"
+  },
+  "P28": {
+    "enabled": true,
+    "description": "Semantic HTTP 200 failure"
+  },
+  "P30": {
+    "enabled": true,
+    "description": "Staging latency"
+  },
+  "P31": {
+    "enabled": true,
+    "description": "Partial request failure"
+  },
+  "P32": {
+    "enabled": true,
+    "description": "HTTP 429 request rejection"
+  },
+  "CI01": {
+    "enabled": true,
+    "description": "ci_retry; final exact-count study"
+  },
+  "CI02": {
+    "enabled": true,
+    "description": "deterministic_control; final exact-count study"
+  },
+  "CI03": {
+    "enabled": true,
+    "description": "deterministic_control; final exact-count study"
+  },
+  "P8001": {
+    "enabled": true,
+    "description": "reference; final exact-count study"
+  },
+  "P8004": {
+    "enabled": true,
+    "description": "reference; final exact-count study"
+  },
+  "P8005": {
+    "enabled": true,
+    "description": "persistent; final exact-count study"
+  },
+  "P8006": {
+    "enabled": true,
+    "description": "persistent; final exact-count study"
+  },
+  "P8007": {
+    "enabled": true,
+    "description": "persistent; final exact-count study"
+  },
+  "P8008": {
+    "enabled": true,
+    "description": "persistent; final exact-count study"
+  },
+  "P8009": {
+    "enabled": true,
+    "description": "persistent; final exact-count study"
+  },
+  "P8010": {
+    "enabled": true,
+    "description": "transient; final exact-count study"
+  },
+  "P8011": {
+    "enabled": true,
+    "description": "transient; final exact-count study"
+  },
+  "P8012": {
+    "enabled": true,
+    "description": "transient; final exact-count study"
+  },
+  "P8013": {
+    "enabled": true,
+    "description": "transient; final exact-count study"
+  },
+  "P8014": {
+    "enabled": true,
+    "description": "transient; final exact-count study"
+  },
+  "P8015": {
+    "enabled": true,
+    "description": "long_transient; final exact-count study"
+  },
+  "P8016": {
+    "enabled": true,
+    "description": "long_transient; final exact-count study"
+  },
+  "P8017": {
+    "enabled": true,
+    "description": "long_transient; final exact-count study"
+  },
+  "P8018": {
+    "enabled": true,
+    "description": "relapse; final exact-count study"
+  },
+  "P8019": {
+    "enabled": true,
+    "description": "relapse; final exact-count study"
+  },
+  "P8020": {
+    "enabled": true,
+    "description": "relapse; final exact-count study"
+  },
+  "P8021": {
+    "enabled": true,
+    "description": "intermittent; final exact-count study"
+  },
+  "P8022": {
+    "enabled": true,
+    "description": "intermittent; final exact-count study"
+  },
+  "P8023": {
+    "enabled": true,
+    "description": "intermittent; final exact-count study"
+  },
+  "P8024": {
+    "enabled": true,
+    "description": "delayed; final exact-count study"
+  },
+  "P8025": {
+    "enabled": true,
+    "description": "delayed; final exact-count study"
+  },
+  "P8026": {
+    "enabled": true,
+    "description": "delayed; final exact-count study"
+  },
+  "P8027": {
+    "enabled": true,
+    "description": "delayed; final exact-count study"
+  },
+  "P8028": {
+    "enabled": true,
+    "description": "delayed; final exact-count study"
+  },
+  "P8029": {
+    "enabled": true,
+    "description": "threshold; final exact-count study"
+  },
+  "P8030": {
+    "enabled": true,
+    "description": "threshold; final exact-count study"
+  },
+  "P8031": {
+    "enabled": true,
+    "description": "threshold; final exact-count study"
+  },
+  "P8032": {
+    "enabled": true,
+    "description": "trajectory; final exact-count study"
+  },
+  "P8033": {
+    "enabled": true,
+    "description": "trajectory; final exact-count study"
+  },
+  "P8034": {
+    "enabled": true,
+    "description": "trajectory; final exact-count study"
+  },
+  "P8035": {
+    "enabled": true,
+    "description": "staging; final exact-count study"
+  },
+  "P8036": {
+    "enabled": true,
+    "description": "staging; final exact-count study"
+  },
+  "P8037": {
+    "enabled": true,
+    "description": "staging; final exact-count study"
+  },
+  "P8038": {
+    "enabled": true,
+    "description": "staging; final exact-count study"
+  },
+  "P8039": {
+    "enabled": true,
+    "description": "staging; final exact-count study"
+  },
+  "P8040": {
+    "enabled": true,
+    "description": "staging; final exact-count study"
+  },
+  "P8041": {
+    "enabled": true,
+    "description": "staging; final exact-count study"
+  },
+  "P8042": {
+    "enabled": true,
+    "description": "latency; final exact-count study"
+  },
+  "P8043": {
+    "enabled": true,
+    "description": "latency; final exact-count study"
+  },
+  "P8044": {
+    "enabled": true,
+    "description": "latency; final exact-count study"
+  },
+  "P8045": {
+    "enabled": true,
+    "description": "latency; final exact-count study"
+  },
+  "P8046": {
+    "enabled": true,
+    "description": "latency; final exact-count study"
+  },
+  "P8047": {
+    "enabled": true,
+    "description": "latency; final exact-count study"
+  },
+  "P8048": {
+    "enabled": true,
+    "description": "latency; final exact-count study"
+  },
+  "P8049": {
+    "enabled": true,
+    "description": "mixed; final exact-count study"
+  },
+  "P8050": {
+    "enabled": true,
+    "description": "mixed; final exact-count study"
+  },
+  "P8051": {
+    "enabled": true,
+    "description": "reference; final exact-count study"
+  },
+  "P8054": {
+    "enabled": true,
+    "description": "reference; final exact-count study"
+  },
+  "P8055": {
+    "enabled": true,
+    "description": "persistent; final exact-count study"
+  },
+  "P8056": {
+    "enabled": true,
+    "description": "persistent; final exact-count study"
+  },
+  "P8057": {
+    "enabled": true,
+    "description": "persistent; final exact-count study"
+  },
+  "P8058": {
+    "enabled": true,
+    "description": "persistent; final exact-count study"
+  },
+  "P8059": {
+    "enabled": true,
+    "description": "persistent; final exact-count study"
+  },
+  "P8060": {
+    "enabled": true,
+    "description": "transient; final exact-count study"
+  },
+  "P8061": {
+    "enabled": true,
+    "description": "transient; final exact-count study"
+  },
+  "P8062": {
+    "enabled": true,
+    "description": "transient; final exact-count study"
+  },
+  "P8063": {
+    "enabled": true,
+    "description": "transient; final exact-count study"
+  },
+  "P8064": {
+    "enabled": true,
+    "description": "transient; final exact-count study"
+  },
+  "P8065": {
+    "enabled": true,
+    "description": "long_transient; final exact-count study"
+  },
+  "P8066": {
+    "enabled": true,
+    "description": "long_transient; final exact-count study"
+  },
+  "P8067": {
+    "enabled": true,
+    "description": "long_transient; final exact-count study"
+  },
+  "P8068": {
+    "enabled": true,
+    "description": "relapse; final exact-count study"
+  },
+  "P8069": {
+    "enabled": true,
+    "description": "relapse; final exact-count study"
+  },
+  "P8070": {
+    "enabled": true,
+    "description": "relapse; final exact-count study"
+  },
+  "P8071": {
+    "enabled": true,
+    "description": "intermittent; final exact-count study"
+  },
+  "P8072": {
+    "enabled": true,
+    "description": "intermittent; final exact-count study"
+  },
+  "P8073": {
+    "enabled": true,
+    "description": "intermittent; final exact-count study"
+  },
+  "P8074": {
+    "enabled": true,
+    "description": "delayed; final exact-count study"
+  },
+  "P8075": {
+    "enabled": true,
+    "description": "delayed; final exact-count study"
+  },
+  "P8076": {
+    "enabled": true,
+    "description": "delayed; final exact-count study"
+  },
+  "P8077": {
+    "enabled": true,
+    "description": "delayed; final exact-count study"
+  },
+  "P8078": {
+    "enabled": true,
+    "description": "delayed; final exact-count study"
+  },
+  "P8079": {
+    "enabled": true,
+    "description": "threshold; final exact-count study"
+  },
+  "P8080": {
+    "enabled": true,
+    "description": "threshold; final exact-count study"
+  },
+  "P8081": {
+    "enabled": true,
+    "description": "threshold; final exact-count study"
+  },
+  "P8082": {
+    "enabled": true,
+    "description": "trajectory; final exact-count study"
+  },
+  "P8083": {
+    "enabled": true,
+    "description": "trajectory; final exact-count study"
+  },
+  "P8084": {
+    "enabled": true,
+    "description": "trajectory; final exact-count study"
+  },
+  "P8085": {
+    "enabled": true,
+    "description": "staging; final exact-count study"
+  },
+  "P8086": {
+    "enabled": true,
+    "description": "staging; final exact-count study"
+  },
+  "P8087": {
+    "enabled": true,
+    "description": "staging; final exact-count study"
+  },
+  "P8088": {
+    "enabled": true,
+    "description": "staging; final exact-count study"
+  },
+  "P8089": {
+    "enabled": true,
+    "description": "staging; final exact-count study"
+  },
+  "P8090": {
+    "enabled": true,
+    "description": "staging; final exact-count study"
+  },
+  "P8091": {
+    "enabled": true,
+    "description": "staging; final exact-count study"
+  },
+  "P8092": {
+    "enabled": true,
+    "description": "latency; final exact-count study"
+  },
+  "P8093": {
+    "enabled": true,
+    "description": "latency; final exact-count study"
+  },
+  "P8094": {
+    "enabled": true,
+    "description": "latency; final exact-count study"
+  },
+  "P8095": {
+    "enabled": true,
+    "description": "latency; final exact-count study"
+  },
+  "P8096": {
+    "enabled": true,
+    "description": "latency; final exact-count study"
+  },
+  "P8097": {
+    "enabled": true,
+    "description": "latency; final exact-count study"
+  },
+  "P8098": {
+    "enabled": true,
+    "description": "latency; final exact-count study"
+  },
+  "P8099": {
+    "enabled": true,
+    "description": "mixed; final exact-count study"
+  },
+  "P8100": {
+    "enabled": true,
+    "description": "mixed; final exact-count study"
   }
 }

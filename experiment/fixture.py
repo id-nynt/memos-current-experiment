@@ -2,6 +2,7 @@
 import argparse
 import datetime
 import json
+import os
 from pathlib import Path
 
 
@@ -14,10 +15,14 @@ def validate(scenario):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--scenario', required=True)
-    parser.add_argument('--boundary', choices=['ci', 'staging'], required=True)
+    parser.add_argument('--boundary', choices=['ci', 'build', 'staging'], required=True)
     parser.add_argument('--receipt', required=True)
     args = parser.parse_args()
     validate(args.scenario)
+    from ci_controls import run_control
+    run_control(args.scenario, 'test' if args.boundary=='ci' else args.boundary,
+                dict(campaign_id=os.environ.get('TRIAL_ID'),control_sha=os.environ.get('GITHUB_SHA'),
+                     release_sha=os.environ.get('RELEASE_SHA')),Path(args.receipt).parent)
     fail = (args.scenario, args.boundary) in {('S1', 'ci'), ('S2', 'staging')}
     record = dict(timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat(),
                   event='deterministic_failure' if fail else 'fixture_passed',

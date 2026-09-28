@@ -29,7 +29,7 @@ def run_fixture(state, evidence, identity):
     """Return measured outcome; refuse replay, foreign state and missing attempt 1."""
     required = {'scenario', 'campaign_id', 'release_sha', 'entity', 'attempt',
                 'execution_id', 'github_run_id', 'github_run_attempt', 'control_sha'}
-    if set(identity) != required or identity['scenario'] != 'S6' or identity['entity'] != 'test':
+    if set(identity) != required or identity['scenario'] not in ('S6', 'CI01') or identity['entity'] != 'test':
         raise ValueError('Invalid S6 identity')
     if identity['attempt'] not in (1, 2) or identity['github_run_attempt'] != 1:
         raise ValueError('Only native attempts 1/2; GitHub manual reruns are invalid')
@@ -149,7 +149,7 @@ def publish_output(record, output):
 
 def conventional_main():
     import os
-    identity = dict(scenario='S6', campaign_id=os.environ['TRIAL_ID'], entity='test', attempt=1,
+    identity = dict(scenario=os.environ.get('SCENARIO', 'S6'), campaign_id=os.environ['TRIAL_ID'], entity='test', attempt=1,
                     execution_id='conventional-' + os.environ['GITHUB_RUN_ID'],
                     github_run_id=os.environ['GITHUB_RUN_ID'],
                     github_run_attempt=int(os.environ['GITHUB_RUN_ATTEMPT']),

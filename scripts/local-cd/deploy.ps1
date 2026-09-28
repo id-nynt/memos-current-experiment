@@ -1,4 +1,4 @@
-# Windows PowerShell 5.1 and PowerShell 7. No automatic rollback.
+# Windows PowerShell 5.1 and cross-platform PowerShell 7. No automatic rollback.
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
@@ -9,6 +9,7 @@ param(
     [int]$ProductionPort = $(if ($env:LOCAL_CD_PRODUCTION_PORT) { [int]$env:LOCAL_CD_PRODUCTION_PORT } else { 5232 }),
     [ValidateSet('', 'v1', 'v2')][string]$FrozenRelease = '',
     [ValidatePattern('^[A-Za-z0-9_.-]+$')][string]$TrialId = 'local',
+    [ValidateRange(1, 3600)][int]$StartupTimeoutSeconds = 180,
     [switch]$CheckOnly,
     [switch]$Experiment,
     [ValidateSet('S0', 'S1', 'S2')][string]$Scenario = 'S0'
@@ -16,6 +17,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+$linuxHost = [Environment]::OSVersion.Platform -eq [PlatformID]::Unix
 if ($ExecutionContext.SessionState.LanguageMode -ne 'FullLanguage') {
     throw 'Local CD requires FullLanguage PowerShell on the runner account'
 }
@@ -38,8 +40,15 @@ if ($Experiment) {
     $StagingPort = $experimentConfig.staging_port
     $ProductionPort = $experimentConfig.production_port
     $ports = @($StagingPort, $ProductionPort)
-    $StateDirectory = Join-Path $env:LOCALAPPDATA 'memos-current-experiment'
+    if ($PSBoundParameters.ContainsKey('StartupTimeoutSeconds') -and $StartupTimeoutSeconds -ne [int]$experimentConfig.startup_timeout_seconds) {
+        throw 'Experiment startup ceiling must match experiment/config.json'
+    }
+    $StartupTimeoutSeconds = [int]$experimentConfig.startup_timeout_seconds
+    $stateParent = if ($env:LOCALAPPDATA) { $env:LOCALAPPDATA } else { [Environment]::GetFolderPath('UserProfile') }
+    $StateDirectory = Join-Path $stateParent 'memos-current-experiment'
 } elseif ($Scenario -ne 'S0') { throw 'Fault scenarios require explicit experiment mode' }
+
+if ($StartupTimeoutSeconds -lt 1 -or $StartupTimeoutSeconds -gt 3600) { throw 'Invalid startup ceiling' }
 
 function Write-Event {
     param([string]$Name, [hashtable]$Fields = @{})
@@ -58,6 +67,7 @@ function Invoke-Native {
 
 function Invoke-Compose {
     param([int]$Environment, [string[]]$Arguments)
+    $env:MEMOS_RESTART_POLICY = if ($Experiment) { 'no' } else { 'unless-stopped' }
     $env:MEMOS_HOST_PORT = [string]$ports[$Environment]
     $env:MEMOS_DATA_VOLUME = "$($projects[$Environment])_$dataSuffix"
     Invoke-Native docker (@('compose', '--file', $composeFile, '--project-name', $projects[$Environment]) + $Arguments)
@@ -80,52 +90,81 @@ function Write-Json {
     Move-Item -LiteralPath $temporary -Destination $Path -Force
 }
 
-function Assert-Deployment {
+function Assert-CandidateContainer {
+    param($Container, [string]$Image)
+    if (!$Container -or !$Container.State.Running) { throw 'Candidate exited or is missing' }
+    if ($Container.Image -ne $Image) { throw 'Container image ID does not match candidate' }
+    if ($Container.RestartCount -ne 0) { throw 'Candidate restarted' }
+    if ($Experiment -and $Container.HostConfig.RestartPolicy.Name -ne 'no') { throw 'Measured candidate must disable automatic restart' }
+}
+
+function Wait-Startup {
+    param([int]$Environment, [string]$Image)
+    $deadline = [DateTime]::UtcNow.AddSeconds($StartupTimeoutSeconds)
+    $first = Get-Container $Environment
+    Assert-CandidateContainer $first $Image
+    Write-Event 'startup_start' @{ environment = @('staging', 'production')[$Environment]; timeout_seconds = $StartupTimeoutSeconds }
+    do {
+        $current = Get-Container $Environment
+        Assert-CandidateContainer $current $Image
+        if ($current.Id -ne $first.Id) { throw 'Candidate replaced during startup' }
+        $ready = $false
+        try {
+            $health = Invoke-WebRequest "http://127.0.0.1:$($ports[$Environment])/healthz" -UseBasicParsing -TimeoutSec 5
+            $ready = $health.StatusCode -eq 200 -and $health.Content.Trim() -eq 'Service ready.'
+        } catch { $ready = $false } # Only initial readiness transport/response is polled.
+        if ([DateTime]::UtcNow -ge $deadline) { break }
+        if ($ready) {
+            Write-Event 'startup_ready' @{ environment = @('staging', 'production')[$Environment]; container_id = $first.Id }
+            return
+        }
+        Start-Sleep -Milliseconds ([int][Math]::Min(3000, [Math]::Max(0, ($deadline - [DateTime]::UtcNow).TotalMilliseconds)))
+    } while ([DateTime]::UtcNow -lt $deadline)
+    throw "Startup timed out for $($projects[$Environment])"
+}
+
+function Assert-Acceptance {
     param([int]$Environment, [string]$Image, [string]$Version)
     $baseUrl = "http://127.0.0.1:$($ports[$Environment])"
-    $deadline = [DateTime]::UtcNow.AddSeconds(180)
-    $lastFailure = 'not ready'
-    $round = 0
-    do {
-        $round++
-        Write-Event 'health_observation' @{ environment = @('staging', 'production')[$Environment]; round = $round }
-        try {
-            $container = Get-Container $Environment
-            if (!$container -or !$container.State.Running) { throw 'Container is not running' }
-            if ($container.Image -ne $Image) { throw 'Container image ID does not match candidate' }
-            $health = Invoke-WebRequest "$baseUrl/healthz" -UseBasicParsing -TimeoutSec 5
-            if ($health.StatusCode -ne 200 -or $health.Content.Trim() -ne 'Service ready.') { throw 'Unexpected health response' }
-            $profile = Invoke-RestMethod "$baseUrl/api/v1/instance/profile" -TimeoutSec 5
-            if ($profile.commit -ne $Commit -or $profile.version -ne $Version -or $profile.instanceUrl -ne $baseUrl) { throw 'API release identity does not match candidate' }
-            if ($FrozenRelease) {
-                $targetName = @('staging', 'production')[$Environment]
-                $credential = Get-Content (Join-Path $StateDirectory "credentials/$targetName/credential.json") -Raw | ConvertFrom-Json
-                $sentinel = Invoke-RestMethod "$baseUrl/api/v1/$($credential.sentinel_name)" -Headers @{ Authorization = "Bearer $($credential.token)" } -TimeoutSec 5
-                if ($sentinel.content -ne $credential.sentinel_content) { throw 'Seed sentinel persistence check failed' }
-            }
-            $page = Invoke-WebRequest "$baseUrl/" -UseBasicParsing -TimeoutSec 5
-            if ($page.Content -notmatch 'id="root"') { throw 'Frontend root is missing' }
-            $asset = [regex]::Match($page.Content, 'src="([^"\s]+\.js)"')
-            if (!$asset.Success) { throw 'Frontend JavaScript asset is missing' }
-            $assetUrl = [Uri]::new([Uri]"$baseUrl/", $asset.Groups[1].Value)
-            if ($assetUrl.Authority -ne ([Uri]$baseUrl).Authority -or $assetUrl.Scheme -ne 'http') { throw 'Unexpected frontend asset origin' }
-            $javascript = Invoke-WebRequest $assetUrl.AbsoluteUri -UseBasicParsing -TimeoutSec 5
-            if ($javascript.StatusCode -ne 200 -or $javascript.Content.Length -eq 0 -or $javascript.Headers['Content-Type'] -notmatch 'javascript') {
-                throw 'Frontend JavaScript was not served'
-            }
-            $after = Get-Container $Environment
-            if (!$after.State.Running -or $after.Id -ne $container.Id -or $after.RestartCount -ne $container.RestartCount) {
-                throw 'Container restarted during verification'
-            }
-            Write-Host "$($projects[$Environment]) verified at $baseUrl ($Commit, $Image)"
-            return
-        } catch {
-            $lastFailure = $_.Exception.Message
-            if ([DateTime]::UtcNow -ge $deadline) { break }
-            Start-Sleep -Seconds 3
-        }
-    } while ([DateTime]::UtcNow -lt $deadline)
-    throw "Verification failed for $($projects[$Environment]): $lastFailure"
+    Write-Event 'health_observation' @{ environment = @('staging', 'production')[$Environment]; round = 1; role = 'once_only_acceptance' }
+    $container = Get-Container $Environment
+    Assert-CandidateContainer $container $Image
+    $health = Invoke-WebRequest "$baseUrl/healthz" -UseBasicParsing -TimeoutSec 5
+    if ($health.StatusCode -ne 200 -or $health.Content.Trim() -ne 'Service ready.') { throw 'Unexpected health response' }
+    $profile = Invoke-RestMethod "$baseUrl/api/v1/instance/profile" -TimeoutSec 5
+    if ($profile.commit -ne $Commit -or $profile.version -ne $Version -or $profile.instanceUrl -ne $baseUrl) { throw 'API release identity does not match candidate' }
+    if ($FrozenRelease) {
+        $targetName = @('staging', 'production')[$Environment]
+        $credential = Get-Content (Join-Path $StateDirectory "credentials/$targetName/credential.json") -Raw | ConvertFrom-Json
+        $sentinel = Invoke-RestMethod "$baseUrl/api/v1/$($credential.sentinel_name)" -Headers @{ Authorization = "Bearer $($credential.token)" } -TimeoutSec 5
+        if ($sentinel.content -ne $credential.sentinel_content) { throw 'Seed sentinel persistence check failed' }
+    }
+    $page = Invoke-WebRequest "$baseUrl/" -UseBasicParsing -TimeoutSec 5
+    if ($page.Content -notmatch 'id="root"') { throw 'Frontend root is missing' }
+    $asset = [regex]::Match($page.Content, 'src="([^"\s]+\.js)"')
+    if (!$asset.Success) { throw 'Frontend JavaScript asset is missing' }
+    $assetUrl = [Uri]::new([Uri]"$baseUrl/", $asset.Groups[1].Value)
+    if ($assetUrl.Authority -ne ([Uri]$baseUrl).Authority -or $assetUrl.Scheme -ne 'http') { throw 'Unexpected frontend asset origin' }
+    $javascript = Invoke-WebRequest $assetUrl.AbsoluteUri -UseBasicParsing -TimeoutSec 5
+    if ($javascript.StatusCode -ne 200 -or $javascript.Content.Length -eq 0 -or $javascript.Headers['Content-Type'] -notmatch 'javascript') {
+        throw 'Frontend JavaScript was not served'
+    }
+    $after = Get-Container $Environment
+    if (!$after.State.Running -or $after.Id -ne $container.Id -or $after.RestartCount -ne $container.RestartCount) {
+        throw 'Container restarted during verification'
+    }
+    Write-Host "$($projects[$Environment]) verified at $baseUrl ($Commit, $Image)"
+}
+
+function Assert-Deployment {
+    param([int]$Environment, [string]$Image, [string]$Version)
+    Wait-Startup $Environment $Image
+    if ($Experiment -and (@('staging', 'production')[$Environment] -eq $(if ($env:MEMOS_FIXTURE_ENVIRONMENT) { $env:MEMOS_FIXTURE_ENVIRONMENT } else { 'production' })) -and $env:MEMOS_FIXTURE_DIRECTORY) {
+        # Signal first readiness, then wait only for fault activation acknowledgement.
+        # The fixture owns its clock; this hook cannot clear or extend an active fault.
+        Invoke-Native $env:MEMOS_FIXTURE_PYTHON @($env:MEMOS_FIXTURE_SCRIPT, 'activate') | Write-Host
+    }
+    Assert-Acceptance $Environment $Image $Version
 }
 
 function Save-Diagnostics {
@@ -161,6 +200,7 @@ if ($StateDirectory.TrimEnd('\', '/') -eq $repo.TrimEnd('\', '/') -or $StateDire
 
 Push-Location $repo
 $deploymentLock = $null
+$linuxLease = $null
 try {
     $head = (Invoke-Native git @('rev-parse', 'HEAD')).Trim()
     $frozen = $null
@@ -213,7 +253,14 @@ try {
     if ($CheckOnly) { Write-Host 'Preflight passed'; return }
 
     New-Item -ItemType Directory -Path $StateDirectory -Force | Out-Null
-    $deploymentLock = [IO.File]::Open((Join-Path $StateDirectory 'deployment.lock'), 'OpenOrCreate', 'ReadWrite', 'None')
+    if ($linuxHost) {
+        # Same exclusive-create lease as manage.py reset. Never steal a stale lease.
+        $leasePath = Join-Path $StateDirectory 'deployment.lock.linux-lease'
+        $deploymentLock = [IO.File]::Open($leasePath, 'CreateNew', 'ReadWrite', 'None')
+        $linuxLease = $leasePath
+    } else {
+        $deploymentLock = [IO.File]::Open((Join-Path $StateDirectory 'deployment.lock'), 'OpenOrCreate', 'ReadWrite', 'None')
+    }
     $runKey = [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffZ') + '-' + [Guid]::NewGuid().ToString('N').Substring(0, 8)
     $releaseDirectory = Join-Path $StateDirectory "releases/$runKey"
     New-Item -ItemType Directory -Path $releaseDirectory -Force | Out-Null
@@ -235,6 +282,7 @@ try {
         workflowRun = $env:GITHUB_RUN_ID; workflowAttempt = $env:GITHUB_RUN_ATTEMPT
         stagingPort = $StagingPort; productionPort = $ProductionPort
         previous = $previous; productionBackup = $null; previousImage = $null; error = $null
+        startup_timeout_seconds = $StartupTimeoutSeconds; acceptance_policy = 'once-after-startup'
         control_sha = $head; trial_id = $TrialId; frozen_release = $FrozenRelease
     }
     $nativeEvents = Join-Path $releaseDirectory 'native-events.jsonl'
@@ -332,25 +380,30 @@ try {
             acceptedAt = $record.acceptedAt; workflowRun = $env:GITHUB_RUN_ID
         }
         Write-Host "Accepted release: $Commit ($image)"
-        if ($env:GITHUB_STEP_SUMMARY) {
-            "Accepted local release: ``$Commit`` / ``$image``. Staging: http://127.0.0.1:$StagingPort ; production: http://127.0.0.1:$ProductionPort" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
-        }
+        try {
+            if ($env:GITHUB_STEP_SUMMARY) {
+                "Accepted local release: ``$Commit`` / ``$image``. Staging: http://127.0.0.1:$StagingPort ; production: http://127.0.0.1:$ProductionPort" | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+            }
+        } catch { Write-Warning "Deployment accepted; summary unavailable: $_" }
     } catch {
         $record.status = 'failed'
         $record.error = $_.Exception.Message
         Write-Json (Join-Path $releaseDirectory 'release.json') $record
         throw
     } finally {
-        Write-Event 'pipeline_end' @{ status = $record.status }
-        Save-Diagnostics
-        if ($reportDirectory -ne $releaseDirectory) {
-            Copy-Item -LiteralPath $nativeEvents -Destination (Join-Path $reportDirectory 'native-events.jsonl') -Force
-            Copy-Item -LiteralPath (Join-Path $releaseDirectory 'release.json') -Destination (Join-Path $reportDirectory 'release.json') -Force
-            Get-ChildItem -LiteralPath $reportDirectory -File | Copy-Item -Destination $releaseDirectory -Force
-        }
+        try {
+            Write-Event 'pipeline_end' @{ status = $record.status }
+            Save-Diagnostics
+            if ($reportDirectory -ne $releaseDirectory) {
+                Copy-Item -LiteralPath $nativeEvents -Destination (Join-Path $reportDirectory 'native-events.jsonl') -Force
+                Copy-Item -LiteralPath (Join-Path $releaseDirectory 'release.json') -Destination (Join-Path $reportDirectory 'release.json') -Force
+                Get-ChildItem -LiteralPath $reportDirectory -File | Copy-Item -Destination $releaseDirectory -Force
+            }
+        } catch { Write-Warning "Post-terminal diagnostics unavailable: $_" }
         Write-Host "Release record and diagnostics: $releaseDirectory"
     }
 } finally {
     if ($deploymentLock) { $deploymentLock.Dispose() }
+    if ($linuxLease) { [IO.File]::Delete($linuxLease) }
     Pop-Location
 }

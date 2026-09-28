@@ -1,3 +1,5 @@
+> Final-matrix execution is gated by [local readiness](../../../docs/LOCAL_BATCH_READINESS.md). This native guide is reference material; use the shared batch runbook after publication and parity verification. Historical examples do not override current contracts.
+
 ﻿# Conventional experiment execution
 
 Current setup, run, reset, scenario status, evidence and ownership instructions are
