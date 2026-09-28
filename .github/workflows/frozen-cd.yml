@@ -11,8 +11,7 @@ on:
         type: string
         required: true
       scenario:
-        type: choice
-        options: [S0, S1, S2, S3, S4, S5, S4R, S5R, S6]
+        type: string
         default: S0
         required: true
 permissions:
@@ -22,7 +21,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, memos-bdi-deploy]
     outputs:
       sha: ${{ steps.release.outputs.sha }}
     steps:
@@ -45,32 +44,35 @@ jobs:
           PY
   backend:
     needs: release
-    uses: ./.github/workflows/backend-tests.yml
+    uses: ./.github/workflows/experiment-backend-tests.yml
     with:
       release_sha: ${{ needs.release.outputs.sha }}
   frontend:
     needs: release
-    uses: ./.github/workflows/frontend-tests.yml
+    uses: ./.github/workflows/experiment-frontend-tests.yml
     with:
       release_sha: ${{ needs.release.outputs.sha }}
   proto:
     needs: release
-    uses: ./.github/workflows/proto-linter.yml
+    uses: ./.github/workflows/experiment-proto-linter.yml
     with:
       release_sha: ${{ needs.release.outputs.sha }}
   fixture:
     needs: [release, backend, frontend, proto]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, memos-bdi-deploy]
     steps:
       - uses: actions/checkout@v6
       - name: Explicit deterministic CI fixture
         env:
           SCENARIO: ${{ inputs.scenario }}
+          TRIAL_ID: ${{ inputs.trial_id }}
+          RELEASE_SHA: ${{ needs.release.outputs.sha }}
         run: python3 experiment/fixture.py --scenario "$SCENARIO" --boundary ci --receipt fault-events.jsonl
       - name: Measure transient dependency
         id: s6
-        if: inputs.scenario == 'S6'
+        if: inputs.scenario == 'S6' || inputs.scenario == 'CI01'
         env:
+          SCENARIO: ${{ inputs.scenario }}
           TRIAL_ID: ${{ inputs.trial_id }}
           RELEASE_SHA: ${{ needs.release.outputs.sha }}
         run: python3 experiment/s6_fixture.py
@@ -78,25 +80,29 @@ jobs:
         if: steps.s6.outputs.result == 'transient_failure'
         run: exit 42
       - uses: actions/upload-artifact@v6
+        continue-on-error: true
         if: always()
         with:
           name: fixture-${{ inputs.trial_id }}
-          path: fault-events.jsonl
+          path: |
+            fault-events.jsonl
+            ci-control.json
       - uses: actions/upload-artifact@v6
-        if: always() && inputs.scenario == 'S6'
+        continue-on-error: true
+        if: always() && (inputs.scenario == 'S6' || inputs.scenario == 'CI01')
         with:
           name: s6-fixture-${{ inputs.trial_id }}
           path: s6-evidence/
           if-no-files-found: error
   upgrade:
     needs: [release, fixture]
-    uses: ./.github/workflows/upgrade-smoke.yml
+    uses: ./.github/workflows/experiment-upgrade-smoke.yml
     with:
       release_sha: ${{ needs.release.outputs.sha }}
-      previous_image: neosmemo/memos:0.31.0
+      previous_image: neosmemo/memos@sha256:24c2707ddd8fbd2ceaa7a61ecab86a53cdcde640b24ce572b73da14b00b5785f
   deploy:
     needs: [release, upgrade]
-    runs-on: [self-hosted, Windows, memos-local]
+    runs-on: [self-hosted, linux, memos-bdi-deploy]
     timeout-minutes: 60
     env:
       RELEASE: ${{ inputs.release }}
@@ -109,12 +115,23 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Deliver frozen image through conventional stages
-        shell: powershell
+      - name: Explicit permanent build control
+        shell: bash
         run: |
-          python experiment/runtime_fixture.py
-          exit $LASTEXITCODE
+          python3 experiment/fixture.py --scenario "$SCENARIO" --boundary build --receipt fault-events.jsonl
       - uses: actions/upload-artifact@v6
+        continue-on-error: true
+        if: always() && inputs.scenario == 'CI02'
+        with:
+          name: build-control-${{ inputs.trial_id }}
+          path: ci-control.json
+          if-no-files-found: error
+      - name: Deliver frozen image through conventional stages
+        shell: bash
+        run: |
+          python3 experiment/runtime_fixture.py
+      - uses: actions/upload-artifact@v6
+        continue-on-error: true
         if: always()
         with:
           name: frozen-cd-${{ inputs.trial_id }}

@@ -26,21 +26,24 @@ class FixtureTests(unittest.TestCase):
         args = self.controller_production_arguments()
         with tempfile.TemporaryDirectory() as temp:
             directory = Path(temp)
-            rf.atomic(directory / 'fixture-start.json', {'ready_at': rf.stamp()})
+            rf.atomic(directory / 'fixture-arm.json', {'scenario':'S3', 'project':rf.PROJECT})
+            rf.atomic(directory / 'fixture-proxy-ready.json', {'timestamp': rf.stamp()})
+            rf.atomic(directory / 'fixture-heartbeat.json', {'timestamp': rf.stamp()})
             with patch.dict(rf.os.environ, MEMOS_FIXTURE_DIRECTORY=temp, MEMOS_REAL_DOCKER='docker.exe'), \
                  patch.object(rf.subprocess, 'run', return_value=SimpleNamespace(returncode=0)) as docker:
                 self.assertEqual(rf.docker_adapter(args), 0)
             docker.assert_called_once_with(['docker.exe', 'compose', '--file', 'base.yaml',
                                            '--file', str(rf.HERE / 'runtime-port.yaml')] + args[3:])
             self.assertTrue((directory / 'fixture-up.json').exists())
-            hook = rf.read(directory / 'fixture-hook.json')
-            self.assertTrue(0 <= hook['synchronization_seconds'] <= 2)
+            self.assertFalse((directory / 'fixture-startup-ready.json').exists())
+            self.assertFalse((directory / 'fixture-hook.json').exists())
 
     def proxy_handler(self, directory):
         """Build the HTTP handler with mock server/clock/readiness; no sockets."""
         (directory / 'fixture-up.json').write_text('{}')
+        rf.atomic(directory / 'fixture-startup-ready.json', {'timestamp': rf.stamp()})
         fixture = rf.Fixture(directory, 'S3', {'application_sha': 'candidate'},
-                             lambda _: {'healthy': True, 'application_sha': 'candidate'})
+                             Mock(side_effect=AssertionError('Fixture must not sample readiness')))
         fixture.stop = Mock()
         fixture.stop.is_set.return_value = False
         fixture.stop.wait.side_effect = [False, True]
@@ -62,6 +65,7 @@ class FixtureTests(unittest.TestCase):
     def test_mock_transport_faults_all_methods_without_leaking_credentials(self):
         with tempfile.TemporaryDirectory() as temp:
             directory = Path(temp)
+            rf.atomic(directory / 'fixture-arm.json', {'scenario':'S3', 'project':rf.PROJECT})
             fixture, handler = self.proxy_handler(directory)
             connection = Mock()
             connection.getresponse.return_value.read.return_value = b'{"commit":"candidate"}'
@@ -139,6 +143,7 @@ class FixtureTests(unittest.TestCase):
 
     def test_adapter_propagates_real_docker_failure_without_arming(self):
         with tempfile.TemporaryDirectory() as temp:
+            rf.atomic(Path(temp) / 'fixture-arm.json', {'scenario':'S3', 'project':rf.PROJECT})
             with patch.dict(rf.os.environ, MEMOS_FIXTURE_DIRECTORY=temp, MEMOS_REAL_DOCKER='docker.exe'), \
                  patch.object(rf.subprocess, 'run', return_value=SimpleNamespace(returncode=17)):
                 args = ['compose', '--file', 'base', '--project-name', rf.PROJECT,
@@ -149,6 +154,7 @@ class FixtureTests(unittest.TestCase):
     def test_stale_observer_fails_hook(self):
         with tempfile.TemporaryDirectory() as temp:
             directory = Path(temp)
+            rf.atomic(directory / 'fixture-arm.json', {'scenario':'S3', 'project':rf.PROJECT})
             rf.atomic(directory / 'fixture-heartbeat.json', {'timestamp': '2000-01-01T00:00:00+00:00'})
             with patch.dict(rf.os.environ, MEMOS_FIXTURE_DIRECTORY=temp, MEMOS_REAL_DOCKER='docker.exe'), \
                  patch.object(rf.subprocess, 'run', return_value=SimpleNamespace(returncode=0)):
@@ -162,6 +168,47 @@ class FixtureTests(unittest.TestCase):
              patch.object(rf.subprocess, 'run', return_value=SimpleNamespace(returncode=42)) as run:
             self.assertEqual(rf.runner(), 42)
             self.assertEqual(run.call_args.args[0][-2:], ['-Scenario', 'S2'])
+
+    def test_activation_is_once_only_and_cannot_restart_fault_clock(self):
+        with tempfile.TemporaryDirectory() as temp:
+            directory = Path(temp)
+            rf.atomic(directory / 'fixture-arm.json', {'scenario':'S3', 'project':rf.PROJECT})
+            rf.atomic(directory / 'fixture-heartbeat.json', {'timestamp': rf.stamp()})
+            start = {'ready_at': rf.stamp(), 'monotonic_start': 123, 't0': 'original'}
+            rf.atomic(directory / 'fixture-start.json', start)
+            with patch.dict(rf.os.environ, MEMOS_FIXTURE_DIRECTORY=temp):
+                self.assertEqual(rf.activate(), 0)
+                with self.assertRaises(FileExistsError):
+                    rf.activate()
+            self.assertEqual(rf.read(directory / 'fixture-start.json'), start)
+            self.assertTrue(rf.fault_active('S3', 1, '/api/v1/memos/item', True))
+
+    def test_cleanup_waits_for_expiry_for_every_runtime_schedule(self):
+        for scenario in rf.SCHEDULES:
+            with self.subTest(scenario=scenario), tempfile.TemporaryDirectory() as temp:
+                fixture = rf.Fixture(temp, scenario, {}, Mock())
+                fixture.started = 100
+                expiry = 100 + fixture.expiry_seconds
+                clock = [expiry - .1]
+
+                def advance(seconds):
+                    self.assertFalse(fixture.stop.is_set())
+                    clock[0] += seconds
+
+                with patch.object(rf.time, 'monotonic', side_effect=lambda: clock[0]), patch.object(rf.time, 'sleep', side_effect=advance):
+                    fixture.close()
+                self.assertGreaterEqual(clock[0], expiry)
+                self.assertTrue(fixture.stop.is_set())
+
+    def test_unknown_identity_does_not_bypass_active_fault(self):
+        with tempfile.TemporaryDirectory() as temp:
+            fixture, handler = self.proxy_handler(Path(temp))
+            identity = Mock()
+            identity.getresponse.return_value.read.return_value = b'{}'
+            with patch.object(rf.http.client, 'HTTPConnection', return_value=identity) as connect:
+                request = self.request(handler)
+            request.send_response.assert_called_once_with(502)
+            connect.assert_called_once()
 
     def lifecycle_case(self, temp, terminal):
         root = Path(temp)
@@ -191,6 +238,10 @@ class FixtureTests(unittest.TestCase):
             if terminal:
                 self.assertEqual(trial.run(args), 0)
                 self.assertEqual(reset.call_count, 2)
+                receipt = manage.read(root / 'experiment/results/unit-lifecycle/lifecycle.json')
+                self.assertEqual(receipt['pipeline_exit_code'], 1)
+                self.assertEqual(receipt['automatic_reset'], 'outside measured trial')
+                self.assertEqual(manage.read(directory / 'launch.json')['exit_code'], 1)
             else:
                 with self.assertRaisesRegex(RuntimeError, 'unresolved'):
                     trial.run(args)

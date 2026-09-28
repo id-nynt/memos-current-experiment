@@ -3,7 +3,7 @@ services:
   memos:
     image: ${MEMOS_IMAGE:?Set the immutable local image ID}
     pull_policy: never
-    restart: unless-stopped
+    restart: "${MEMOS_RESTART_POLICY:-unless-stopped}"
     stop_grace_period: 30s
     environment:
       MEMOS_DRIVER: sqlite

@@ -21,6 +21,8 @@ sys.path.insert(0, str(ROOT / 'scripts/experiment-measurement'))
 from measure_trial import now, read, save, sample, summarize, instant
 from fixture import validate
 import runtime_fixture
+from measurement_records import request_record
+from final_timing import HORIZON, window as timing_window, require_current_scenario
 
 CFG = read(HERE / 'config.json')
 RELEASES = read(ROOT / CFG['release_manifest'])['releases']
@@ -45,12 +47,22 @@ def identity():
     paths.append(ROOT / '.github/workflows/frozen-cd.yml')
     return {'control_sha': command('git', 'rev-parse', 'HEAD'),
             'policy_baseline': CFG['policy_baseline'],
+            'controller_policy': CFG['controller_policy'],
             'files': {p.relative_to(ROOT).as_posix(): digest(p) for p in paths}}
 
 
 @contextlib.contextmanager
 def lock(name='experiment.lock'):
-    """Windows byte lock plus deployment's exclusive-open check during reset."""
+    """Shared Linux exclusive-create lease; original Windows byte lock retained."""
+    if os.name != 'nt':
+        STATE.mkdir(parents=True, exist_ok=True)
+        lease = STATE / (name + '.linux-lease')
+        with lease.open('xb'):
+            try:
+                yield
+            finally:
+                lease.unlink()
+        return
     import msvcrt
     STATE.mkdir(parents=True, exist_ok=True)
     with (STATE / name).open('a+b') as stream:
@@ -76,7 +88,7 @@ def port(env):
 
 def compose(env, release, *args):
     variables = dict(os.environ, MEMOS_IMAGE=RELEASES[release]['image_id'],
-                     MEMOS_HOST_PORT=str(port(env)), MEMOS_DATA_VOLUME=project(env) + '_data')
+                     MEMOS_RESTART_POLICY='no', MEMOS_HOST_PORT=str(port(env)), MEMOS_DATA_VOLUME=project(env) + '_data')
     return command('docker', 'compose', '-f', ROOT / 'scripts/local-cd/compose.yaml',
                    '-p', project(env), *args, env=variables)
 
@@ -101,9 +113,7 @@ def verify(release=None):
 
 def preflight():
     runtime_fixture.frozen_check()
-    if os.name != 'nt':
-        raise RuntimeError('This conventional runner requires Windows')
-    for name in ('git', 'docker', 'powershell', 'tar', 'gh'):
+    for name in ('git', 'docker', 'powershell' if os.name == 'nt' else 'pwsh', 'tar', 'gh'):
         if not shutil.which(name):
             raise RuntimeError(f'Missing prerequisite: {name}')
     if command('docker', 'version', '--format', '{{.Server.Os}}/{{.Server.Arch}}') != 'linux/amd64':
@@ -185,7 +195,7 @@ def no_remote_work():
 
 
 def deploy(release, trial, scenario='S0', **kwargs):
-    args = ['powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
+    args = ['powershell.exe' if os.name == 'nt' else 'pwsh', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
             str(ROOT / 'scripts/local-cd/deploy.ps1'), '-Experiment', '-FrozenRelease', release,
             '-Commit', RELEASES[release]['application_sha'], '-TrialId', trial, '-Scenario', scenario]
     return subprocess.run(args, cwd=ROOT, **kwargs).returncode
@@ -283,12 +293,22 @@ def extract_logs(archive, target):
         bundle.extractall(target)
 
 
+def candidate_launch(directory, finished, trial, release='v2'):
+    finished['candidate_launch_at'] = now()
+    finished['candidate_launch_monotonic'] = time.monotonic()
+    save(directory / 'measurement-boundaries.json', {
+        'schema_version': 2, 'role': 'candidate' if release == 'v2' else 'qualification',
+        'trial_id': trial, 'candidate_launch_at': finished['candidate_launch_at'],
+        'clock': 'host_utc', 'native_terminal_source': 'correlated GitHub terminal metadata'})
+
+
 def github_run(release, trial, scenario, directory, finished):
     repo = CFG['repository']
     sha = command('git', 'rev-parse', 'HEAD')
     remote = command('gh', 'api', f'repos/{repo}/commits/main', '--jq', '.sha')
     if remote != sha:
         raise RuntimeError('Publish this control revision to origin/main before a GitHub trial')
+    candidate_launch(directory, finished, trial, release)
     command('gh', 'workflow', 'run', 'frozen-cd.yml', '--repo', repo, '--ref', 'main',
             '-f', 'release=' + release, '-f', 'trial_id=' + trial, '-f', 'scenario=' + scenario)
     # Unique title AND exact control SHA. Never select the latest run.
@@ -351,10 +371,11 @@ def collect_run(run_id, directory, finished):
 
 
 def run(args):
+    require_current_scenario(args.scenario)
     validate(args.scenario)
     if args.scenario != 'S0' and args.release != 'v2':
         raise RuntimeError('Fault scenarios require v2')
-    if args.scenario in ('S1', 'S6') and args.mode != 'github':
+    if args.scenario in ('S1', 'S6', 'CI01', 'CI02', 'CI03') and args.mode != 'github':
         raise RuntimeError('CI fault scenarios require real GitHub quality jobs, not a local rehearsal')
     runtime = args.scenario in runtime_fixture.SCHEDULES
     if runtime and args.mode != 'github':
@@ -381,26 +402,48 @@ def run(args):
     pointer = directory / 'runtime-pointer.txt'
     meta = dict(pipeline_start=now(), pipeline_end=None, exit_code=None)
     save(directory / 'launch.json', meta)
+    if args.scenario.startswith('P') or args.scenario in ('S6', 'CI01', 'CI02', 'CI03'):
+        seed_manifest=read(STATE/'seed/manifest.json')
+        if digest(STATE/'seed/data.tar.gz') != seed_manifest['archive_sha256'] or read(STATE/'baseline.json')['seed_sha256'] != seed_manifest['archive_sha256']:
+            raise ValueError('Controlled seed baseline mismatch')
+        save(directory/'reset-state.json',dict(data_semantics='shared-controlled-seed',
+            archive_sha256=seed_manifest['archive_sha256'],application_sha=RELEASES['v1']['application_sha'],
+            image_id=RELEASES['v1']['image_id'],verified=True,role='infrastructure-reset',treatment_cost=False))
     finished = {}
     stop_workload = threading.Event()
     injector = runtime_fixture.Fixture(directory, args.scenario, config, sample) if runtime else None
     if injector:
         injector.arm()
+    staging_observer = None
+    if injector and injector.environment == 'staging':
+        from staging_observer import StagingObserver
+        staging_observer = StagingObserver(measurement('staging', release=args.release, trial=trial), directory)
+        staging_observer.start()
 
     def workload():
         credential = read(config['credential_file'])
+        ordinal = 0
         with (directory / 'workload.jsonl').open('w', encoding='utf-8') as stream:
             while not stop_workload.is_set():
                 start = time.monotonic()
-                record = {'timestamp': now()}
+                ordinal += 1
+                record = {'timestamp': now(), 'request_id': 'production-' + str(ordinal)}
+                with (directory / 'workload-starts.jsonl').open('a', encoding='utf-8') as starts:
+                    starts.write(json.dumps(dict(request_id=record['request_id'],request_started_at=record['timestamp']))+'\n')
                 request = urllib.request.Request(config['production_url'] + '/api/v1/' + credential['sentinel_name'],
-                                                 headers={'Authorization': 'Bearer ' + credential['token']})
+                                                 headers={'Authorization': 'Bearer ' + credential['token'], 'X-Experiment-Stream': 'independent','X-Experiment-Request':record['request_id']})
+                status = valid = matches = failure = None
                 try:
                     with urllib.request.urlopen(request, timeout=3) as response:
-                        record.update(status=response.status, content_matches=json.load(response).get('content') == credential['sentinel_content'])
+                        status = response.status
+                        body = json.load(response)
+                        valid = isinstance(body, dict)
+                        matches = body.get('content') == credential['sentinel_content'] if valid else None
                 except Exception as exc:
-                    record.update(status=getattr(exc, 'code', None), error_type=type(exc).__name__)
-                record['duration_seconds'] = time.monotonic() - start
+                    failure = exc
+                    status = getattr(exc, 'code', status)
+                record.update(request_record(record['timestamp'], now(), time.monotonic() - start,
+                                             status, valid, matches, failure))
                 stream.write(json.dumps(record) + '\n'); stream.flush()
                 stop_workload.wait(max(0, 1 - record['duration_seconds']))
 
@@ -410,6 +453,7 @@ def run(args):
                 github_run(args.release, trial, args.scenario, directory, finished)
             else:
                 with (directory / 'controller.log').open('w', encoding='utf-8') as log:
+                    candidate_launch(directory, finished, trial, args.release)
                     finished['exit_code'] = deploy(args.release, trial, args.scenario,
                         env=dict(os.environ, LOCAL_CD_EVIDENCE_POINTER=str(pointer)), stdout=log, stderr=subprocess.STDOUT)
             finished.setdefault('native_terminal', now())
@@ -417,33 +461,49 @@ def run(args):
         except Exception as exc:
             finished.update(error=str(exc), exit_code=None)
 
-    traffic = threading.Thread(target=workload, daemon=True)
+    def workload_safe():
+        try:
+            workload()
+        except Exception as exc:
+            save(directory / 'measurement-errors.json', {
+                'timestamp': now(), 'role': 'independent_workload',
+                'error_type': type(exc).__name__, 'affects_native_outcome': False})
+
+    traffic = threading.Thread(target=workload_safe, daemon=True)
     worker = threading.Thread(target=controller, daemon=True)
     traffic.start(); worker.start()
     samples = []
     pipeline_samples = None
     endpoint = None
+    evaluation_epoch = None
     try:
         with (directory / 'common-observations.jsonl').open('w', encoding='utf-8') as stream:
             while True:
                 observation = sample(config)
+                observation['role'] = 'EXPERIMENT MEASUREMENT'
+                observation['controller_terminal_seen'] = finished.get('native_terminal') is not None
                 samples.append(observation)
                 stream.write(json.dumps(observation) + '\n'); stream.flush()
-                if not worker.is_alive() and endpoint is None:
+                if args.mode == 'github' and endpoint is None and (injector and injector.started is not None or finished.get('native_terminal')):
+                    anchor = instant(injector.t0).timestamp() if injector and injector.t0 else instant(finished['native_terminal']).timestamp()
+                    horizon = timing_window(anchor)
+                    evaluation_epoch = horizon['endpoint_epoch']
+                    endpoint = time.monotonic() + max(0, evaluation_epoch - time.time())
+                    save(directory / 'observation-horizon.json', horizon)
+                if not worker.is_alive() and pipeline_samples is None:
                     meta.update(pipeline_end=now() if finished.get('exit_code') is not None else None,
                                 exit_code=finished.get('exit_code'))
                     pipeline_samples = list(samples)
-                    endpoint = ((injector.started + 600) if injector and injector.started is not None else
-                                time.monotonic() + (600 if args.mode == 'github' and meta['pipeline_end'] else 0))
-                # S4 retains its predeclared 900-second safety expiry. Its outcome
-                # endpoint is still t0+600; later expiry is not controller recovery.
-                finish_at = max(endpoint or float('inf'), injector.started + runtime_fixture.SCHEDULES[args.scenario][-1][1]
-                                if injector and injector.started is not None else 0)
-                if endpoint is not None and time.monotonic() >= finish_at:
+                    if endpoint is None:
+                        # Incomplete native evidence: preserve outcome, do not invent a valid horizon.
+                        endpoint = time.monotonic()
+                if endpoint is not None and time.monotonic() >= endpoint and not worker.is_alive():
                     break
                 time.sleep(2)
     finally:
         stop_workload.set(); traffic.join()
+        if staging_observer:
+            staging_observer.close()
         if injector:
             save(directory / 'final-state-before-cleanup.json',
                  {env: sample(measurement(env)) for env in ('staging', 'production')})
@@ -454,21 +514,28 @@ def run(args):
     if interventions or args.no_interventions:
         save(directory / 'human-interventions.json', interventions)
     save(directory / 'launch.json', {**meta, **finished})
+    save(directory / 'measurement-boundaries.json', {
+        'schema_version': 2, 'role': 'candidate' if args.release == 'v2' else 'qualification', 'trial_id': trial,
+        'candidate_launch_at': finished.get('candidate_launch_at'),
+        'native_terminal_at': finished.get('native_terminal'),
+        'native_terminal_source': 'correlated GitHub updatedAt; completion proxy',
+        'collection_completed_at': finished.get('operator_terminal'),
+        'observation_completed_at': now(), 'clock': 'host UTC / GitHub UTC',
+        'duration_quality': 'cross_clock', 'reset_included': False})
     # Preserve contract-v1 terminal semantics; follow-up is separate evidence.
     result = summarize(config, directory, meta, pipeline_samples or samples)
     if (directory / 'github/collection-warning.json').exists():
         result['evidence_complete'] = False
     save(directory / 'common-measurement.json', result)
-    evaluation_time = (instant(injector.t0) + dt.timedelta(seconds=600)
-                       if injector and injector.t0 else instant(now()))
+    evaluation_time = dt.datetime.fromtimestamp(evaluation_epoch, dt.timezone.utc) if evaluation_epoch is not None else instant(now())
     window = [s for s in samples if 0 <= (evaluation_time - instant(s['timestamp'])).total_seconds() <= 30]
-    coverage = (len(window) >= 3
+    coverage = (evaluation_epoch is not None and len(window) >= 3
                 and (evaluation_time - instant(window[0]['timestamp'])).total_seconds() >= (25 if args.scenario in ('S4R', 'S5R') else 15)
                 and (evaluation_time - instant(window[-1]['timestamp'])).total_seconds() <= 5
                 and all((instant(b['timestamp']) - instant(a['timestamp'])).total_seconds() <= 15
                         for a, b in zip(window, window[1:])))
     endpoint_health = all(s['healthy'] for s in window) if coverage and args.mode == 'github' else None
-    save(directory / 'evaluation.json', dict(scope=args.mode, followup_seconds=600 if args.mode == 'github' else 0,
+    save(directory / 'evaluation.json', dict(role='EXPERIMENT MEASUREMENT', affects_controller_outcome=False, scope=args.mode, followup_seconds=HORIZON if args.mode == 'github' else 0,
          endpoint_time=evaluation_time.isoformat(), endpoint_health=endpoint_health,
          candidate_delivered_at_endpoint=(endpoint_health and window[-1]['application_sha'] == config['application_sha']
              and window[-1]['image_id'] == config['image_identity']) if endpoint_health is not None else None,
@@ -545,7 +612,7 @@ def main():
     image_parser.add_argument('path')
     run_parser = sub.add_parser('run')
     run_parser.add_argument('--release', choices=['v1', 'v2'], default='v2')
-    run_parser.add_argument('--scenario', choices=['S0', 'S1', 'S2', 'S3', 'S4', 'S5', 'S4R', 'S5R', 'S6'], default='S0')
+    run_parser.add_argument('--scenario', choices=['S0', 'S1', 'S2', 'S3', 'S4', 'S5', 'S4R', 'S5R', 'S6', 'CI01', 'CI02', 'CI03'] + list(runtime_fixture.final_scenarios.catalogue()), default='S0')
     run_parser.add_argument('--mode', choices=['rehearsal', 'github'], default='rehearsal')
     run_parser.add_argument('--trial', required=True)
     run_parser.add_argument('--no-interventions', action='store_true')

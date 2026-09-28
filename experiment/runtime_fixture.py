@@ -1,7 +1,8 @@
 """External, clock-driven HTTP fixture; never consumes controller decisions.
 
 The operator owns the proxy. A runner-only Docker CLI adapter changes production
-port plumbing and synchronizes initial readiness before returning `compose up`.
+port plumbing and acknowledges proxy setup before returning `compose up`.
+The controller signals first startup readiness once; the fixture starts its own clock.
 All other Docker commands and all deployment policy remain untouched.
 """
 import argparse
@@ -13,6 +14,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import shlex
 import socket
 import subprocess
 import sys
@@ -27,7 +29,9 @@ PUBLIC_PORT = 5542
 BACKEND_PORT = 5543
 SCHEDULES = {'S3': [(0, 60)], 'S4': [(0, 900)], 'S5': [(0, 60), (120, 240)]}
 import paired_rq1 as paired
+import scenario_runtime as final_scenarios
 SCHEDULES.update({k: [tuple(x) for x in v['fault_intervals_seconds']] for k, v in paired.contract()['scenarios'].items()})
+SCHEDULES.update({k: [(e['start'],e['end']) for e in v['episodes']] for k,v in final_scenarios.catalogue().items() if v['status']=='implemented'})
 HOP = {'connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization',
        'te', 'trailer', 'transfer-encoding', 'upgrade', 'content-length'}
 
@@ -95,6 +99,13 @@ class Fixture:
         self.stop = threading.Event()
         self.mutex = threading.Lock()
         self.thread = None
+        self.spec = final_scenarios.resolve(scenario) if scenario.startswith('P') else None
+        self.environment = self.spec['stage'] if self.spec else 'production'
+        self.public_port = 5541 if self.environment == 'staging' else PUBLIC_PORT
+        self.backend_port = 5544 if self.environment == 'staging' else BACKEND_PORT
+        self.project = 'memos-current-experiment-' + self.environment
+        self.engine = None
+        self.expiry_seconds = 300 if self.spec else SCHEDULES[self.scenario][-1][1]
 
     def event(self, event, **fields):
         with self.mutex:
@@ -104,10 +115,10 @@ class Fixture:
     def arm(self):
         # Reserve only the alternate backend port; production is still v1 here.
         with socket.socket() as test:
-            test.bind(('127.0.0.1', BACKEND_PORT))
+            test.bind(('127.0.0.1', self.backend_port))
         atomic(self.directory / 'fixture-arm.json', dict(scenario=self.scenario, trial_id=self.directory.name,
                control_sha=self.config['control_sha'], pid=os.getpid(), created_at=stamp(),
-               public_port=PUBLIC_PORT, backend_port=BACKEND_PORT, schedule=SCHEDULES[self.scenario]))
+               public_port=self.public_port, backend_port=self.backend_port, environment=self.environment, project=self.project, schedule=SCHEDULES[self.scenario]))
         if paired.revised(self.scenario):
             atomic(self.directory / 'paired-contract.json', dict(contract=paired.contract(), sha256=paired.digest()))
         self.event('fixture_armed')
@@ -134,6 +145,8 @@ class Fixture:
                     headers = []
                     connection = None
                     elapsed, memo = -1, False
+                    decision = None
+                    request_clock = time.monotonic()
                     try:
                         # Identity on each memo request keeps the rule release-scoped,
                         # including restarts. Never infer identity from controller events.
@@ -141,15 +154,25 @@ class Fixture:
                         route = urlsplit(self.path).path
                         memo = route == '/api/v1/memos' or route.startswith('/api/v1/memos/')
                         if memo and fixture.started is not None:
-                            identity = http.client.HTTPConnection('127.0.0.1', BACKEND_PORT, timeout=1)
+                            identity = http.client.HTTPConnection('127.0.0.1', fixture.backend_port, timeout=1)
                             try:
                                 identity.request('GET', '/api/v1/instance/profile')
                                 profile = json.loads(identity.getresponse().read())
-                                candidate = profile.get('commit') == fixture.config['application_sha']
+                                commit = profile.get('commit')
+                                if not commit:
+                                    raise RuntimeError('Fixture cannot establish release identity')
+                                candidate = commit == fixture.config['application_sha']
                             finally:
                                 identity.close()
                         elapsed = time.monotonic() - fixture.started if fixture.started is not None else -1
-                        if fault_active(fixture.scenario, elapsed, self.path, candidate):
+                        if fixture.engine and candidate:
+                            decision = fixture.engine.decision(self.path, self.command, self.headers.get('X-Experiment-Stream','native'),
+                                                               request_id=self.headers.get('X-Experiment-Request'))
+                            fixture.engine.delay(decision)
+                        if decision and (decision['injected_error'] or decision['mode']=='content' and self.command=='GET'):
+                            status = decision['injected_status'] or 200
+                            body = b'{"content":"phase7-injected-mismatch"}'
+                        elif not fixture.spec and fault_active(fixture.scenario, elapsed, self.path, candidate):
                             status, body = 503, b'External experiment fixture'
                             fixture.event('injected_response', method=self.command, route='memo', elapsed_seconds=elapsed)
                         else:
@@ -160,7 +183,7 @@ class Fixture:
                             forward = {k: v for k, v in self.headers.items() if k.lower() not in HOP}
                             # Let the caller's original 3s/5s timeout win. The
                             # transport must not shorten a native probe budget.
-                            connection = http.client.HTTPConnection('127.0.0.1', BACKEND_PORT, timeout=6)
+                            connection = http.client.HTTPConnection('127.0.0.1', fixture.backend_port, timeout=6)
                             connection.request(self.command, self.path, data, forward)
                             response = connection.getresponse()
                             status, body = response.status, response.read()
@@ -178,6 +201,8 @@ class Fixture:
                         self.end_headers()
                         if self.command != 'HEAD':
                             self.wfile.write(body)
+                        if fixture.engine:
+                            fixture.engine.record(decision, status, (time.monotonic()-request_clock)*1000, True)
                         if paired.revised(fixture.scenario):
                             fixture.event('response_delivered', status=status,
                                           route='memo' if memo else 'other', method=self.command,
@@ -185,7 +210,8 @@ class Fixture:
                                           elapsed_seconds=elapsed,
                                           note='Transport evidence only; correlate client and native probe before attributing receipt')
                     except (BrokenPipeError, ConnectionResetError):
-                        pass
+                        if fixture.engine:
+                            fixture.engine.record(decision, status, (time.monotonic()-request_clock)*1000, False)
 
                 do_GET = do_POST = do_PUT = do_PATCH = do_DELETE = do_HEAD = do_OPTIONS = proxy
 
@@ -194,27 +220,35 @@ class Fixture:
                         return self.proxy
                     raise AttributeError(name)
 
-            self.server = ThreadingHTTPServer(('127.0.0.1', PUBLIC_PORT), Handler)
+            self.server = ThreadingHTTPServer(('127.0.0.1', self.public_port), Handler)
             serving = threading.Thread(target=self.server.serve_forever, daemon=True)
             serving.start()
-            # A fixture setup cap, not an additional controller retry policy. No
-            # production acceptance code runs until this external boundary returns.
-            deadline = time.monotonic() + 180
-            while not self.stop.is_set() and time.monotonic() < deadline:
+            atomic(self.directory / 'fixture-proxy-ready.json', {'timestamp': stamp()})
+            # No health sampling or second readiness window. The controller's one
+            # startup gate signals this boundary; activation is one-way IPC only.
+            while not self.stop.is_set():
                 atomic(self.directory / 'fixture-heartbeat.json', {'timestamp': stamp()})
-                observation = self.sampler(self.config)
-                if observation['healthy'] and observation['application_sha'] == self.config['application_sha']:
-                    ready = stamp()
+                if (self.directory / 'fixture-startup-ready.json').exists():
+                    ready = read(self.directory / 'fixture-startup-ready.json')['timestamp']
+                    age = (dt.datetime.now(dt.timezone.utc) - dt.datetime.fromisoformat(ready)).total_seconds()
+                    if not 0 <= age <= 2:
+                        raise RuntimeError('Stale startup boundary')
                     self.started = time.monotonic()
                     self.t0 = stamp()
-                    self.event('fault_started', t0=self.t0, readiness=observation)
+                    if self.spec:
+                        expected = dict(trial_id=self.directory.name,project=self.project,environment=self.environment,
+                            release='v2',release_sha=self.config['application_sha'],image_id=self.config['image_identity'])
+                        value = final_scenarios.lease(self.spec, expected, dt.datetime.fromisoformat(self.t0).timestamp(), self.started)
+                        self.engine = final_scenarios.Engine(value, expected, lambda row: self.event(**row))
+                        atomic(self.directory / 'scenario-schedule.json', value)
+                        threading.Thread(target=final_scenarios.watch, args=(self.directory/'scenario-schedule.json',lambda row:self.event(**row),self.stop),daemon=True).start()
+                    self.event('fault_started', t0=self.t0, boundary='controller_first_startup_readiness')
                     atomic(self.directory / 'fixture-start.json', dict(t0=self.t0, ready_at=ready,
                            monotonic_start=self.started, scenario=self.scenario))
                     break
-                self.event('fixture_readiness', observation=observation)
-                self.stop.wait(.1)
+                self.stop.wait(.05)
             if self.started is None:
-                raise RuntimeError('Fixture initial candidate readiness not reached')
+                return
             boundaries = sorted({x for interval in SCHEDULES[self.scenario] for x in interval if x})
             while not self.stop.wait(.05):
                 elapsed = time.monotonic() - self.started
@@ -223,7 +257,7 @@ class Fixture:
                     boundary = boundaries.pop(0)
                     self.event('fault_boundary', scheduled_seconds=boundary, elapsed_seconds=elapsed,
                                active=any(a <= elapsed < b for a, b in SCHEDULES[self.scenario]))
-                if elapsed >= SCHEDULES[self.scenario][-1][1] and not (self.directory / 'fixture-expired.json').exists():
+                if elapsed >= self.expiry_seconds and not (self.directory / 'fixture-expired.json').exists():
                     self.event('fault_ended', reason='fixed_schedule_expired')
                     atomic(self.directory / 'fixture-expired.json', {'timestamp': stamp()})
         except Exception as exc:
@@ -232,8 +266,8 @@ class Fixture:
             atomic(self.directory / 'fixture-error.json', {'timestamp': stamp(), 'error': str(exc)})
 
     def close(self):
-        if paired.revised(self.scenario) and self.started is not None:
-            expiry = self.started + SCHEDULES[self.scenario][-1][1]
+        if self.started is not None:
+            expiry = self.started + self.expiry_seconds
             if time.monotonic() < expiry:
                 self.event('cleanup_waits_for_schedule_expiry')
             while time.monotonic() < expiry:
@@ -244,14 +278,15 @@ class Fixture:
         if self.server:
             self.server.shutdown()
             self.server.server_close()
+        final_scenarios.finalize_evidence(self.directory)
         self.event('fixture_closed', scheduled_expiry_reached=(self.directory / 'fixture-expired.json').exists())
 
 
-def adapted_arguments(arguments, override):
+def adapted_arguments(arguments, override, project=PROJECT):
     """Only alter the exact production up command; inspect output stays real."""
     target = (len(arguments) > 4 and arguments[0] == 'compose'
               and '--project-name' in arguments
-              and arguments[arguments.index('--project-name') + 1] == PROJECT
+              and arguments[arguments.index('--project-name') + 1] == project
               and 'up' in arguments)
     if target:
         # The frozen controller spells detach long-form; preserve its arguments.
@@ -266,28 +301,53 @@ def adapted_arguments(arguments, override):
 
 def docker_adapter(arguments):
     directory = Path(os.environ['MEMOS_FIXTURE_DIRECTORY'])
-    arguments, target = adapted_arguments(arguments, HERE / 'runtime-port.yaml')
+    arm = read(directory / 'fixture-arm.json')
+    override = HERE / 'runtime-port.yaml'
+    if arm['scenario'].startswith('P'):
+        spec = final_scenarios.resolve(arm['scenario'])
+        project = 'memos-current-experiment-' + spec['stage']
+        backend = 5544 if spec['stage']=='staging' else 5543
+        if arm['project'] != project or arm['backend_port'] != backend:
+            raise ValueError('Foreign environment fixture')
+        override = directory / 'runtime-port.yaml'
+        override.write_text('services:\n  memos:\n    ports: !override\n      - "127.0.0.1:'+str(backend)+':5230"\n')
+    arguments, target = adapted_arguments(arguments, override, arm.get('project',PROJECT))
     code = subprocess.run([os.environ['MEMOS_REAL_DOCKER'], *arguments]).returncode
     if code or not target:
         return code
     atomic(directory / 'fixture-up.json', {'timestamp': stamp()})
-    deadline = time.monotonic() + 185
+    wait_receipt(directory, 'fixture-proxy-ready.json', 5)
+    return 0
+
+
+def wait_receipt(directory, name, timeout):
+    deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         if (directory / 'fixture-error.json').exists():
             raise RuntimeError('External fixture failed; trial is invalid')
-        if (directory / 'fixture-start.json').exists():
-            start = read(directory / 'fixture-start.json')
-            released = stamp()
-            latency = (dt.datetime.fromisoformat(released) - dt.datetime.fromisoformat(start['ready_at'])).total_seconds()
-            atomic(directory / 'fixture-hook.json', {'released_at': released, 'synchronization_seconds': latency})
-            if not 0 <= latency <= 2:
-                raise RuntimeError('Fixture synchronization exceeded two seconds')
-            return 0
         heartbeat = read(directory / 'fixture-heartbeat.json')
         if (dt.datetime.now(dt.timezone.utc) - dt.datetime.fromisoformat(heartbeat['timestamp'])).total_seconds() > 15:
             raise RuntimeError('External fixture observer disconnected')
+        if (directory / name).exists():
+            return read(directory / name)
         time.sleep(.05)
-    raise RuntimeError('External fixture hook timed out')
+    raise RuntimeError('External fixture acknowledgement timed out: ' + name)
+
+
+def activate():
+    """One-way startup boundary. Never reset a running schedule or probe health."""
+    directory = Path(os.environ['MEMOS_FIXTURE_DIRECTORY'])
+    # Exclusive creation rejects duplicate activation, including late retries.
+    with (directory / 'fixture-activation.lock').open('x', encoding='utf-8'):
+        pass
+    atomic(directory / 'fixture-startup-ready.json', {'timestamp': stamp()})
+    start = wait_receipt(directory, 'fixture-start.json', 2)
+    released = stamp()
+    latency = (dt.datetime.fromisoformat(released) - dt.datetime.fromisoformat(start['ready_at'])).total_seconds()
+    atomic(directory / 'fixture-hook.json', {'released_at': released, 'synchronization_seconds': latency})
+    if not 0 <= latency <= 2:
+        raise RuntimeError('Fixture synchronization exceeded two seconds')
+    return 0
 
 
 def runner():
@@ -307,7 +367,7 @@ def runner():
         heartbeat = read(directory / 'fixture-heartbeat.json')
         if (dt.datetime.now(dt.timezone.utc) - dt.datetime.fromisoformat(heartbeat['timestamp'])).total_seconds() > 15:
             raise RuntimeError('Fixture lease is stale')
-        docker = shutil.which('docker.exe')
+        docker = shutil.which('docker.exe' if os.name == 'nt' else 'docker')
         if not docker:
             raise RuntimeError('Real Docker executable missing')
         shim = directory / 'docker-adapter'
@@ -316,11 +376,18 @@ def runner():
         for value in (sys.executable, str(Path(__file__).resolve())):
             if any(c in value for c in '%!\r\n"'):
                 raise ValueError('Unsupported adapter path')
-        (shim / 'docker.cmd').write_text(f'@echo off\n"{sys.executable}" "{Path(__file__).resolve()}" docker %*\nexit /b %errorlevel%\n')
+        if os.name == 'nt':
+            (shim / 'docker.cmd').write_text(f'@echo off\n"{sys.executable}" "{Path(__file__).resolve()}" docker %*\nexit /b %errorlevel%\n')
+        else:
+            adapter = shim / 'docker'
+            adapter.write_text('#!/bin/sh\nexec ' + shlex.quote(sys.executable) + ' ' + shlex.quote(str(Path(__file__).resolve())) + ' docker "$@"\n', encoding='utf-8')
+            adapter.chmod(0o700)
         environment.update(MEMOS_REAL_DOCKER=docker, MEMOS_FIXTURE_DIRECTORY=str(directory),
+                           MEMOS_FIXTURE_ENVIRONMENT=arm.get('environment','production'),
+                           MEMOS_FIXTURE_PYTHON=sys.executable, MEMOS_FIXTURE_SCRIPT=str(Path(__file__).resolve()),
                            PATH=str(shim) + os.pathsep + environment['PATH'])
         native_scenario = 'S0'  # Controller is unaware of the external runtime fault.
-    return subprocess.run(['powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
+    return subprocess.run(['powershell.exe' if os.name == 'nt' else 'pwsh', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
         str(ROOT / 'scripts/local-cd/deploy.ps1'), '-Experiment', '-Commit', os.environ['RELEASE_SHA'],
         '-FrozenRelease', os.environ['RELEASE'], '-TrialId', os.environ['TRIAL_ID'],
         '-Scenario', native_scenario], cwd=ROOT, env=environment).returncode
@@ -329,5 +396,7 @@ def runner():
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == 'docker':
         raise SystemExit(docker_adapter(sys.argv[2:]))
+    if len(sys.argv) > 1 and sys.argv[1] == 'activate':
+        raise SystemExit(activate())
     argparse.ArgumentParser(description=__doc__).parse_args()
     raise SystemExit(runner())
