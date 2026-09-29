@@ -1,21 +1,21 @@
 {
   "schema_version": 1,
-  "preview_only": true,
+  "preview_only": false,
   "controls": {
     "schema_version": 1,
     "release_manifest": "protocol/frozen-releases.json",
     "conventional": {
       "checkout": "memos-current",
       "repository": "id-nynt/memos-current-experiment",
-      "control_sha": "737b3b0ec3efc2612d80bdebba557773c0711eb1",
-      "control_ref": "memos-control-conventional-portable-20260929-125126",
+      "control_sha": "f4cff1d28a89952b8c082ef6e1c2690d2212b8f3",
+      "control_ref": "memos-control-conventional-f4cff1d28a89",
       "release_manifest": "scripts/local-cd/frozen-releases.json"
     },
     "bdi": {
       "checkout": "memos-bdi",
       "repository": "id-nynt/memos-bdi-experiment",
-      "control_sha": "802f88aed2d58661cbd30709faf08b0a1c801b0a",
-      "control_ref": "memos-control-bdi-portable-20260929-125126",
+      "control_sha": "764576cd20398c812115574b330ef406eff4e24f",
+      "control_ref": "memos-control-bdi-764576cd2039",
       "release_manifest": "experiment/frozen-releases.json",
       "policy_contract": "protocol/bdi-policy-final-source.json"
     }
@@ -36,7 +36,7 @@
     "protocol/matrix-scenarios.json": "1b2dcbf3875c623a4912a711fe54c3076ec6fb6404a01542a7de9669de744062",
     "protocol/measurement-contract-v2.json": "3024a54c68108d4e66adb6ffc28709028661c699254c5321198cfad0005df015",
     "protocol/measurement-contract.json": "26d315f8a3bd694bb7bae3105d92c305bc08779a1977f3b337bd2a095f176998",
-    "protocol/operator-revisions.json": "0a964642526c2cc54b80e663cc7a7ec97bd257be9da51a557f5b64635d85157e",
+    "protocol/operator-revisions.json": "6ad99126198fefd4c9157ef81793b2dd2e92740799b47483f92a14ad56375fdd",
     "protocol/phase6-timing.json": "83e4b00ab9bdc476395e39e9b6393d4ad0490dd2e04e23a4ce62029664fa3a2a",
     "protocol/phase7-measurement.json": "1610cfdca28fd34910d4fb5159959eafdc2f5d7b4346430ca30a993eb1357dc3",
     "protocol/phase8-case-matrix.json": "e36e44a9bdefb19efc94796ad89bbe90d8dc3b411f1b24eda0d48a2d8af714ad",
