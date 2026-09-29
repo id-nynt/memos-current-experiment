@@ -58,7 +58,13 @@ def package(preview=False):
     for name in names:
         destination=KIT/name;destination.parent.mkdir(parents=True,exist_ok=True)
         # LF prevents source fingerprints depending on the developer's Git autocrlf.
-        destination.write_text((ROOT/name).read_text(encoding='utf-8-sig'),encoding='utf-8',newline='\n')
+        if name.as_posix() == 'SERVER_EXECUTION_SIMPLE.md':
+            if not destination.is_file():raise ValueError('Missing canonical guide: '+str(destination))
+            continue
+        content=(ROOT/name).read_text(encoding='utf-8-sig')
+        if name.parts[0]=='docs':
+            content=content.replace('../memos-current/experiment-kit/SERVER_EXECUTION_SIMPLE.md','../SERVER_EXECUTION_SIMPLE.md')
+        destination.write_text(content,encoding='utf-8',newline='\n')
     (KIT/'.gitignore').write_text('/.venv/\n/results/\n/memos-current\n/memos-bdi/\n__pycache__/\n',encoding='utf-8')
     (KIT/'.gitattributes').write_text('* text eol=lf\n*.sh text eol=lf\n',encoding='utf-8')
     batch.save(KIT/'package.json',dict(schema_version=1,preview_only=preview,controls=pins,
@@ -76,13 +82,17 @@ def publish():
     if manifest['preview_only']:raise ValueError('Run package after native commits')
     for name,digest in manifest['files'].items():
         if batch.digest(KIT/name)!=digest:raise ValueError('Package changed: '+name)
+    # Complete both repositories' checks before the first remote mutation.
     for arm in ('bdi','conventional'):
         spec=manifest['controls'][arm];repo=ROOT/spec['checkout']
         if git(repo,'status','--porcelain','--untracked-files=normal'):raise ValueError('Commit changes before publish: '+arm)
         # The default branch must contain job-execution.yml for GitHub dispatch.
-        if git(repo,'branch','--show-current')!='main':raise ValueError('Publish from main after merging reviewed changes')
+        branch=git(repo,'branch','--show-current')
+        if branch!='main':raise ValueError(f'{arm} is on {branch or "detached HEAD"}; integrate the reviewed branch into main first. See experiment-kit/SERVER_EXECUTION_SIMPLE.md, section 1.')
         if git(repo,'diff','--name-only',spec['control_sha'],'HEAD','--','.',':(exclude)experiment-kit'):
             raise ValueError('Native source changed after packaging; run package again: '+arm)
+    for arm in ('bdi','conventional'):
+        spec=manifest['controls'][arm];repo=ROOT/spec['checkout']
         refs=['HEAD:refs/heads/main','refs/tags/'+spec['control_ref']]
         for label,release in batch.read(ROOT/'protocol/frozen-releases.json')['releases'].items():
             tag='memos-app-'+label+'-'+release['application_sha'][:12]

@@ -2,6 +2,8 @@
 
 Use **LOCAL** for Windows PowerShell and **SERVER** for Ubuntu Bash.
 
+This is the only operator guide. Edit this tracked file directly; packaging preserves it.
+
 ```text
 LOCAL: validate → commit controls → package → commit kit → push
 SERVER: clone → prepare → M001 → smoke → five 20-case batches
@@ -10,44 +12,73 @@ SERVER: clone → prepare → M001 → smoke → five 20-case batches
 
 ## 1. Finish and publish on LOCAL
 
+Use `main` in both experiment repositories for publication and server cloning.
+Working branches such as `fix/portable-20260929-125126` are development history;
+the experiment itself pins immutable control commits in the packaged manifest.
+
 | Value | Use |
 |---|---|
 | Workspace | `C:\NHI\2026_IT-Project\260037_memos-exp` |
 | Conventional repository | `id-nynt/memos-current-experiment` |
 | BDI repository | `id-nynt/memos-bdi-experiment` |
-| Branch | `main` in both repositories; merge your reviewed work first |
+| Publication branch | `main` in both repositories |
+| `$WorkBranch` | Reviewed working branch to integrate; example below |
 
-The refactor and experiment changes must be committed before packaging. The
-package command selects those commits automatically. It copies the shared tools,
-protocol, scenarios and scripts into Conventional's tracked `experiment-kit/`.
+For future updates, commit reviewed native changes and guide changes on your working
+branch first. Skip integration when the changes are already on `main`. Run each block
+only after the previous block succeeds.
 
 ```powershell
 Set-Location C:\NHI\2026_IT-Project\260037_memos-exp
-.\.venv\Scripts\python.exe -B tools/local_prepare.py validate
-
-git -C memos-bdi add .github bdi-cicd-framework experiment docs
-git -C memos-bdi commit -m "Complete Job controls and shared Linux image preparation"
-git -C memos-current add .github scripts experiment .gitattributes
-git -C memos-current commit -m "Use shared server image freeze for experiment controls"
-
-.\.venv\Scripts\python.exe -B tools/local_prepare.py package
-git -C memos-current add experiment-kit
-git -C memos-current commit -m "Package reproducible experiment runner and five study batches"
-.\.venv\Scripts\python.exe -B tools/local_prepare.py publish
+$WorkBranch = "fix/portable-20260929-125126"
+foreach ($Repo in @("memos-bdi", "memos-current")) {
+    git -C $Repo fetch origin
+    if ($LASTEXITCODE -ne 0) { throw "Fetch failed: $Repo" }
+    git -C $Repo switch main
+    if ($LASTEXITCODE -ne 0) { throw "Commit local changes before switching: $Repo" }
+    git -C $Repo merge --ff-only origin/main
+    if ($LASTEXITCODE -ne 0) { throw "Review divergence from origin/main: $Repo" }
+    git -C $Repo merge --no-edit $WorkBranch
+    if ($LASTEXITCODE -ne 0) { throw "Resolve and commit merge conflicts before continuing: $Repo" }
+}
 ```
 
 Explanation:
 
-- `Set-Location` opens the local workspace; `validate` checks contracts, batch allocation and offline tests.
-- The first two `git add` / `git commit` pairs save the BDI and Conventional changes.
-- `package` selects those commits and creates the reproducible experiment kit.
-- The final `git add` / `git commit` saves the kit; `publish` pushes both repositories and required tags to GitHub.
+- Fetches remote changes and integrates the reviewed working branch into each local `main`.
+- Uses a normal merge when histories diverge; it preserves both histories and stops on conflicts.
+- Does not publish anything or discard local work. Do not force-push or force-reset to bypass a failure.
 
-If native changes are already committed, skip that repository's commit command.
-`validate` runs offline tests. `package` requires a matching successful validation
-receipt and refuses uncommitted native changes.
-`publish` pushes both controls and the kit, with automatic immutable control/source
-tags. **Do not publish the supplied preview package without running `package`.**
+```powershell
+.\.venv\Scripts\python.exe -B tools/local_prepare.py validate
+if ($LASTEXITCODE -ne 0) { throw "Local validation failed" }
+.\.venv\Scripts\python.exe -B tools/local_prepare.py package
+if ($LASTEXITCODE -ne 0) { throw "Packaging failed" }
+git -C memos-current add experiment-kit
+git -C memos-current commit -m "Package validated experiment controls and operator guide"
+```
+
+Explanation:
+
+- Validates the current native controls, scenario definitions and offline tests.
+- Selects the committed controls and packages shared tools, scenarios and protocol files.
+- Preserves this single guide in `experiment-kit/` and commits the refreshed kit on `main`.
+- If Git says there is nothing to commit, the package is already committed; other errors require diagnosis.
+
+```powershell
+.\.venv\Scripts\python.exe -B tools/local_prepare.py publish
+if ($LASTEXITCODE -ne 0) { throw "Publication failed; do not start server setup yet" }
+```
+
+Explanation:
+
+- Checks both repositories and the package before pushing either repository.
+- Publishes `main`, immutable control tags and the frozen application source tags to the experiment repositories.
+- Pushes are atomic per repository, not across both; if the second push fails, fix the reported issue and rerun.
+
+**Expected: `PASS: controls, application objects and experiment kit published`.**
+Proceed to server setup only after publication succeeds. Local success does not replace
+Ubuntu preparation, runner qualification or the M001 and fault smoke checks.
 
 ## 2. Set up SERVER once
 
