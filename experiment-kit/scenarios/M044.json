@@ -1,0 +1,68 @@
+{
+  "matrix_sha256": "011dd3415860bc605b78cd7d5753fac013c680aeee26bd471e0c7be2811ba86f",
+  "case_id": "M044",
+  "pair_key": "M044",
+  "baseline": "P18",
+  "scenario": "P8044",
+  "family": "latency",
+  "test_set": "A",
+  "analysis_stratum": "service",
+  "parameters": {
+    "stage": "production",
+    "seed": 820044,
+    "episodes": [
+      {
+        "start": 0,
+        "end": 90,
+        "error_percent": 0,
+        "delay_ms": 550,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 0
+      }
+    ]
+  },
+  "spec": {
+    "id": "P8044",
+    "title": "M044 production latency",
+    "family": "latency",
+    "version": "memos-phase7-v1",
+    "stage": "production",
+    "seed": 820044,
+    "horizon_seconds": 300,
+    "episodes": [
+      {
+        "start": 0,
+        "end": 90,
+        "error_percent": 0,
+        "delay_ms": 550,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 0,
+        "id": "e1"
+      }
+    ],
+    "status": "implemented",
+    "final_matrix_eligible": true
+  },
+  "spec_sha256": "cc0e8c351d6ecf943f928ee10a3231ce3f43d3f62dd085b8cc0ce99bcf17842c",
+  "treatments": [
+    "bdi",
+    "conventional"
+  ],
+  "anchor": "schedule_activation",
+  "horizon_seconds": 300,
+  "reset": "shared-controlled-seed",
+  "execution_status": "requires_published_controls",
+  "seed_affects_fault_positions": false,
+  "exposure_group": "1d04aca9c461021eaac8fd31276391e6319bece8409ccbee3e4d04efd3271926",
+  "repeat_members": [
+    "M044",
+    "M094"
+  ],
+  "repeat_rationale": "Limited robustness/reference repeat; distinct seed, not a powered replicate study"
+}

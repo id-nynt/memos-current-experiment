@@ -99,7 +99,7 @@ def measurement(env='production', release='v2', trial='verification', scenario='
     r = RELEASES[release]
     return dict(approach='conventional', scenario=scenario, trial_id=trial,
                 control_sha=command('git', 'rev-parse', 'HEAD'), application_sha=r['application_sha'],
-                image_identity=r['image_id'], frozen_oci_digest=r['image_id'], runtime_image_id=images_identity.runtime_id(r), execution_mode=mode, releases=RELEASES,
+                image_identity=images_identity.frozen_digest(r), frozen_oci_digest=images_identity.frozen_digest(r), runtime_image_id=images_identity.runtime_id(r), execution_mode=mode, releases=RELEASES,
                 production_url=f'http://127.0.0.1:{port(env)}',
                 production_container=project(env) + '-memos-1',
                 credential_file=str(STATE / 'credentials' / env / 'credential.json'))

@@ -1,0 +1,45 @@
+{
+  "matrix_sha256": "011dd3415860bc605b78cd7d5753fac013c680aeee26bd471e0c7be2811ba86f",
+  "case_id": "M051",
+  "pair_key": "M051",
+  "baseline": "P00",
+  "scenario": "P8051",
+  "family": "reference",
+  "test_set": "B",
+  "analysis_stratum": "service",
+  "parameters": {
+    "stage": "production",
+    "seed": 820051,
+    "episodes": []
+  },
+  "spec": {
+    "id": "P8051",
+    "title": "M051 production reference",
+    "family": "reference",
+    "version": "memos-phase7-v1",
+    "stage": "production",
+    "seed": 820051,
+    "horizon_seconds": 300,
+    "episodes": [],
+    "status": "implemented",
+    "final_matrix_eligible": true
+  },
+  "spec_sha256": "699d8e1e9a2464e729fe10cb1d5f264f44b93e3b71c77d8561f5813297a86e95",
+  "treatments": [
+    "conventional",
+    "bdi"
+  ],
+  "anchor": "schedule_activation",
+  "horizon_seconds": 300,
+  "reset": "shared-controlled-seed",
+  "execution_status": "requires_published_controls",
+  "seed_affects_fault_positions": false,
+  "exposure_group": "06bb5a34edb66a833db8a107d589471724c6e420fcc702f6651c0bc74cfdc93e",
+  "repeat_members": [
+    "M001",
+    "M004",
+    "M051",
+    "M054"
+  ],
+  "repeat_rationale": "Limited robustness/reference repeat; distinct seed, not a powered replicate study"
+}

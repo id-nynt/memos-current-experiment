@@ -1,0 +1,113 @@
+{
+  "matrix_sha256": "011dd3415860bc605b78cd7d5753fac013c680aeee26bd471e0c7be2811ba86f",
+  "case_id": "M082",
+  "pair_key": "M082",
+  "baseline": "P13",
+  "scenario": "P8082",
+  "family": "trajectory",
+  "test_set": "B",
+  "analysis_stratum": "service",
+  "parameters": {
+    "stage": "production",
+    "seed": 820082,
+    "episodes": [
+      {
+        "start": 0,
+        "end": 30,
+        "error_percent": 4,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 4
+      },
+      {
+        "start": 30,
+        "end": 65,
+        "error_percent": 6,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 6
+      },
+      {
+        "start": 65,
+        "end": 180,
+        "error_percent": 30,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 30
+      }
+    ]
+  },
+  "spec": {
+    "id": "P8082",
+    "title": "M082 production trajectory",
+    "family": "trajectory",
+    "version": "memos-phase7-v1",
+    "stage": "production",
+    "seed": 820082,
+    "horizon_seconds": 300,
+    "episodes": [
+      {
+        "start": 0,
+        "end": 30,
+        "error_percent": 4,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 4,
+        "id": "e1"
+      },
+      {
+        "start": 30,
+        "end": 65,
+        "error_percent": 6,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 6,
+        "id": "e2"
+      },
+      {
+        "start": 65,
+        "end": 180,
+        "error_percent": 30,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 30,
+        "id": "e3"
+      }
+    ],
+    "status": "implemented",
+    "final_matrix_eligible": true
+  },
+  "spec_sha256": "cb2a959851ce9102cf91c027d710e1b1998279eabf7c4dfabb9a9c7dddb888de",
+  "treatments": [
+    "bdi",
+    "conventional"
+  ],
+  "anchor": "schedule_activation",
+  "horizon_seconds": 300,
+  "reset": "shared-controlled-seed",
+  "execution_status": "requires_published_controls",
+  "seed_affects_fault_positions": true,
+  "exposure_group": "173e715af40ef54f6eb9338c8fc6afe17f85d84619d3c84b041d44bb89a27684",
+  "repeat_members": [
+    "M082"
+  ],
+  "repeat_rationale": null
+}

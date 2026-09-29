@@ -1,0 +1,90 @@
+{
+  "matrix_sha256": "011dd3415860bc605b78cd7d5753fac013c680aeee26bd471e0c7be2811ba86f",
+  "case_id": "M023",
+  "pair_key": "M023",
+  "baseline": "P06",
+  "scenario": "P8023",
+  "family": "intermittent",
+  "test_set": "A",
+  "analysis_stratum": "service",
+  "parameters": {
+    "stage": "production",
+    "seed": 820023,
+    "episodes": [
+      {
+        "start": 0,
+        "end": 35,
+        "error_percent": 60,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 60
+      },
+      {
+        "start": 70,
+        "end": 105,
+        "error_percent": 60,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 60
+      }
+    ]
+  },
+  "spec": {
+    "id": "P8023",
+    "title": "M023 production intermittent",
+    "family": "intermittent",
+    "version": "memos-phase7-v1",
+    "stage": "production",
+    "seed": 820023,
+    "horizon_seconds": 300,
+    "episodes": [
+      {
+        "start": 0,
+        "end": 35,
+        "error_percent": 60,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 60,
+        "id": "e1"
+      },
+      {
+        "start": 70,
+        "end": 105,
+        "error_percent": 60,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 60,
+        "id": "e2"
+      }
+    ],
+    "status": "implemented",
+    "final_matrix_eligible": true
+  },
+  "spec_sha256": "3d14567a66e1577b05b350271ca30fe1b647ab21900961f246aefafbb16d73a4",
+  "treatments": [
+    "conventional",
+    "bdi"
+  ],
+  "anchor": "schedule_activation",
+  "horizon_seconds": 300,
+  "reset": "shared-controlled-seed",
+  "execution_status": "requires_published_controls",
+  "seed_affects_fault_positions": true,
+  "exposure_group": "9ecb9d5202aa9e48b82add2b6348a5ca3f0456f747a6c28a3765a85c91f4b4a6",
+  "repeat_members": [
+    "M023"
+  ],
+  "repeat_rationale": null
+}

@@ -13,12 +13,12 @@
     ".github/workflows/local-cd.yml": "3a5b9fb9de5436bccfc763e2c334d620210ce29bb98dbdaf01979d4f76a0e502",
     ".github/workflows/frozen-cd.yml": "2dd2fbe8471b69d0f04cb1663db9c8f61f819100808326e076f8df68b44bc43f",
     "experiment/runtime_fixture.py": "645f826d8754e4c76b0c24f313c2e35b8a31dea62afcd79f44b1495397be8cb5",
-    "experiment/manage.py": "00706db368aa56551b992ab764374746dcaed75b7b64d0cf17df7175cdf024b4",
+    "experiment/manage.py": "6c447e042e23c6bcce9ef1c5df9c1a9980a315527ab58c54ef2e944e2191131e",
     ".github/workflows/experiment-backend-tests.yml": "14d1fb87295b48d00a74be8b1d3d98351454ba2ed42a2a3bf0b53fc18d1cc5e8",
     ".github/workflows/experiment-frontend-tests.yml": "c8030c508835927b75a9a2c515bad9e42da0a450d88149aa18079780d79a6ea0",
     ".github/workflows/experiment-proto-linter.yml": "eda638d9723e5b8f0a1ff8825d1d6e999d4084bd19da7ca1044bee23b5f972dc",
-    ".github/workflows/experiment-upgrade-smoke.yml": "6939ca97669c1193f52200b199cabb62349cafa3032b49fb6c20d8f5d262bb3b",
-    "scripts/experiment-measurement/image_identity.py": "1945f63e2f6b2f5134c6a29baa35e4e4872f5a77fbb3bdc8a0dd0807d6126985",
+    ".github/workflows/experiment-upgrade-smoke.yml": "05893f3fe4f8ead905a5ef3ef360aa2e91dbb939c37592cf2cdfcf84564c9046",
+    "scripts/experiment-measurement/image_identity.py": "7cdf1bf4f8c5d547023b13ed4197cd01a521253d45f71037d464e8a8c9ee623d",
     "scripts/experiment-measurement/frozen-runtime-identities.json": "1edcf8599e223df253bf578179ec0f690cca2234b258e3c6de80b9cabb7017af",
     "scripts/experiment-measurement/frozen_artifacts.py": "80b9c1926e698a367101cc2ffa1e93ddc12dbf5eefa64b5d9c4d51d8d6f2e4ca"
   },
@@ -27,5 +27,5 @@
   "phase7_note": "Reviewed source adds environment-specific activation plumbing only; immutable operator promotion remains separate.",
   "phase11_review": "Local source only: shared self-hosted quality copies; native policy preserved; immutable publication pending.",
   "phase9_boundary_review": "Schedule and measurement use the same recorded activation epoch; no second UTC read. Native timing/policy unchanged.",
-  "server_preparation_note": "Prepared Linux source fingerprints; no immutable control publication or selection. Historical evidence unchanged."
+  "server_preparation_note": "Current source fingerprints for the shared Linux image session; actual control selection belongs to the versioned experiment kit."
 }

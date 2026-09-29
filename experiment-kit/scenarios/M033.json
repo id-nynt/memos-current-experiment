@@ -1,0 +1,114 @@
+{
+  "matrix_sha256": "011dd3415860bc605b78cd7d5753fac013c680aeee26bd471e0c7be2811ba86f",
+  "case_id": "M033",
+  "pair_key": "M033",
+  "baseline": "P14",
+  "scenario": "P8033",
+  "family": "trajectory",
+  "test_set": "A",
+  "analysis_stratum": "service",
+  "parameters": {
+    "stage": "production",
+    "seed": 820033,
+    "episodes": [
+      {
+        "start": 0,
+        "end": 25,
+        "error_percent": 60,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 60
+      },
+      {
+        "start": 25,
+        "end": 60,
+        "error_percent": 30,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 30
+      },
+      {
+        "start": 60,
+        "end": 180,
+        "error_percent": 10,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 10
+      }
+    ]
+  },
+  "spec": {
+    "id": "P8033",
+    "title": "M033 production trajectory",
+    "family": "trajectory",
+    "version": "memos-phase7-v1",
+    "stage": "production",
+    "seed": 820033,
+    "horizon_seconds": 300,
+    "episodes": [
+      {
+        "start": 0,
+        "end": 25,
+        "error_percent": 60,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 60,
+        "id": "e1"
+      },
+      {
+        "start": 25,
+        "end": 60,
+        "error_percent": 30,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 30,
+        "id": "e2"
+      },
+      {
+        "start": 60,
+        "end": 180,
+        "error_percent": 10,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 10,
+        "id": "e3"
+      }
+    ],
+    "status": "implemented",
+    "final_matrix_eligible": true
+  },
+  "spec_sha256": "b942c348782369d8d886bf51ea056e8bee02ad801232af7e9df9651d236d0da4",
+  "treatments": [
+    "conventional",
+    "bdi"
+  ],
+  "anchor": "schedule_activation",
+  "horizon_seconds": 300,
+  "reset": "shared-controlled-seed",
+  "execution_status": "requires_published_controls",
+  "seed_affects_fault_positions": true,
+  "exposure_group": "77a2c90071235ed247973e0eaa6e0f5477d65158885d53d31322e78634b0159c",
+  "repeat_members": [
+    "M033",
+    "M083"
+  ],
+  "repeat_rationale": "Limited robustness/reference repeat; distinct seed, not a powered replicate study"
+}

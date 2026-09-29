@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "purpose": "Reviewed fixed-code semantics, not a new execution policy. Changed fixed consumers require explicit review. Four source inputs remain framework policy authority.",
+  "reviewed_code_sha256": {
+    "experiment/scripts/operate.py": "d582d16e898a70a85d0b6b22a39c0477fe316f4d873933a8d5dcf6b73ede23da",
+    "experiment/scripts/observe.py": "7fec73b4a3e182a0030e70b4178e0bade08efda9c4809746cf6933ae902a205c",
+    "experiment/scripts/record.py": "f9e3a7c140a1b89422eac9883d3202ce58dbcaf3a1a466895edd0412135bf45a",
+    "experiment/scripts/paired_rq1.py": "3dc6cbc612a8993cb362dfdf3ebe561f52f2b88961388dfe9b20a2d9a051d7cf",
+    "experiment/scripts/common.py": "feb84e3ad37852d3536e0821926eca23fedc93b3b658d1a1a93adc981da82231",
+    "experiment/scripts/probe.py": "f5a34cfb794d1e3d8da0434867df47b072b1480ef96f745b0fd5f9b714d3c935",
+    "experiment/scripts/proxy.py": "1ea00b9c94bfad7b4b69c4f43627049d3d19956e708dc36cc2277552a8cfbaca",
+    "experiment/scripts/trial.py": "44489b5eea25b7013c402f1b0ca0d7d587d3b26fdb1161c3d2561da7faf29ea6",
+    "experiment/scripts/raw_facts.py": "5f30125a7d8895c616c728167134c561f572657d3f71233245e9047c0fad28b1",
+    "experiment/measurement/measure_trial.py": "a66da683c77aafa80d11d5a106c86c7410a8e354f02a0ba1857a87f1db1ccb0e",
+    ".github/workflows/experiment-operation.yml": "afc98c9f9fe0b6f49d340a36ca283ded5f7eb546f779afbff10c018e1e256481",
+    ".github/workflows/entity-execution.yml": "fca1be6a8315d1301d3ca90dd81bd56f5fbe62ab50409e438649bb4752f85d19",
+    "bdi-cicd-framework/generator/controller_generic.asl": "fd419a7b6f680d2694fb9e287ecebe04b9124b457bb99d845cdf0b35f60758e3",
+    "bdi-cicd-framework/bdi/harness/ControllerEnvironment.java": "5e6ada062ee7e382dbc7cbd0ece3114f50b7fdba9588a702a52de13e1fb88456",
+    "bdi-cicd-framework/bdi/harness/GitHubEntityExecution.java": "2ca6dcd9b78f0a08abb2f9cc8a2939e03df2cb2b497284ab1396a65de383b48e",
+    "bdi-cicd-framework/bdi/harness/ProjectTelemetryProvider.java": "5b1c1c7244ebf11a6106a07039e50579187b7dfc996831795489c6953b4837cd",
+    "bdi-cicd-framework/monitoring/observer/PrometheusTelemetryObserver.java": "c9ae7833fc051910783754b38157aea1a4df880dbe02860889153ad3087c1ab6"
+  },
+  "fixed_semantics": {
+    "analysis_error_fraction": 0.05,
+    "analysis_p95_ms": 500,
+    "worker_metric_window_seconds": 30,
+    "worker_metric_queries": {
+      "error_rate_query": "sum(rate(memos_experiment_errors_total{ci_run_id=\"{{run_id}}\",route=\"/api/v1/memos\"}[30s])) / (sum(rate(memos_experiment_requests_total{ci_run_id=\"{{run_id}}\",route=\"/api/v1/memos\"}[30s])) > 0)",
+      "latency_p95_ms_query": "histogram_quantile(0.95, sum by (le) (rate(memos_experiment_request_duration_milliseconds_bucket{ci_run_id=\"{{run_id}}\",route=\"/api/v1/memos\"}[30s])))",
+      "availability_query": "min(memos_experiment_ready{ci_run_id=\"{{run_id}}\"})",
+      "sample_age_seconds_query": "time() - max(timestamp(memos_experiment_ready{ci_run_id=\"{{run_id}}\"}))"
+    },
+    "traffic_cycle_seconds": 1,
+    "endpoint_window_seconds": 30,
+    "endpoint_coverage_seconds": 25,
+    "safety": {
+      "startup_seconds": 60,
+      "startup_interval_seconds": 2,
+      "operation_timeout_minutes": 40,
+      "readiness_http_status": 200,
+      "identity_fields": [
+        "deploymentRunId",
+        "release_sha",
+        "image_id",
+        "container_id"
+      ],
+      "memo_cycle": "create/read/content-match/delete and persistent sentinel; all HTTP 200",
+      "agent_readiness_timeout_seconds": 5,
+      "agent_metric_request_timeout_seconds": 10,
+      "worker_request_timeout_seconds": 10,
+      "agent_source_age_tolerance_seconds": -5,
+      "worker_source_age_min_seconds": 0,
+      "availability": "agent >=1; worker ==1; proxy emits boolean 0/1"
+    },
+    "measurement": {
+      "endpoint_window_seconds": 30,
+      "minimum_samples": 3,
+      "coverage_seconds": 25,
+      "last_sample_max_age_seconds": 5,
+      "max_sample_gap_seconds": 15,
+      "http_timeout_seconds": 3,
+      "docker_timeout_seconds": 5,
+      "sentinel_workload_interval_seconds": 1,
+      "health": "running frozen image + compiled identity + healthz + authenticated sentinel",
+      "native_record": "Legacy mixed-layer summary; not authoritative for BDI mechanism attribution"
+    }
+  }
+}

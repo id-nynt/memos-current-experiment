@@ -1,0 +1,18 @@
+{
+  "scenario": "S6",
+  "revision": 1,
+  "name": "Transient Failure and Automatic Retry",
+  "fixture": "Identical s6_fixture.py bytes in both repositories",
+  "target": "isolated loopback HTTP dependency at the extra CI/test fixture boundary",
+  "failure": "first request receives HTTP 503 and consumes the outage",
+  "clearance": "immediate after consumption; diagnostic HTTP 200 required before reporting transient",
+  "diagnostic_is_not_retry": true,
+  "native_attempts": "BDI entity attempts 1 and 2; GitHub run_attempt must remain 1",
+  "state": "trial/campaign scoped, immutable attempt receipts, reject replay or missing first failure",
+  "policy": "unchanged native policies; BDI one additional execution, conventional no added retry",
+  "endpoint": "600 seconds of passive follow-up after native termination, existing early-failure measurement path",
+  "v1": "2b5a8be2c2f9cf81599393a227890fb2424a5f03",
+  "v2": "db695ea0d54cfce6925f07a4715cb42eb6fd8f20",
+  "bdi_qualification": "fresh achieved v1 baseline plus explicit S6-only authorization; no new healthy v2/S0 claim",
+  "scope_limit": "controlled synthetic dependency outage with real HTTP responses, not an application or public dependency failure"
+}

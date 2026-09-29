@@ -1,0 +1,39 @@
+{
+  "contract_id": "memos-exact-count-v1",
+  "study_id": "memos-final-exact-v2",
+  "selection": "SHA256 rank of [exact-count-v1, seed, episode_id, stream, block_index, position]; lowest K positions",
+  "block_size": 100,
+  "streams": [
+    "independent",
+    "native"
+  ],
+  "native_methods": "pooled within native stream",
+  "episode_blocks": "restart at each predetermined episode",
+  "partial_block_exact_rate": null,
+  "workload": "serial approximately 1 request per second; existing transport timeout",
+  "independent_horizon_seconds": 300,
+  "native_observation_ceiling_seconds": 150,
+  "reobservation_seconds": 5,
+  "rollback_reconsideration_seconds": 60,
+  "measurement_extension": "additive accounting; Phase 5 primary denominator, cost boundary and native outcomes unchanged",
+  "reviewed_source_sha256": {
+    "tools/scenario_runtime.py": "9bc858310bfef3f121e0372c9cc0920182a3ffc6133ef13c519e9f2285f38ef6",
+    "tools/exact_measurements.py": "78763f3803eb457e5a9341a50022384c968ceb626dd7ddeb852ab4f22d765af9",
+    "tools/phase5_metrics.py": "6af6c9a2af320c8935c1830475b913efa4a2559a63dcdff66a08b0a1e1cb5d81",
+    "tools/phase8_matrix.py": "fc381b3731cfdb767bb7c5b94cbda75bab32aaea95198c8480eb703023e97075",
+    "tools/batch_runner.py": "497fec2fd5734a3b066092e7dedafe4793ffc7359d680e16f0a4891a903d52d6",
+    "tools/ci_controls.py": "95ae67236cbc54be878eb8d556b8f7ff9538dbf5fd1ba37acba1f17dcc97c3d6",
+    "memos-current/experiment/runtime_fixture.py": "ed693b1660cc78de7946e2505752439a2a562405e145ede63285b94bfd57697b",
+    "memos-current/experiment/manage.py": "b868771bf17895396f8675601b97c24583b691297723ab31b57dd50d2761d268",
+    "memos-current/experiment/staging_observer.py": "567c392488d8f4c4a876e8615af93d43430252f60c737ab3f6331026e1c321ea",
+    "memos-current/experiment/fixture.py": "bb551923c51a50b9ffd25ce6320c657827b12d37fadb5ae9e5b241c09e506ae0",
+    "memos-bdi/experiment/scripts/proxy.py": "c054baf63b08ce8261b42c0c6dc731e3732d74457522687be5a93fdc1c96ece1",
+    "memos-bdi/experiment/scripts/observe.py": "76d99b3539e28dd80ff923faac0b23ef6de69c675975d0080242a2a082579e58",
+    "memos-bdi/experiment/scripts/scenarios.py": "055c24d11efaea1116126ab552416b37680adc9865dfd8034ce9f3fa5ca9a98f",
+    "memos-bdi/experiment/scripts/scenario_gate.py": "ac357ea136dc41d83ad26914befad556ba117596b12083af6b74824f9e246dc9",
+    "memos-bdi/experiment/scripts/cases.py": "873c3beefaad716db0da3aab32b835c7522f595b39aa10ec89d3aafd842d254a",
+    "memos-bdi/experiment/scripts/trial.py": "12e9091eb84632c8d377ad4e1e929c3ba760ec6a669f6b4c8eb8f2de9763f14f",
+    "memos-current/.github/workflows/frozen-cd.yml": "726925bfa692fa1d7d25f723bfce81af3566e88eea7a9ac15b5de172d5664439",
+    "memos-bdi/.github/workflows/experiment-operation.yml": "77155e8473c2eba2a9895515c1eea950ab5d3b9260baa22c81beca2bc114fcb0"
+  }
+}
