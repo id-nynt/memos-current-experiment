@@ -1,0 +1,67 @@
+{
+  "matrix_sha256": "011dd3415860bc605b78cd7d5753fac013c680aeee26bd471e0c7be2811ba86f",
+  "case_id": "M059",
+  "pair_key": "M059",
+  "baseline": "P02",
+  "scenario": "P8059",
+  "family": "persistent",
+  "test_set": "B",
+  "analysis_stratum": "service",
+  "parameters": {
+    "stage": "production",
+    "seed": 820059,
+    "episodes": [
+      {
+        "start": 25,
+        "end": 300,
+        "error_percent": 60,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 60
+      }
+    ]
+  },
+  "spec": {
+    "id": "P8059",
+    "title": "M059 production persistent",
+    "family": "persistent",
+    "version": "memos-phase7-v1",
+    "stage": "production",
+    "seed": 820059,
+    "horizon_seconds": 300,
+    "episodes": [
+      {
+        "start": 25,
+        "end": 300,
+        "error_percent": 60,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 60,
+        "id": "e1"
+      }
+    ],
+    "status": "implemented",
+    "final_matrix_eligible": true
+  },
+  "spec_sha256": "3cb9b4901b2e9f9ec2351b9de73747aa8185fa9467c50e876dd627d695665a17",
+  "treatments": [
+    "conventional",
+    "bdi"
+  ],
+  "anchor": "schedule_activation",
+  "horizon_seconds": 300,
+  "reset": "shared-controlled-seed",
+  "execution_status": "requires_published_controls",
+  "seed_affects_fault_positions": true,
+  "exposure_group": "19ddc09fea76a9a234506e30c049438450a98d27ca82f661d3f5f29e386d0d9b",
+  "repeat_members": [
+    "M059"
+  ],
+  "repeat_rationale": null
+}

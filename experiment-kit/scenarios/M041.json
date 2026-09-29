@@ -1,0 +1,67 @@
+{
+  "matrix_sha256": "011dd3415860bc605b78cd7d5753fac013c680aeee26bd471e0c7be2811ba86f",
+  "case_id": "M041",
+  "pair_key": "M041",
+  "baseline": "P30",
+  "scenario": "P8041",
+  "family": "staging",
+  "test_set": "A",
+  "analysis_stratum": "service",
+  "parameters": {
+    "stage": "staging",
+    "seed": 820041,
+    "episodes": [
+      {
+        "start": 0,
+        "end": 90,
+        "error_percent": 0,
+        "delay_ms": 500,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 0
+      }
+    ]
+  },
+  "spec": {
+    "id": "P8041",
+    "title": "M041 staging staging",
+    "family": "staging",
+    "version": "memos-phase7-v1",
+    "stage": "staging",
+    "seed": 820041,
+    "horizon_seconds": 300,
+    "episodes": [
+      {
+        "start": 0,
+        "end": 90,
+        "error_percent": 0,
+        "delay_ms": 500,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 0,
+        "id": "e1"
+      }
+    ],
+    "status": "implemented",
+    "final_matrix_eligible": true
+  },
+  "spec_sha256": "5d152f22dc2b4663f1f938fbf8de21e1ec327b46565cbeec47c921a1b934e698",
+  "treatments": [
+    "conventional",
+    "bdi"
+  ],
+  "anchor": "schedule_activation",
+  "horizon_seconds": 300,
+  "reset": "shared-controlled-seed",
+  "execution_status": "requires_published_controls",
+  "seed_affects_fault_positions": false,
+  "exposure_group": "6c0285f66c574204fcdb7a414c07198df5745ab00f92b4ee123f5ea75d9b8aa4",
+  "repeat_members": [
+    "M041"
+  ],
+  "repeat_rationale": null
+}

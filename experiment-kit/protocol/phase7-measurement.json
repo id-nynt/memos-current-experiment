@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "contract_id": "memos-phase7-v1",
+  "extends": ["measurement-contract-v2.json", "phase6-timing.json"],
+  "primary_metric_changed": false,
+  "native_policy_changed": false,
+  "workload": {"independent_production_cadence_seconds": 1, "serial": true, "timeout_seconds": 3, "staging_stream": "supplementary, same cadence; never pooled into production reliability"},
+  "window": "Exactly 300 seconds from recorded schedule activation; first impairment separately recorded. Completed requests assigned by start; collection never extends endpoint.",
+  "detection": {"latency": "fresh native latency_p95_ms > 500", "errors": "fresh native error_rate > 0.05", "telemetry": "declared observability fault plus native unavailable/missing/stale data_status; not a service outage", "passive_observer": "never native detection"},
+  "episodes": "Predetermined non-overlapping phases; contiguous severity changes are episode ends, not healthy clearance. Stable restoration uses unchanged Phase 5 rule and cannot span the next impairment.",
+  "supplementary_outputs": ["episodes", "staging", "controlled_seed_sha256"],
+  "isolation": {"seed": "same sealed Conventional controlled archive in all four environments", "qualified_image": "exact retained immutable v1", "rollback": "unchanged data-preserving native behavior", "cost": "reset remains infrastructure only", "idle_bdi_crud": "stopped after reset; resumes on ordinary candidate deployment", "comparison": "all logical SQLite tables and columns; exclude only PAT last-used timestamp written asynchronously by authenticated probes; retain raw hashes"},
+  "publication": "Existing immutable controls remain historical; new source must be reviewed/published/prepared/qualified before final cases"
+}

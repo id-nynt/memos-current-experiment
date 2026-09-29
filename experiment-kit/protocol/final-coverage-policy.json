@@ -1,0 +1,9 @@
+{
+  "contract_id": "memos-final-coverage-v1",
+  "authority": "User approved existing prospective coverage rules on 2026-09-29",
+  "policy": {
+    "coverage": {"maximum_gap_seconds": 15, "minimum_fraction": 0.95},
+    "endpoint": {"window_seconds": 30, "minimum_samples": 3, "edge_tolerance_seconds": 5},
+    "stability": {"minimum_samples": 3, "minimum_span_seconds": 10, "maximum_gap_seconds": 15}
+  }
+}

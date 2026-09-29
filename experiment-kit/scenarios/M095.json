@@ -1,0 +1,67 @@
+{
+  "matrix_sha256": "011dd3415860bc605b78cd7d5753fac013c680aeee26bd471e0c7be2811ba86f",
+  "case_id": "M095",
+  "pair_key": "M095",
+  "baseline": "P18",
+  "scenario": "P8095",
+  "family": "latency",
+  "test_set": "B",
+  "analysis_stratum": "service",
+  "parameters": {
+    "stage": "production",
+    "seed": 820095,
+    "episodes": [
+      {
+        "start": 0,
+        "end": 90,
+        "error_percent": 0,
+        "delay_ms": 1000,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 0
+      }
+    ]
+  },
+  "spec": {
+    "id": "P8095",
+    "title": "M095 production latency",
+    "family": "latency",
+    "version": "memos-phase7-v1",
+    "stage": "production",
+    "seed": 820095,
+    "horizon_seconds": 300,
+    "episodes": [
+      {
+        "start": 0,
+        "end": 90,
+        "error_percent": 0,
+        "delay_ms": 1000,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 0,
+        "id": "e1"
+      }
+    ],
+    "status": "implemented",
+    "final_matrix_eligible": true
+  },
+  "spec_sha256": "e51aa296efe7fc55043f7bd8091779be2d96e6a2f80f4f7f9fa9a69fd2e01b88",
+  "treatments": [
+    "conventional",
+    "bdi"
+  ],
+  "anchor": "schedule_activation",
+  "horizon_seconds": 300,
+  "reset": "shared-controlled-seed",
+  "execution_status": "requires_published_controls",
+  "seed_affects_fault_positions": false,
+  "exposure_group": "76f8abbfd9a0285b2dc00acec25556da1e63f7921dd14f4350ea0447ad1905b6",
+  "repeat_members": [
+    "M095"
+  ],
+  "repeat_rationale": null
+}

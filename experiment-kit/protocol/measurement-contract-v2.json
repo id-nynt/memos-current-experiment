@@ -1,0 +1,19 @@
+{
+  "schema_version": 2,
+  "status": "Phase 5 definitions; timing calibration deferred to Phase 6",
+  "legacy_contract": "measurement-contract.json",
+  "primary_reliability": "Failed independent sentinel reads / completed independent sentinel reads in a declared half-open scenario window, assigned by request start",
+  "success": "HTTP 200, valid JSON object and expected sentinel content",
+  "failure_categories": ["http_4xx", "http_5xx", "unexpected_http_status", "timeout", "transport_failure", "invalid_response", "content_mismatch", "unknown"],
+  "window": "Required explicit start/end, anchor and pair_key; never inferred from treatment duration. Runtime faults use independently verified activation. Other cases use declared launch-relative structure. Historical selections are diagnostic, not prospective declarations.",
+  "request_boundary": "Include starts in [start,end); a completed request may finish beyond end. Unfinished requests are unknown, not successes. Historical BDI starts reconstructed from completion minus monotonic duration are estimates.",
+  "availability": "Sample-and-hold between consecutive samples only when gap <= explicitly declared maximum; clip to window. Unbounded edges and measurement failures are unknown. Ratio is healthy seconds / full window, published only if declared minimum coverage passes. Not exact uptime.",
+  "recovery": "First stable independent healthy sequence after an attributed fault episode; expose onset and confirmation. Later relapse retained. Service restoration does not establish controller causality.",
+  "historical_stability": {"minimum_samples": 3, "minimum_span_seconds": 10, "maximum_gap_seconds": 15},
+  "cost": "Candidate launch after preflight to native terminal outcome; excludes qualification, setup, collection, post-terminal observation and reset. Native controller runtime is separate. Historical launch proxies explicitly labelled.",
+  "attribution": "Candidate identity and campaign must match. Read only explicit candidate streams and correlated run IDs. Native detections require native evidence. Reset/qualification/setup cannot be candidate inputs.",
+  "missing": "null with validity reasons; no imputed zero, success or detection",
+  "outcome": "Native result immutable. Measurement failure affects metric validity only.",
+  "aggregation": "Case-weighted summaries and distributions separately from pooled request-weighted error. Report applicability, missingness, censoring, complete pairs, group identity and denominators. No composite score.",
+  "limitations": ["Sentinel-read reliability, not all application behaviour", "Native workload differs between arms", "Independent requests contribute to BDI proxy telemetry; no new queries or traffic", "UTC clocks are not proven synchronized", "Conventional reseeds; BDI preserves data: unresolved isolation decision before scenario/batch freeze", "New native instrumentation requires separately reviewed immutable control publication before live use"]
+}

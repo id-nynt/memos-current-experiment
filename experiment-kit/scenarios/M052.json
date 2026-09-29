@@ -1,0 +1,31 @@
+{
+  "matrix_sha256": "011dd3415860bc605b78cd7d5753fac013c680aeee26bd471e0c7be2811ba86f",
+  "case_id": "M052",
+  "pair_key": "M052",
+  "baseline": "P34",
+  "scenario": "CI03",
+  "family": "deterministic_control",
+  "test_set": "B",
+  "analysis_stratum": "ci",
+  "parameters": {
+    "stage": "ci",
+    "seed": 820052,
+    "episodes": []
+  },
+  "spec": null,
+  "spec_sha256": "0280b503b7b6476c4719ecdda35be9f95ba358fb53592346712e5581add0d29d",
+  "treatments": [
+    "bdi",
+    "conventional"
+  ],
+  "anchor": "native_terminal",
+  "horizon_seconds": 300,
+  "reset": "shared-controlled-seed",
+  "execution_status": "requires_published_controls",
+  "seed_affects_fault_positions": false,
+  "exposure_group": "39ea4672a5238febe91e3a02730a5f276ad7d867c3b966a8e5657237e38ff5e2",
+  "repeat_members": [
+    "M052"
+  ],
+  "repeat_rationale": null
+}

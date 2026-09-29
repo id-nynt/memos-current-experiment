@@ -30,7 +30,7 @@ def ready(scenario):
         import os
         text = m.command('docker', 'compose', '-f', m.ROOT / 'scripts/local-cd/compose.yaml',
                          '-f', rf.HERE / 'runtime-port.yaml', '-p', rf.PROJECT, 'config', '--format', 'json',
-                         env=dict(os.environ, MEMOS_IMAGE=m.RELEASES['v2']['image_id'],
+                         env=dict(os.environ, MEMOS_IMAGE=m.images_identity.runtime_id(m.RELEASES['v2']),
                                   MEMOS_HOST_PORT='5542', MEMOS_DATA_VOLUME=rf.PROJECT + '_data'))
         service = json.loads(text)['services']['memos']
         if len(service['ports']) != 1 or str(service['ports'][0]['published']) != '5543':

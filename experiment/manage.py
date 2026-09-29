@@ -19,6 +19,8 @@ ROOT = Path(__file__).resolve().parents[1]
 HERE = ROOT / 'experiment'
 sys.path.insert(0, str(ROOT / 'scripts/experiment-measurement'))
 from measure_trial import now, read, save, sample, summarize, instant
+import image_identity as images_identity
+import frozen_artifacts
 from fixture import validate
 import runtime_fixture
 from measurement_records import request_record
@@ -87,7 +89,7 @@ def port(env):
 
 
 def compose(env, release, *args):
-    variables = dict(os.environ, MEMOS_IMAGE=RELEASES[release]['image_id'],
+    variables = dict(os.environ, MEMOS_IMAGE=images_identity.runtime_id(RELEASES[release]),
                      MEMOS_RESTART_POLICY='no', MEMOS_HOST_PORT=str(port(env)), MEMOS_DATA_VOLUME=project(env) + '_data')
     return command('docker', 'compose', '-f', ROOT / 'scripts/local-cd/compose.yaml',
                    '-p', project(env), *args, env=variables)
@@ -97,7 +99,7 @@ def measurement(env='production', release='v2', trial='verification', scenario='
     r = RELEASES[release]
     return dict(approach='conventional', scenario=scenario, trial_id=trial,
                 control_sha=command('git', 'rev-parse', 'HEAD'), application_sha=r['application_sha'],
-                image_identity=r['image_id'], execution_mode=mode, releases=RELEASES,
+                image_identity=images_identity.frozen_digest(r), frozen_oci_digest=images_identity.frozen_digest(r), runtime_image_id=images_identity.runtime_id(r), execution_mode=mode, releases=RELEASES,
                 production_url=f'http://127.0.0.1:{port(env)}',
                 production_container=project(env) + '-memos-1',
                 credential_file=str(STATE / 'credentials' / env / 'credential.json'))
@@ -121,10 +123,7 @@ def preflight():
     for name, release in RELEASES.items():
         if command('git', 'rev-parse', release['application_sha'] + '^{tree}') != release['tree']:
             raise RuntimeError(f'{name}: source tree mismatch; fetch the frozen tags')
-        image = json.loads(command('docker', 'image', 'inspect', release['image_id']))[0]
-        if (image['Id'] != release['image_id'] or image['Os'] != 'linux' or image['Architecture'] != 'amd64'
-                or image['Config'].get('Labels', {}).get('experiment.release_sha') != release['application_sha']):
-            raise RuntimeError(f'{name}: frozen image metadata mismatch')
+        images_identity.resolve(release, lambda value: json.loads(command('docker', 'image', 'inspect', value))[0])
     print('Prerequisites, source trees and frozen images verified')
 
 
@@ -171,7 +170,7 @@ def archive(env, destination):
     destination.mkdir(parents=True, exist_ok=False)
     command('docker', 'run', '--rm', '--network', 'none', '--user', '0', '--entrypoint', '/bin/sh',
             '--mount', f'type=volume,source={project(env)}_data,target=/data,readonly',
-            '--mount', f'type=bind,source={destination},target=/backup', RELEASES['v1']['image_id'],
+            '--mount', f'type=bind,source={destination},target=/backup', images_identity.runtime_id(RELEASES['v1']),
             '-ec', 'tar -czf /backup/data.tar.gz -C /data .; tar -tzf /backup/data.tar.gz >/dev/null')
     return digest(destination / 'data.tar.gz')
 
@@ -181,7 +180,7 @@ def restore(env, source):
     # Only a statically named, ownership-checked conventional volume is cleared.
     command('docker', 'run', '--rm', '--network', 'none', '--user', '0', '--entrypoint', '/bin/sh',
             '--mount', f'type=volume,source={project(env)}_data,target=/data',
-            '--mount', f'type=bind,source={source},target=/seed,readonly', RELEASES['v1']['image_id'],
+            '--mount', f'type=bind,source={source},target=/seed,readonly', images_identity.runtime_id(RELEASES['v1']),
             '-ec', 'find /data -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +; tar -xzf /seed/data.tar.gz -C /data')
 
 
@@ -395,8 +394,8 @@ def run(args):
                          mode='github' if args.mode == 'github' else 'local')
     save(directory / 'manifest.json', dict(identity=identity(), config=config, release=RELEASES[args.release],
          scope=args.mode, baseline=read(STATE / 'baseline.json'), resources=command('docker', 'info', '--format', '{{.NCPU}} CPUs; {{.MemTotal}} bytes')))
+    baseline = read(STATE / 'baseline.json')
     if args.release == 'v2':
-        baseline = read(STATE / 'baseline.json')
         baseline['used_by'] = trial
         save(STATE / 'baseline.json', baseline)
     pointer = directory / 'runtime-pointer.txt'
@@ -408,7 +407,8 @@ def run(args):
             raise ValueError('Controlled seed baseline mismatch')
         save(directory/'reset-state.json',dict(data_semantics='shared-controlled-seed',
             archive_sha256=seed_manifest['archive_sha256'],application_sha=RELEASES['v1']['application_sha'],
-            image_id=RELEASES['v1']['image_id'],verified=True,role='infrastructure-reset',treatment_cost=False))
+            image_id=baseline['observations']['production']['image_id'],
+            **images_identity.evidence(RELEASES['v1'], baseline['observations']['production']['image_id']),verified=True,role='infrastructure-reset',treatment_cost=False))
     finished = {}
     stop_workload = threading.Event()
     injector = runtime_fixture.Fixture(directory, args.scenario, config, sample) if runtime else None
@@ -538,7 +538,7 @@ def run(args):
     save(directory / 'evaluation.json', dict(role='EXPERIMENT MEASUREMENT', affects_controller_outcome=False, scope=args.mode, followup_seconds=HORIZON if args.mode == 'github' else 0,
          endpoint_time=evaluation_time.isoformat(), endpoint_health=endpoint_health,
          candidate_delivered_at_endpoint=(endpoint_health and window[-1]['application_sha'] == config['application_sha']
-             and window[-1]['image_id'] == config['image_identity']) if endpoint_health is not None else None,
+             and images_identity.matches(RELEASES[args.release], window[-1]['image_id'])) if endpoint_health is not None else None,
          observation_coverage=coverage, terminal_health=result['final_health'],
          fault_not_reached=args.scenario != 'S0' and not any(any(name in p.read_text(encoding='utf-8-sig') for name in ('deterministic_failure', 'injected_response', 'transient_dependency_failure'))
                  for p in directory.rglob('*.jsonl'))))
@@ -570,7 +570,7 @@ def raw_result(directory, config, common, samples, injector):
     return dict(**common, frozen_controller=runtime_fixture.frozen_check()['revision'],
                 harness_identity=identity(), endpoint=evaluation, endpoint_observation=final,
                 candidate_retained=(final.get('application_sha') == config['application_sha'] and
-                                    final.get('image_id') == config['image_identity']) if final else None,
+                                    images_identity.matches(next(r for r in RELEASES.values() if r['application_sha']==config['application_sha']), final.get('image_id'))) if final else None,
                 deployment_events=[e for e in records if e.get('event') in ('deployment_start', 'deployment_end')],
                 fault_events=[e for e in records if e.get('event') in ('deterministic_failure', 'fault_started', 'fault_boundary', 'fault_ended', 'transient_dependency_failure', 'transient_condition_cleared')],
                 native_probe_rounds=sum(e.get('event') == 'health_observation' for e in records),
@@ -594,6 +594,7 @@ def images(action, path):
             command('docker', 'save', '-o', archive_path, release['image_id'])
         save(path / 'images.json', {name: {'sha256': digest(path / (name + '.tar')), **r} for name, r in RELEASES.items()})
     else:
+        frozen_artifacts.verify_bundle(path, {'releases': RELEASES})
         manifest = read(path / 'images.json')
         for name, release in RELEASES.items():
             if manifest[name]['image_id'] != release['image_id'] or digest(path / (name + '.tar')) != manifest[name]['sha256']:

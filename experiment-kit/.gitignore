@@ -1,0 +1,5 @@
+/.venv/
+/results/
+/memos-current
+/memos-bdi/
+__pycache__/

@@ -1,0 +1,67 @@
+{
+  "matrix_sha256": "011dd3415860bc605b78cd7d5753fac013c680aeee26bd471e0c7be2811ba86f",
+  "case_id": "M064",
+  "pair_key": "M064",
+  "baseline": "P03",
+  "scenario": "P8064",
+  "family": "transient",
+  "test_set": "B",
+  "analysis_stratum": "service",
+  "parameters": {
+    "stage": "production",
+    "seed": 820064,
+    "episodes": [
+      {
+        "start": 0,
+        "end": 100,
+        "error_percent": 30,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 30
+      }
+    ]
+  },
+  "spec": {
+    "id": "P8064",
+    "title": "M064 production transient",
+    "family": "transient",
+    "version": "memos-phase7-v1",
+    "stage": "production",
+    "seed": 820064,
+    "horizon_seconds": 300,
+    "episodes": [
+      {
+        "start": 0,
+        "end": 100,
+        "error_percent": 30,
+        "delay_ms": 0,
+        "mode": "request",
+        "status": 503,
+        "error_model": "exact_count",
+        "block_size": 100,
+        "failure_count": 30,
+        "id": "e1"
+      }
+    ],
+    "status": "implemented",
+    "final_matrix_eligible": true
+  },
+  "spec_sha256": "72423bae553b0270855aef012f9f408a2a853b18508e3d7f33dec7a291c5a408",
+  "treatments": [
+    "bdi",
+    "conventional"
+  ],
+  "anchor": "schedule_activation",
+  "horizon_seconds": 300,
+  "reset": "shared-controlled-seed",
+  "execution_status": "requires_published_controls",
+  "seed_affects_fault_positions": true,
+  "exposure_group": "d3cd9e7202204c33c0401547edce9ac7ab6673be7eedef01c4d1c8e98303f85a",
+  "repeat_members": [
+    "M064"
+  ],
+  "repeat_rationale": null
+}

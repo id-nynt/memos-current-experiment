@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "release_manifest": "protocol/frozen-releases.json",
+  "conventional": {
+    "checkout": "memos-current",
+    "repository": "id-nynt/memos-current-experiment",
+    "control_sha": "f4cff1d28a89952b8c082ef6e1c2690d2212b8f3",
+    "control_ref": "memos-control-conventional-f4cff1d28a89",
+    "release_manifest": "scripts/local-cd/frozen-releases.json"
+  },
+  "bdi": {
+    "checkout": "memos-bdi",
+    "repository": "id-nynt/memos-bdi-experiment",
+    "control_sha": "764576cd20398c812115574b330ef406eff4e24f",
+    "control_ref": "memos-control-bdi-764576cd2039",
+    "release_manifest": "experiment/frozen-releases.json",
+    "policy_contract": "protocol/bdi-policy-final-source.json"
+  }
+}
