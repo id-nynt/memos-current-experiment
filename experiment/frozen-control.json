@@ -2,7 +2,7 @@
   "revision": "67c4731e67ee1ff0a8cc8d3cbfd7459a23ffe667",
   "normalization": "CRLF to LF only",
   "files": {
-    "scripts/local-cd/deploy.ps1": "2984f660afe8c7cfcbe191930aad31d9749000b93e773b99851d2c87574a161b",
+    "scripts/local-cd/deploy.ps1": "6755c970861b4fc336ac0883e532ad9cb1494c864f684e015442199321f4a182",
     "scripts/local-cd/compose.yaml": "57d05deeb2669833fbbde4693670a611dbdb999d5dd34737ffeeeb36866849e3",
     "scripts/local-cd/frozen-releases.json": "928fbfe715411dc17c1e0369accdcc7d7af24b167bd4e30f2f506cb7150007be",
     "experiment/config.json": "3cfe5806c1bfd323101c9d3f138ce46f35dcbe437ddfa9d4ea41fe4f929f9601",
@@ -12,12 +12,15 @@
     ".github/workflows/upgrade-smoke.yml": "3728556d3bacba72e262d54bd9e7b1a992e9dc2a0342c955e021829f6693ea47",
     ".github/workflows/local-cd.yml": "3a5b9fb9de5436bccfc763e2c334d620210ce29bb98dbdaf01979d4f76a0e502",
     ".github/workflows/frozen-cd.yml": "2dd2fbe8471b69d0f04cb1663db9c8f61f819100808326e076f8df68b44bc43f",
-    "experiment/runtime_fixture.py": "cc02114bcaec07d843d9014f46186a798dc72ae91559f652e8cb0e7cd8c4ff42",
-    "experiment/manage.py": "d31f565afb40ef5075a769a49acb7ec069e00f4fa61b55fb8dae08c47a4b280b",
+    "experiment/runtime_fixture.py": "645f826d8754e4c76b0c24f313c2e35b8a31dea62afcd79f44b1495397be8cb5",
+    "experiment/manage.py": "00706db368aa56551b992ab764374746dcaed75b7b64d0cf17df7175cdf024b4",
     ".github/workflows/experiment-backend-tests.yml": "14d1fb87295b48d00a74be8b1d3d98351454ba2ed42a2a3bf0b53fc18d1cc5e8",
     ".github/workflows/experiment-frontend-tests.yml": "c8030c508835927b75a9a2c515bad9e42da0a450d88149aa18079780d79a6ea0",
     ".github/workflows/experiment-proto-linter.yml": "eda638d9723e5b8f0a1ff8825d1d6e999d4084bd19da7ca1044bee23b5f972dc",
-    ".github/workflows/experiment-upgrade-smoke.yml": "6939ca97669c1193f52200b199cabb62349cafa3032b49fb6c20d8f5d262bb3b"
+    ".github/workflows/experiment-upgrade-smoke.yml": "6939ca97669c1193f52200b199cabb62349cafa3032b49fb6c20d8f5d262bb3b",
+    "scripts/experiment-measurement/image_identity.py": "1945f63e2f6b2f5134c6a29baa35e4e4872f5a77fbb3bdc8a0dd0807d6126985",
+    "scripts/experiment-measurement/frozen-runtime-identities.json": "1edcf8599e223df253bf578179ec0f690cca2234b258e3c6de80b9cabb7017af",
+    "scripts/experiment-measurement/frozen_artifacts.py": "80b9c1926e698a367101cc2ffa1e93ddc12dbf5eefa64b5d9c4d51d8d6f2e4ca"
   },
   "controller_policy": "issue3b-once-after-startup",
   "revision_note": "Historical provenance only; actual execution identity is Git HEAD and operator-revisions.json. Issue 3B source not yet promoted.",

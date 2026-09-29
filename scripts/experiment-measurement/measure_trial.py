@@ -1,4 +1,5 @@
 """Passive, common evidence collector. Never selects, retries or repairs deployments."""
+import image_identity as images_identity
 import argparse
 import datetime as dt
 import json
@@ -45,8 +46,10 @@ def sample(config):
         sentinel = json.loads(get('/api/v1/' + credential['sentinel_name'], True))
         release = next((r for r in config['releases'].values() if r['application_sha'] == profile.get('commit')), None)
         result.update(application_sha=profile.get('commit'), image_id=container['Image'], version=profile.get('version'), instance_url=profile.get('instanceUrl'))
+        if release:
+            result.update(images_identity.evidence(release, container['Image']))
         result['healthy'] = bool(health == 'Service ready.' and container['State']['Running'] and release
-                                 and release['image_id'] == container['Image'] and profile.get('version') == release['version']
+                                 and images_identity.matches(release, container['Image']) and profile.get('version') == release['version']
                                  and profile.get('instanceUrl') == config['production_url']
                                  and sentinel.get('content') == credential['sentinel_content'])
     except Exception as exc:
@@ -116,9 +119,9 @@ def summarize(config, directory, meta, samples):
         'deployment_end': max((e['timestamp'] for e in deployments if e['event'] == 'deployment_end'), key=instant, default=None),
         'first_fault_unhealthy_time': first_bad, 'first_recovered_healthy_time': recovered,
         'final_health': final.get('healthy'),
-        'final_deployed_release': {'application_sha': final.get('application_sha'), 'image_identity': final.get('image_id')},
+        'final_deployed_release': {'application_sha': final.get('application_sha'), 'image_identity': final.get('image_id'), 'runtime_image_id': final.get('image_id'), 'frozen_oci_digest': final.get('frozen_oci_digest')},
         'candidate_delivered': (bool(final.get('healthy') and final.get('application_sha') == config['application_sha']
-                                    and final.get('image_id') == config['image_identity']) if samples else None),
+                                    and images_identity.matches(dict(image_id=config['image_identity'], application_sha=config['application_sha']), final.get('image_id'))) if samples else None),
         'retry_count': retries if native_complete else None, 'reobservation_count': reobservations if native_complete else None,
         'recovery_rollback_selected': True if selected else (False if native_complete else None),
         'recovery_rollback_executed': True if executed else (False if native_complete else None),

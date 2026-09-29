@@ -12,6 +12,23 @@ import manage
 
 
 class OwnershipTests(unittest.TestCase):
+    def test_import_verifies_before_load_and_preflights_after_load(self):
+        events = []
+        with patch.object(manage.frozen_artifacts, 'verify_bundle', side_effect=lambda *a: events.append('verify')), \
+             patch.object(manage, 'read', return_value={k: dict(v, sha256='hash') for k,v in manage.RELEASES.items()}), \
+             patch.object(manage, 'digest', return_value='hash'), \
+             patch.object(manage, 'command', side_effect=lambda *a: events.append('load')), \
+             patch.object(manage, 'preflight', side_effect=lambda: events.append('preflight')):
+            manage.images('import', '.')
+        self.assertEqual(events, ['verify', 'load', 'load', 'preflight'])
+
+    def test_bad_archive_cannot_reach_docker_load(self):
+        with patch.object(manage.frozen_artifacts, 'verify_bundle', side_effect=ValueError('checksum')), \
+             patch.object(manage, 'command') as command:
+            with self.assertRaisesRegex(ValueError, 'checksum'):
+                manage.images('import', '.')
+            command.assert_not_called()
+
     def test_full_log_archive_extracts_nested_job_logs(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -49,7 +66,7 @@ class OwnershipTests(unittest.TestCase):
                 manage.assert_owned('production')
 
     def test_live_candidate_requires_exact_sha(self):
-        with patch.object(manage, 'sample', return_value={'healthy': True, 'application_sha': 'wrong'}), patch.object(manage, 'command', return_value='control'):
+        with patch.object(manage.images_identity, 'runtime_id', return_value='verified-image'), patch.object(manage, 'sample', return_value={'healthy': True, 'application_sha': 'wrong'}), patch.object(manage, 'command', return_value='control'):
             with self.assertRaisesRegex(RuntimeError, 'verification failed'):
                 manage.verify('v2')
 
@@ -90,7 +107,7 @@ class OwnershipTests(unittest.TestCase):
             self.assertRegex(release['image_id'], r'^sha256:[0-9a-f]{64}$')
 
     def test_measured_compose_disables_restart_even_if_environment_requests_it(self):
-        with patch.dict(manage.os.environ, MEMOS_RESTART_POLICY='always'), patch.object(manage, 'command') as command:
+        with patch.object(manage.images_identity, 'runtime_id', return_value='verified-image'), patch.dict(manage.os.environ, MEMOS_RESTART_POLICY='always'), patch.object(manage, 'command') as command:
             manage.compose('production', 'v1', 'config')
             self.assertEqual(command.call_args.kwargs['env']['MEMOS_RESTART_POLICY'], 'no')
 

@@ -291,7 +291,12 @@ try {
     if ($env:LOCAL_CD_EVIDENCE_POINTER) { $releaseDirectory | Set-Content -LiteralPath $env:LOCAL_CD_EVIDENCE_POINTER -Encoding UTF8 }
     try {
         if ($frozen) {
-            $image = $frozen.image_id
+            $identityTool = Join-Path $repo 'scripts/experiment-measurement/image_identity.py'
+            $python = if ($linuxHost) { 'python3' } else { 'python' }
+            $identity = ((Invoke-Native $python @($identityTool, '--manifest', (Join-Path $repo 'scripts/local-cd/frozen-releases.json'), '--release', $FrozenRelease)) -join "`n" | ConvertFrom-Json)
+            $image = $identity.runtime_image_id
+            $record.frozen_oci_digest = $identity.frozen_oci_digest
+            $record.runtime_image_id = $image
             $meta = @(((Invoke-Native docker @('image', 'inspect', $image)) -join "`n" | ConvertFrom-Json))[0]
             if ($meta.Id -ne $image -or $meta.Config.Labels.'experiment.release_sha' -ne $Commit) { throw 'Frozen image identity mismatch' }
             if ($frozen.version -ne $version) { throw 'Frozen VERSION mismatch' }

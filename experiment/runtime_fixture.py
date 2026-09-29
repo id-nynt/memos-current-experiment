@@ -237,7 +237,7 @@ class Fixture:
                     self.t0 = stamp()
                     if self.spec:
                         expected = dict(trial_id=self.directory.name,project=self.project,environment=self.environment,
-                            release='v2',release_sha=self.config['application_sha'],image_id=self.config['image_identity'])
+                            release='v2',release_sha=self.config['application_sha'],image_id=self.config.get('runtime_image_id', self.config['image_identity']))
                         value = final_scenarios.lease(self.spec, expected, dt.datetime.fromisoformat(self.t0).timestamp(), self.started)
                         self.engine = final_scenarios.Engine(value, expected, lambda row: self.event(**row))
                         atomic(self.directory / 'scenario-schedule.json', value)
