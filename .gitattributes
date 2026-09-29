@@ -2,3 +2,6 @@
 experiment/rq1-s4r-s5r.json text eol=lf
 experiment/paired_rq1.py text eol=lf
 experiment/s6_fixture.py text eol=lf
+
+# Shared measurement sources must match Linux bytes on Windows too.
+scripts/experiment-measurement/** text eol=lf
