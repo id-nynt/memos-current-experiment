@@ -4,15 +4,15 @@
   "conventional": {
     "checkout": "memos-current",
     "repository": "id-nynt/memos-current-experiment",
-    "control_sha": "f4cff1d28a89952b8c082ef6e1c2690d2212b8f3",
-    "control_ref": "memos-control-conventional-f4cff1d28a89",
+    "control_sha": "2c2040bb14e9bf41d422f9508936836e19ff981d",
+    "control_ref": "memos-control-conventional-2c2040bb14e9",
     "release_manifest": "scripts/local-cd/frozen-releases.json"
   },
   "bdi": {
     "checkout": "memos-bdi",
     "repository": "id-nynt/memos-bdi-experiment",
-    "control_sha": "764576cd20398c812115574b330ef406eff4e24f",
-    "control_ref": "memos-control-bdi-764576cd2039",
+    "control_sha": "ca635d597388ce27a0a04efb60fa3876a91c2b77",
+    "control_ref": "memos-control-bdi-ca635d597388",
     "release_manifest": "experiment/frozen-releases.json",
     "policy_contract": "protocol/bdi-policy-final-source.json"
   }

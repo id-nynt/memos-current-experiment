@@ -7,15 +7,15 @@
     "conventional": {
       "checkout": "memos-current",
       "repository": "id-nynt/memos-current-experiment",
-      "control_sha": "f4cff1d28a89952b8c082ef6e1c2690d2212b8f3",
-      "control_ref": "memos-control-conventional-f4cff1d28a89",
+      "control_sha": "2c2040bb14e9bf41d422f9508936836e19ff981d",
+      "control_ref": "memos-control-conventional-2c2040bb14e9",
       "release_manifest": "scripts/local-cd/frozen-releases.json"
     },
     "bdi": {
       "checkout": "memos-bdi",
       "repository": "id-nynt/memos-bdi-experiment",
-      "control_sha": "764576cd20398c812115574b330ef406eff4e24f",
-      "control_ref": "memos-control-bdi-764576cd2039",
+      "control_sha": "ca635d597388ce27a0a04efb60fa3876a91c2b77",
+      "control_ref": "memos-control-bdi-ca635d597388",
       "release_manifest": "experiment/frozen-releases.json",
       "policy_contract": "protocol/bdi-policy-final-source.json"
     }
@@ -36,7 +36,7 @@
     "protocol/matrix-scenarios.json": "1b2dcbf3875c623a4912a711fe54c3076ec6fb6404a01542a7de9669de744062",
     "protocol/measurement-contract-v2.json": "3024a54c68108d4e66adb6ffc28709028661c699254c5321198cfad0005df015",
     "protocol/measurement-contract.json": "26d315f8a3bd694bb7bae3105d92c305bc08779a1977f3b337bd2a095f176998",
-    "protocol/operator-revisions.json": "6ad99126198fefd4c9157ef81793b2dd2e92740799b47483f92a14ad56375fdd",
+    "protocol/operator-revisions.json": "919dd8d36961c468eaf5e3b097afd5d5aaa0379f1437b8cd0a37db95cbb8702c",
     "protocol/phase6-timing.json": "83e4b00ab9bdc476395e39e9b6393d4ad0490dd2e04e23a4ce62029664fa3a2a",
     "protocol/phase7-measurement.json": "1610cfdca28fd34910d4fb5159959eafdc2f5d7b4346430ca30a993eb1357dc3",
     "protocol/phase8-case-matrix.json": "e36e44a9bdefb19efc94796ad89bbe90d8dc3b411f1b24eda0d48a2d8af714ad",
@@ -152,7 +152,7 @@
     "scripts/run-study.sh": "df21ff1ac368db124b630c8bf085b8d0059e10d59b2037d5ac8e3c25b00a8510",
     "scripts/server-prepare.sh": "5e61a8d3e807ca1540eacd00dfa619037cbeb98e2bc785347a92f3d1ff83cab0",
     "scripts/validate-results.sh": "94fdf125cf0bb9c99ac5609a38fa73a2dd39996c2bd4ff5abdf8b84277f96a7b",
-    "SERVER_EXECUTION_SIMPLE.md": "ce7abaad8259f16c7c9da90a661a2b85c5709f12f0189889319656f214c390f7",
+    "SERVER_EXECUTION_SIMPLE.md": "a97872ef51101c85317b9587ea3acb72b45ec8965ea3b4a930403e1d111e0f00",
     "tools/batch_runner.py": "e0bbd3a6e146f46efbb63a678c9b239069981509ed183dfc4cc4d886d399676c",
     "tools/bdi_attribution.py": "77d3d23678645265c1947c24296c700c560389890de0f6c086ba4f1a28870c28",
     "tools/bdi_policy.py": "cc435b0544265d07ffd180ee6785298f909001546923d90f97887fef89271193",
@@ -198,7 +198,7 @@
     "tools/test_frozen_artifacts.py": "8f33bc160267acb7ca467459fa1302be8a7ddb00f0ea175abea80ee2ae101ffd",
     "tools/test_image_identity.py": "def8b3b89243c2a6f6895d6cf9bef1a03f6563aae57c0587e79ff0457cee6411",
     "tools/test_linux_workflow.py": "b0a1d0b7cdafaaf4c99cd0a0f1c6ce716412fcd1596da4d21183884020ff6bc3",
-    "tools/test_local_batch.py": "073fd6b90019be77372bbaf3fd949693b0a53e55bc7327c8e3ac17073ee3374d",
+    "tools/test_local_batch.py": "6eeb212718fad90680d404fcf057bbd25108b386c7ab7ce96b558fb640d32126",
     "tools/test_phase5_instrumentation.py": "c8f0d5a3fa868af1f74b31864f305d57fc049169b1a3647b67fd0faceffb0cfc",
     "tools/test_phase5_metrics.py": "be3f0f7a12dd9ae8100e2e85d565bd951ded5130671afa299b1a5656b731158a",
     "tools/test_phase6_timing.py": "1c0d99504e9495cf13073223a2ec7e5823265f799f3d6ea884cf44c12e04e628",

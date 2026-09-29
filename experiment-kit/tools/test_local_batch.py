@@ -47,9 +47,9 @@ class MatrixTests(unittest.TestCase):
     def test_exact_reproducibility(self):
         value=b.read(m.MANIFEST);self.assertEqual(value,m.build());self.assertEqual(m.validate(value)['cases'],100)
     def test_all_profiles_copied_and_resolve(self):
-        original=(b.ROOT/'protocol/matrix-scenarios.json').read_bytes()
+        original=(b.ROOT/'protocol/matrix-scenarios.json').read_text(encoding='utf-8')
         for folder in ('tools','memos-current/experiment','memos-bdi/experiment/scripts'):
-            self.assertEqual(original,(b.ROOT/folder/'matrix-scenarios.json').read_bytes())
+            self.assertEqual(original,(b.ROOT/folder/'matrix-scenarios.json').read_text(encoding='utf-8'))
         for c in m.build()['cases']:
             if c['spec']:self.assertEqual(s.resolve(c['scenario']),c['spec'])
     def test_pairing_seed_and_window(self):
