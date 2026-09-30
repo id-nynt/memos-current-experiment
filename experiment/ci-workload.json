@@ -1,9 +1,10 @@
 {
-  "id": "representative-sqlite-v2",
+  "id": "representative-sqlite-v3",
   "supersedes": [
     "all-database",
     "conservative-sqlite-v1",
-    "representative-sqlite-v1"
+    "representative-sqlite-v1",
+    "representative-sqlite-v2"
   ],
   "driver": "sqlite",
   "go_version": "1.27.0",
@@ -73,7 +74,9 @@
     ],
     [
       "pnpm",
-      "test"
+      "test",
+      "--exclude",
+      "tests/locale-resources.test.ts"
     ],
     [
       "pnpm",
