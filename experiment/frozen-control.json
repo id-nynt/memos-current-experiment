@@ -20,7 +20,7 @@
     ".github/workflows/experiment-release-qualification.yml": "7cefdee7b9898b14b54cfdc631f2366d657edfb8d68fd34e66ed5b2f91a12e36",
     ".github/workflows/experiment-validation.yml": "6b113772a5be67c939a3378bf6338dd3b6aa34d9f183ebdb7e9ead8a605ed590",
     ".github/workflows/experiment-artifact-check.yml": "5b0dcb9204e81fee213e06e60d5544bc555b7bcf9e9bb31ec3fbe8d20f162fc3",
-    "experiment/ci-workload.json": "4b33b6cf756d23fb50f81dd3a6af2b3de0f6b61d297d55172a90205c57fe9f98",
+    "experiment/ci-workload.json": "f9529655523532cf3d1e0cba07a052e16edd0c7e68e1f73aba08229c68532a5b",
     "experiment/ci_candidate.py": "bcbcb30e4a6e541ae5bed445ae6e2d54754658ef1f591288495050880f316072"
   },
   "controller_policy": "issue3b-once-after-startup",

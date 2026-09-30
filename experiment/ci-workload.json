@@ -1,8 +1,9 @@
 {
-  "id": "representative-sqlite-v1",
+  "id": "representative-sqlite-v2",
   "supersedes": [
     "all-database",
-    "conservative-sqlite-v1"
+    "conservative-sqlite-v1",
+    "representative-sqlite-v1"
   ],
   "driver": "sqlite",
   "go_version": "1.27.0",
@@ -15,7 +16,7 @@
       "-json",
       "-count=1",
       "-run",
-      "^(TestUserStore|TestMemoStore|TestDeleteMemoStore|TestAttachmentStore|TestFreshInstall)$",
+      "^(TestUserStore|TestMemoStore|TestDeleteMemoStore|TestAttachmentStore|TestFreshInstall|TestMemoAccessScopeUsesEachMemoAudience|TestAttachmentAccessScopeFiltersBeforePagination|TestDeleteAttachmentsWithPolicyBatchIsAtomic|TestCreateUserWithIdentityIsAtomic)$",
       "./store/test"
     ],
     "api": [
@@ -24,8 +25,44 @@
       "-json",
       "-count=1",
       "-run",
-      "^TestStartup(ServesEveryRegisteredRouter|FreshInstallRoundTrip|RestartPreservesData|PrivateInstance|PrivateInstanceGatewayPolicy)$",
+      "^(TestStartupServesEveryRegisteredRouter|TestStartupFreshInstallRoundTrip|TestStartupRestartPreservesData|TestStartupPrivateInstance|TestStartupPrivateInstanceGatewayPolicy)$",
       "./server/test"
+    ],
+    "api-services": [
+      "go",
+      "test",
+      "-json",
+      "-count=1",
+      "-run",
+      "^(TestAuthenticatorAccessTokenV2|TestAuthenticatorPAT|TestCreateAndUpdateMemoRebuildsTagPayload|TestListMemos|TestCreateAttachment|TestCreateAttachmentMemoPermission|TestBatchDeleteAttachments)$",
+      "./server/api/v1/test"
+    ],
+    "core-access": [
+      "go",
+      "test",
+      "-json",
+      "-count=1",
+      "-run",
+      "^(TestCheckMemoReadInvalidStateFailsClosed)$",
+      "./core/access"
+    ],
+    "core-export": [
+      "go",
+      "test",
+      "-json",
+      "-count=1",
+      "-run",
+      "^(TestReadAttachmentVerifiesDigest)$",
+      "./core/memoexport"
+    ],
+    "filter": [
+      "go",
+      "test",
+      "-json",
+      "-count=1",
+      "-run",
+      "^(TestCompileContainsEscapesLikeWildcards|TestCompileRejectsOversizedExpression)$",
+      "./filter"
     ]
   },
   "frontend": [
@@ -49,7 +86,7 @@
     "v2"
   ],
   "cache_policy": "Persistent local dependency/compiler caches; no remote cache restoration; fresh test execution.",
-  "scope": "Representative SQLite candidate validation, not general application certification. Native image identity, deployment, acceptance and observation remain separate unchanged stages.",
+  "scope": "Representative SQLite application validation: 25 top-level Go tests with all existing subtests, selected by documented functional behavior; not comprehensive upstream CI. Deployment, acceptance, traffic and observation are unchanged.",
   "healthy_started_jobs": {
     "conventional": 5,
     "bdi": 15
@@ -65,7 +102,11 @@
       "TestMemoStore",
       "TestDeleteMemoStore",
       "TestAttachmentStore",
-      "TestFreshInstall"
+      "TestFreshInstall",
+      "TestMemoAccessScopeUsesEachMemoAudience",
+      "TestAttachmentAccessScopeFiltersBeforePagination",
+      "TestDeleteAttachmentsWithPolicyBatchIsAtomic",
+      "TestCreateUserWithIdentityIsAtomic"
     ],
     "api": [
       "TestStartupServesEveryRegisteredRouter",
@@ -73,6 +114,64 @@
       "TestStartupRestartPreservesData",
       "TestStartupPrivateInstance",
       "TestStartupPrivateInstanceGatewayPolicy"
+    ],
+    "api-services": [
+      "TestAuthenticatorAccessTokenV2",
+      "TestAuthenticatorPAT",
+      "TestCreateAndUpdateMemoRebuildsTagPayload",
+      "TestListMemos",
+      "TestCreateAttachment",
+      "TestCreateAttachmentMemoPermission",
+      "TestBatchDeleteAttachments"
+    ],
+    "core-access": [
+      "TestCheckMemoReadInvalidStateFailsClosed"
+    ],
+    "core-export": [
+      "TestReadAttachmentVerifiesDigest"
+    ],
+    "filter": [
+      "TestCompileContainsEscapesLikeWildcards",
+      "TestCompileRejectsOversizedExpression"
     ]
+  },
+  "test_behaviors": {
+    "store": {
+      "TestUserStore": "User create/read/update/delete lifecycle.",
+      "TestMemoStore": "Memo CRUD and persistence.",
+      "TestDeleteMemoStore": "Memo deletion.",
+      "TestAttachmentStore": "Attachment metadata persistence.",
+      "TestFreshInstall": "Fresh SQLite installation/schema.",
+      "TestMemoAccessScopeUsesEachMemoAudience": "Memo and comment visibility follows each memo audience.",
+      "TestAttachmentAccessScopeFiltersBeforePagination": "Filter inaccessible attachments before applying LIMIT.",
+      "TestDeleteAttachmentsWithPolicyBatchIsAtomic": "Reject unauthorized or missing batch targets without partial deletion.",
+      "TestCreateUserWithIdentityIsAtomic": "Create user and linked identity atomically; roll back failed creation."
+    },
+    "api": {
+      "TestStartupServesEveryRegisteredRouter": "Readiness and registered HTTP routes.",
+      "TestStartupFreshInstallRoundTrip": "Bootstrap, sign-in and memo write/read over HTTP.",
+      "TestStartupRestartPreservesData": "Data survives real server restart.",
+      "TestStartupPrivateInstance": "Private-instance bootstrap and anonymous access restrictions.",
+      "TestStartupPrivateInstanceGatewayPolicy": "Enforce private-instance policy through the REST gateway."
+    },
+    "api-services": {
+      "TestAuthenticatorAccessTokenV2": "Validate signed access tokens; reject invalid signatures and archived users.",
+      "TestAuthenticatorPAT": "Validate personal access tokens, expiry, invalid tokens and archived users.",
+      "TestCreateAndUpdateMemoRebuildsTagPayload": "Rebuild and persist tags when memo content changes.",
+      "TestListMemos": "Return correct memo content, attachments, relations and reactions.",
+      "TestCreateAttachment": "Validate/sniff MIME types and preserve blobs across storage-name collisions.",
+      "TestCreateAttachmentMemoPermission": "Enforce owner/admin/non-owner permission for linked attachments.",
+      "TestBatchDeleteAttachments": "Delete batches, deduplicate names and reject unauthorized deletion."
+    },
+    "core-access": {
+      "TestCheckMemoReadInvalidStateFailsClosed": "Deny read access for invalid resource states."
+    },
+    "core-export": {
+      "TestReadAttachmentVerifiesDigest": "Reject attachment data whose digest does not match the archive manifest."
+    },
+    "filter": {
+      "TestCompileContainsEscapesLikeWildcards": "Escape literal percent and underscore characters in SQLite LIKE predicates.",
+      "TestCompileRejectsOversizedExpression": "Reject oversized filter expressions."
+    }
   }
 }
