@@ -167,11 +167,17 @@ def assert_owned(env):
 
 def archive(env, destination):
     assert_owned(env)
-    destination.mkdir(parents=True, exist_ok=False)
+    destination.mkdir(parents=True, exist_ok=False, mode=0o700)
+    # Root must read the stopped database volume, but the new private archive
+    # belongs to the host operator. Change metadata only, never the tar payload.
+    archive_command = 'umask 077; tar -czf /backup/data.tar.gz -C /data .; tar -tzf /backup/data.tar.gz >/dev/null'
+    if os.name == 'posix':
+        archive_command += f'; chown {os.getuid()}:{os.getgid()} /backup/data.tar.gz'
+    archive_command += '; chmod 600 /backup/data.tar.gz'
     command('docker', 'run', '--rm', '--network', 'none', '--user', '0', '--entrypoint', '/bin/sh',
             '--mount', f'type=volume,source={project(env)}_data,target=/data,readonly',
             '--mount', f'type=bind,source={destination},target=/backup', images_identity.runtime_id(RELEASES['v1']),
-            '-ec', 'tar -czf /backup/data.tar.gz -C /data .; tar -tzf /backup/data.tar.gz >/dev/null')
+            '-ec', archive_command)
     return digest(destination / 'data.tar.gz')
 
 

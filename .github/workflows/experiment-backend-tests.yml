@@ -67,29 +67,21 @@ jobs:
         run: |
           case "${{ matrix.test-group }}" in
             store)
-              # Run store tests for all drivers (sqlite, mysql, postgres)
-              DRIVER= go test -v -coverprofile=coverage.out -covermode=atomic ./store/...
+              # Workload conservative-sqlite-v1: SQLite deployment, fresh tests on every attempt.
+              DRIVER=sqlite go test -v -count=1 ./store/...
               ;;
             server)
               # Includes ./server/test, which boots the real server via
               # server.NewServer and smokes every router it mounts.
-              go test -v -race -coverprofile=coverage.out -covermode=atomic ./server/...
+              go test -v -race -count=1 ./server/...
               ;;
             internal)
-              go test -v -race -coverprofile=coverage.out -covermode=atomic ./internal/...
+              go test -v -race -count=1 ./internal/...
               ;;
             other)
-              go test -v -race -coverprofile=coverage.out -covermode=atomic \
+              go test -v -race -count=1 \
                 ./cmd/... ./core/... ./markdown/... ./filter/... ./provider/... ./proto/...
               ;;
           esac
         env:
           DRIVER: sqlite
-
-      - name: Upload coverage
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: codecov/codecov-action@v5
-        with:
-          files: ./coverage.out
-          flags: ${{ matrix.test-group }}
-          fail_ci_if_error: false

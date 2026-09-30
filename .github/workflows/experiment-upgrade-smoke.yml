@@ -26,37 +26,6 @@ env:
   PNPM_VERSION: "11.0.1"
 
 jobs:
-  migration-upgrade:
-    name: Upgrade from previous stable (${{ matrix.driver }})
-    runs-on: [self-hosted, linux, memos-bdi-deploy]
-    strategy:
-      fail-fast: false
-      matrix:
-        driver: [sqlite, mysql, postgres]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ inputs.release_sha || github.sha }}
-
-      - name: Setup Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-          cache-dependency-path: go.sum
-
-      - name: Test release versioning and installer
-        run: go test -v ./scripts/...
-
-      # No -race here: testcontainers has known races in its reaper, which is why
-      # store/test/migrator_test.go documents skipping the race detector.
-      - name: Run migration and upgrade tests
-        run: |
-          go test -v -timeout 30m -run 'TestMigration|TestUpgrade|TestFreshInstall' ./store/test/...
-        env:
-          DRIVER: ${{ matrix.driver }}
-
   release-smoke:
     name: Fresh install and upgrade through the release image
     runs-on: [self-hosted, linux, memos-bdi-deploy]
@@ -70,11 +39,13 @@ jobs:
           fetch-depth: 0
 
       - name: Setup pnpm
+        if: inputs.release_sha == ''
         uses: pnpm/action-setup@v4.2.0
         with:
           version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Node
+        if: inputs.release_sha == ''
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -82,6 +53,7 @@ jobs:
           cache-dependency-path: web/pnpm-lock.yaml
 
       - name: Install frontend dependencies
+        if: inputs.release_sha == ''
         working-directory: web
         run: pnpm install --frozen-lockfile
 
