@@ -44,21 +44,11 @@ jobs:
           PY
   backend:
     needs: release
-    uses: ./.github/workflows/experiment-backend-tests.yml
-    with:
-      release_sha: ${{ needs.release.outputs.sha }}
-  frontend:
-    needs: release
-    uses: ./.github/workflows/experiment-frontend-tests.yml
-    with:
-      release_sha: ${{ needs.release.outputs.sha }}
-  proto:
-    needs: release
-    uses: ./.github/workflows/experiment-proto-linter.yml
+    uses: ./.github/workflows/experiment-validation.yml
     with:
       release_sha: ${{ needs.release.outputs.sha }}
   fixture:
-    needs: [release, backend, frontend, proto]
+    needs: [release, backend]
     runs-on: [self-hosted, linux, memos-bdi-deploy]
     steps:
       - uses: actions/checkout@v6
@@ -96,10 +86,9 @@ jobs:
           if-no-files-found: error
   upgrade:
     needs: [release, fixture]
-    uses: ./.github/workflows/experiment-upgrade-smoke.yml
+    uses: ./.github/workflows/experiment-artifact-check.yml
     with:
       release_sha: ${{ needs.release.outputs.sha }}
-      previous_image: neosmemo/memos@sha256:24c2707ddd8fbd2ceaa7a61ecab86a53cdcde640b24ce572b73da14b00b5785f
   deploy:
     needs: [release, upgrade]
     runs-on: [self-hosted, linux, memos-bdi-deploy]

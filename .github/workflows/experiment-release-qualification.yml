@@ -1,5 +1,5 @@
-# Pre-study only. Never called by a candidate workflow.
-name: Frozen release compatibility qualification
+# Two exact releases, one identical SQLite workload; no compatibility matrix.
+name: SQLite experimental pipeline qualification
 on:
   workflow_dispatch:
 permissions:
@@ -7,42 +7,17 @@ permissions:
 concurrency:
   group: memos-release-qualification
   cancel-in-progress: false
-env:
-  GO_VERSION: "1.27.0"
 jobs:
-  migration-upgrade:
-    name: Qualify (${{ matrix.release }}, ${{ matrix.driver }})
-    runs-on: [self-hosted, linux, memos-bdi-deploy]
+  qualify:
+    name: Qualify (${{ matrix.release }}, sqlite)
     strategy:
       fail-fast: false
       matrix:
-        driver: [sqlite, mysql, postgres]
-        release: [v1, v2]
         include:
           - release: v1
             sha: 2b5a8be2c2f9cf81599393a227890fb2424a5f03
           - release: v2
             sha: db695ea0d54cfce6925f07a4715cb42eb6fd8f20
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ matrix.sha }}
-
-      - name: Setup Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-          cache-dependency-path: go.sum
-
-      - name: Test release versioning and installer
-        run: go test -v -count=1 ./scripts/...
-
-      # No -race here: testcontainers has known races in its reaper, which is why
-      # store/test/migrator_test.go documents skipping the race detector.
-      - name: Run migration and upgrade tests
-        run: |
-          go test -v -count=1 -timeout 30m -run 'TestMigration|TestUpgrade|TestFreshInstall' ./store/test/...
-        env:
-          DRIVER: ${{ matrix.driver }}
+    uses: ./.github/workflows/experiment-validation.yml
+    with:
+      release_sha: ${{ matrix.sha }}

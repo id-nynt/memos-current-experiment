@@ -1,0 +1,78 @@
+{
+  "id": "representative-sqlite-v1",
+  "supersedes": [
+    "all-database",
+    "conservative-sqlite-v1"
+  ],
+  "driver": "sqlite",
+  "go_version": "1.27.0",
+  "node_version": "24",
+  "pnpm_version": "11.0.1",
+  "backend": {
+    "store": [
+      "go",
+      "test",
+      "-json",
+      "-count=1",
+      "-run",
+      "^(TestUserStore|TestMemoStore|TestDeleteMemoStore|TestAttachmentStore|TestFreshInstall)$",
+      "./store/test"
+    ],
+    "api": [
+      "go",
+      "test",
+      "-json",
+      "-count=1",
+      "-run",
+      "^TestStartup(ServesEveryRegisteredRouter|FreshInstallRoundTrip|RestartPreservesData|PrivateInstance|PrivateInstanceGatewayPolicy)$",
+      "./server/test"
+    ]
+  },
+  "frontend": [
+    [
+      "pnpm",
+      "install",
+      "--frozen-lockfile"
+    ],
+    [
+      "pnpm",
+      "test"
+    ],
+    [
+      "pnpm",
+      "build"
+    ]
+  ],
+  "qualification_workflow": "experiment-release-qualification.yml",
+  "qualification_releases": [
+    "v1",
+    "v2"
+  ],
+  "cache_policy": "Persistent local dependency/compiler caches; no remote cache restoration; fresh test execution.",
+  "scope": "Representative SQLite candidate validation, not general application certification. Native image identity, deployment, acceptance and observation remain separate unchanged stages.",
+  "healthy_started_jobs": {
+    "conventional": 5,
+    "bdi": 15
+  },
+  "previous_healthy_started_jobs": {
+    "conventional": 13,
+    "bdi": 23
+  },
+  "job_count_note": "Actual GitHub started_jobs definition unchanged; healthy no-retry/no-rollback counts. Never pool prior revision cost evidence.",
+  "required_tests": {
+    "store": [
+      "TestUserStore",
+      "TestMemoStore",
+      "TestDeleteMemoStore",
+      "TestAttachmentStore",
+      "TestFreshInstall"
+    ],
+    "api": [
+      "TestStartupServesEveryRegisteredRouter",
+      "TestStartupFreshInstallRoundTrip",
+      "TestStartupRestartPreservesData",
+      "TestStartupPrivateInstance",
+      "TestStartupPrivateInstanceGatewayPolicy"
+    ]
+  }
+}
