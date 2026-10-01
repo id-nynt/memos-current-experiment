@@ -154,398 +154,402 @@
   },
   "CI01": {
     "enabled": true,
-    "description": "ci_retry; final exact-count study"
+    "description": "ci_transient; memos-bdi-advantage-v1"
   },
   "CI02": {
     "enabled": true,
-    "description": "deterministic_control; final exact-count study"
+    "description": "ci_permanent; memos-bdi-advantage-v1"
   },
   "CI03": {
     "enabled": true,
     "description": "deterministic_control; final exact-count study"
   },
-  "P8001": {
+  "P8101": {
     "enabled": true,
-    "description": "reference; final exact-count study"
+    "description": "healthy_reference; memos-bdi-advantage-v1"
   },
-  "P8004": {
+  "P8103": {
     "enabled": true,
-    "description": "reference; final exact-count study"
+    "description": "staging_fault; memos-bdi-advantage-v1"
   },
-  "P8005": {
+  "P8104": {
     "enabled": true,
-    "description": "persistent; final exact-count study"
+    "description": "subthreshold_error; memos-bdi-advantage-v1"
   },
-  "P8006": {
+  "P8105": {
     "enabled": true,
-    "description": "persistent; final exact-count study"
+    "description": "late_onset; memos-bdi-advantage-v1"
   },
-  "P8007": {
+  "P8108": {
     "enabled": true,
-    "description": "persistent; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8008": {
+  "P8109": {
     "enabled": true,
-    "description": "persistent; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8009": {
+  "P8110": {
     "enabled": true,
-    "description": "persistent; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8010": {
+  "P8111": {
     "enabled": true,
-    "description": "transient; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8011": {
+  "P8112": {
     "enabled": true,
-    "description": "transient; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8012": {
+  "P8113": {
     "enabled": true,
-    "description": "transient; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8013": {
+  "P8114": {
     "enabled": true,
-    "description": "transient; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8014": {
+  "P8115": {
     "enabled": true,
-    "description": "transient; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8015": {
+  "P8116": {
     "enabled": true,
-    "description": "long_transient; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8016": {
+  "P8117": {
     "enabled": true,
-    "description": "long_transient; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8017": {
+  "P8118": {
     "enabled": true,
-    "description": "long_transient; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8018": {
+  "P8119": {
     "enabled": true,
-    "description": "relapse; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8019": {
+  "P8120": {
     "enabled": true,
-    "description": "relapse; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8020": {
+  "P8121": {
     "enabled": true,
-    "description": "relapse; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8021": {
+  "P8122": {
     "enabled": true,
-    "description": "intermittent; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8022": {
+  "P8123": {
     "enabled": true,
-    "description": "intermittent; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8023": {
+  "P8124": {
     "enabled": true,
-    "description": "intermittent; final exact-count study"
+    "description": "persistent_error; memos-bdi-advantage-v1"
   },
-  "P8024": {
+  "P8125": {
     "enabled": true,
-    "description": "delayed; final exact-count study"
+    "description": "early_onset; memos-bdi-advantage-v1"
   },
-  "P8025": {
+  "P8126": {
     "enabled": true,
-    "description": "delayed; final exact-count study"
+    "description": "early_onset; memos-bdi-advantage-v1"
   },
-  "P8026": {
+  "P8127": {
     "enabled": true,
-    "description": "delayed; final exact-count study"
+    "description": "early_onset; memos-bdi-advantage-v1"
   },
-  "P8027": {
+  "P8128": {
     "enabled": true,
-    "description": "delayed; final exact-count study"
+    "description": "early_onset; memos-bdi-advantage-v1"
   },
-  "P8028": {
+  "P8129": {
     "enabled": true,
-    "description": "delayed; final exact-count study"
+    "description": "early_onset; memos-bdi-advantage-v1"
   },
-  "P8029": {
+  "P8130": {
     "enabled": true,
-    "description": "threshold; final exact-count study"
+    "description": "early_onset; memos-bdi-advantage-v1"
   },
-  "P8030": {
+  "P8131": {
     "enabled": true,
-    "description": "threshold; final exact-count study"
+    "description": "early_onset; memos-bdi-advantage-v1"
   },
-  "P8031": {
+  "P8132": {
     "enabled": true,
-    "description": "threshold; final exact-count study"
+    "description": "early_onset; memos-bdi-advantage-v1"
   },
-  "P8032": {
+  "P8133": {
     "enabled": true,
-    "description": "trajectory; final exact-count study"
+    "description": "early_onset; memos-bdi-advantage-v1"
   },
-  "P8033": {
+  "P8134": {
     "enabled": true,
-    "description": "trajectory; final exact-count study"
+    "description": "early_onset; memos-bdi-advantage-v1"
   },
-  "P8034": {
+  "P8135": {
     "enabled": true,
-    "description": "trajectory; final exact-count study"
+    "description": "early_onset; memos-bdi-advantage-v1"
   },
-  "P8035": {
+  "P8136": {
     "enabled": true,
-    "description": "staging; final exact-count study"
+    "description": "early_onset; memos-bdi-advantage-v1"
   },
-  "P8036": {
+  "P8137": {
     "enabled": true,
-    "description": "staging; final exact-count study"
+    "description": "early_onset; memos-bdi-advantage-v1"
   },
-  "P8037": {
+  "P8138": {
     "enabled": true,
-    "description": "staging; final exact-count study"
+    "description": "early_onset; memos-bdi-advantage-v1"
   },
-  "P8038": {
+  "P8139": {
     "enabled": true,
-    "description": "staging; final exact-count study"
+    "description": "transient_outage; memos-bdi-advantage-v1"
   },
-  "P8039": {
+  "P8140": {
     "enabled": true,
-    "description": "staging; final exact-count study"
+    "description": "transient_outage; memos-bdi-advantage-v1"
   },
-  "P8040": {
+  "P8141": {
     "enabled": true,
-    "description": "staging; final exact-count study"
+    "description": "transient_outage; memos-bdi-advantage-v1"
   },
-  "P8041": {
+  "P8142": {
     "enabled": true,
-    "description": "staging; final exact-count study"
+    "description": "transient_outage; memos-bdi-advantage-v1"
   },
-  "P8042": {
+  "P8143": {
     "enabled": true,
-    "description": "latency; final exact-count study"
+    "description": "transient_outage; memos-bdi-advantage-v1"
   },
-  "P8043": {
+  "P8144": {
     "enabled": true,
-    "description": "latency; final exact-count study"
+    "description": "transient_outage; memos-bdi-advantage-v1"
   },
-  "P8044": {
+  "P8145": {
     "enabled": true,
-    "description": "latency; final exact-count study"
+    "description": "transient_outage; memos-bdi-advantage-v1"
   },
-  "P8045": {
+  "P8146": {
     "enabled": true,
-    "description": "latency; final exact-count study"
+    "description": "transient_outage; memos-bdi-advantage-v1"
   },
-  "P8046": {
+  "P8147": {
     "enabled": true,
-    "description": "latency; final exact-count study"
+    "description": "transient_outage; memos-bdi-advantage-v1"
   },
-  "P8047": {
+  "P8148": {
     "enabled": true,
-    "description": "latency; final exact-count study"
+    "description": "transient_outage; memos-bdi-advantage-v1"
   },
-  "P8048": {
+  "P8149": {
     "enabled": true,
-    "description": "latency; final exact-count study"
+    "description": "transient_outage; memos-bdi-advantage-v1"
   },
-  "P8049": {
+  "P8150": {
     "enabled": true,
-    "description": "mixed; final exact-count study"
+    "description": "transient_outage; memos-bdi-advantage-v1"
   },
-  "P8050": {
+  "P8151": {
     "enabled": true,
-    "description": "mixed; final exact-count study"
+    "description": "transient_outage; memos-bdi-advantage-v1"
   },
-  "P8051": {
+  "P8152": {
     "enabled": true,
-    "description": "reference; final exact-count study"
+    "description": "transient_outage; memos-bdi-advantage-v1"
   },
-  "P8054": {
+  "P8153": {
     "enabled": true,
-    "description": "reference; final exact-count study"
+    "description": "transient_outage; memos-bdi-advantage-v1"
   },
-  "P8055": {
+  "P8154": {
     "enabled": true,
-    "description": "persistent; final exact-count study"
+    "description": "latency_timeout; memos-bdi-advantage-v1"
   },
-  "P8056": {
+  "P8155": {
     "enabled": true,
-    "description": "persistent; final exact-count study"
+    "description": "latency_timeout; memos-bdi-advantage-v1"
   },
-  "P8057": {
+  "P8156": {
     "enabled": true,
-    "description": "persistent; final exact-count study"
+    "description": "latency_timeout; memos-bdi-advantage-v1"
   },
-  "P8058": {
+  "P8157": {
     "enabled": true,
-    "description": "persistent; final exact-count study"
+    "description": "latency_timeout; memos-bdi-advantage-v1"
   },
-  "P8059": {
+  "P8158": {
     "enabled": true,
-    "description": "persistent; final exact-count study"
+    "description": "latency_timeout; memos-bdi-advantage-v1"
   },
-  "P8060": {
+  "P8159": {
     "enabled": true,
-    "description": "transient; final exact-count study"
+    "description": "latency_timeout; memos-bdi-advantage-v1"
   },
-  "P8061": {
+  "P8160": {
     "enabled": true,
-    "description": "transient; final exact-count study"
+    "description": "latency_timeout; memos-bdi-advantage-v1"
   },
-  "P8062": {
+  "P8161": {
     "enabled": true,
-    "description": "transient; final exact-count study"
+    "description": "latency_timeout; memos-bdi-advantage-v1"
   },
-  "P8063": {
+  "P8162": {
     "enabled": true,
-    "description": "transient; final exact-count study"
+    "description": "latency_timeout; memos-bdi-advantage-v1"
   },
-  "P8064": {
+  "P8163": {
     "enabled": true,
-    "description": "transient; final exact-count study"
+    "description": "latency_timeout; memos-bdi-advantage-v1"
   },
-  "P8065": {
+  "P8164": {
     "enabled": true,
-    "description": "long_transient; final exact-count study"
+    "description": "latency_slow; memos-bdi-advantage-v1"
   },
-  "P8066": {
+  "P8165": {
     "enabled": true,
-    "description": "long_transient; final exact-count study"
+    "description": "latency_slow; memos-bdi-advantage-v1"
   },
-  "P8067": {
+  "P8166": {
     "enabled": true,
-    "description": "long_transient; final exact-count study"
+    "description": "latency_slow; memos-bdi-advantage-v1"
   },
-  "P8068": {
+  "P8167": {
     "enabled": true,
-    "description": "relapse; final exact-count study"
+    "description": "latency_slow; memos-bdi-advantage-v1"
   },
-  "P8069": {
+  "P8168": {
     "enabled": true,
-    "description": "relapse; final exact-count study"
+    "description": "intermittent; memos-bdi-advantage-v1"
   },
-  "P8070": {
+  "P8169": {
     "enabled": true,
-    "description": "relapse; final exact-count study"
+    "description": "intermittent; memos-bdi-advantage-v1"
   },
-  "P8071": {
+  "P8170": {
     "enabled": true,
-    "description": "intermittent; final exact-count study"
+    "description": "intermittent; memos-bdi-advantage-v1"
   },
-  "P8072": {
+  "P8171": {
     "enabled": true,
-    "description": "intermittent; final exact-count study"
+    "description": "intermittent; memos-bdi-advantage-v1"
   },
-  "P8073": {
+  "P8172": {
     "enabled": true,
-    "description": "intermittent; final exact-count study"
+    "description": "intermittent; memos-bdi-advantage-v1"
   },
-  "P8074": {
+  "P8173": {
     "enabled": true,
-    "description": "delayed; final exact-count study"
+    "description": "intermittent; memos-bdi-advantage-v1"
   },
-  "P8075": {
+  "P8174": {
     "enabled": true,
-    "description": "delayed; final exact-count study"
+    "description": "intermittent; memos-bdi-advantage-v1"
   },
-  "P8076": {
+  "P8175": {
     "enabled": true,
-    "description": "delayed; final exact-count study"
+    "description": "intermittent; memos-bdi-advantage-v1"
   },
-  "P8077": {
+  "P8176": {
     "enabled": true,
-    "description": "delayed; final exact-count study"
+    "description": "intermittent; memos-bdi-advantage-v1"
   },
-  "P8078": {
+  "P8177": {
     "enabled": true,
-    "description": "delayed; final exact-count study"
+    "description": "intermittent; memos-bdi-advantage-v1"
   },
-  "P8079": {
+  "P8178": {
     "enabled": true,
-    "description": "threshold; final exact-count study"
+    "description": "intermittent; memos-bdi-advantage-v1"
   },
-  "P8080": {
+  "P8179": {
     "enabled": true,
-    "description": "threshold; final exact-count study"
+    "description": "intermittent; memos-bdi-advantage-v1"
   },
-  "P8081": {
+  "P8180": {
     "enabled": true,
-    "description": "threshold; final exact-count study"
+    "description": "intermittent; memos-bdi-advantage-v1"
   },
-  "P8082": {
+  "P8181": {
     "enabled": true,
-    "description": "trajectory; final exact-count study"
+    "description": "relapse; memos-bdi-advantage-v1"
   },
-  "P8083": {
+  "P8182": {
     "enabled": true,
-    "description": "trajectory; final exact-count study"
+    "description": "relapse; memos-bdi-advantage-v1"
   },
-  "P8084": {
+  "P8183": {
     "enabled": true,
-    "description": "trajectory; final exact-count study"
+    "description": "relapse; memos-bdi-advantage-v1"
   },
-  "P8085": {
+  "P8184": {
     "enabled": true,
-    "description": "staging; final exact-count study"
+    "description": "relapse; memos-bdi-advantage-v1"
   },
-  "P8086": {
+  "P8185": {
     "enabled": true,
-    "description": "staging; final exact-count study"
+    "description": "relapse; memos-bdi-advantage-v1"
   },
-  "P8087": {
+  "P8186": {
     "enabled": true,
-    "description": "staging; final exact-count study"
+    "description": "relapse; memos-bdi-advantage-v1"
   },
-  "P8088": {
+  "P8187": {
     "enabled": true,
-    "description": "staging; final exact-count study"
+    "description": "relapse; memos-bdi-advantage-v1"
   },
-  "P8089": {
+  "P8188": {
     "enabled": true,
-    "description": "staging; final exact-count study"
+    "description": "relapse; memos-bdi-advantage-v1"
   },
-  "P8090": {
+  "P8189": {
     "enabled": true,
-    "description": "staging; final exact-count study"
+    "description": "relapse; memos-bdi-advantage-v1"
   },
-  "P8091": {
+  "P8190": {
     "enabled": true,
-    "description": "staging; final exact-count study"
+    "description": "relapse; memos-bdi-advantage-v1"
   },
-  "P8092": {
+  "P8191": {
     "enabled": true,
-    "description": "latency; final exact-count study"
+    "description": "worsening; memos-bdi-advantage-v1"
   },
-  "P8093": {
+  "P8192": {
     "enabled": true,
-    "description": "latency; final exact-count study"
+    "description": "worsening; memos-bdi-advantage-v1"
   },
-  "P8094": {
+  "P8193": {
     "enabled": true,
-    "description": "latency; final exact-count study"
+    "description": "worsening; memos-bdi-advantage-v1"
   },
-  "P8095": {
+  "P8194": {
     "enabled": true,
-    "description": "latency; final exact-count study"
+    "description": "worsening; memos-bdi-advantage-v1"
   },
-  "P8096": {
+  "P8195": {
     "enabled": true,
-    "description": "latency; final exact-count study"
+    "description": "worsening; memos-bdi-advantage-v1"
   },
-  "P8097": {
+  "P8196": {
     "enabled": true,
-    "description": "latency; final exact-count study"
+    "description": "worsening; memos-bdi-advantage-v1"
   },
-  "P8098": {
+  "P8197": {
     "enabled": true,
-    "description": "latency; final exact-count study"
+    "description": "above_threshold; memos-bdi-advantage-v1"
   },
-  "P8099": {
+  "P8198": {
     "enabled": true,
-    "description": "mixed; final exact-count study"
+    "description": "above_threshold; memos-bdi-advantage-v1"
   },
-  "P8100": {
+  "P8199": {
     "enabled": true,
-    "description": "mixed; final exact-count study"
+    "description": "above_threshold; memos-bdi-advantage-v1"
+  },
+  "P8200": {
+    "enabled": true,
+    "description": "above_threshold; memos-bdi-advantage-v1"
   }
 }

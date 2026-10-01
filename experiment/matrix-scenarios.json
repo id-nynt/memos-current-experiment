@@ -1,38 +1,101 @@
 {
   "schema_version": 2,
-  "matrix_sha256": "011dd3415860bc605b78cd7d5753fac013c680aeee26bd471e0c7be2811ba86f",
+  "matrix_sha256": "710176209a382b1684ac0b7bea2b8cb633ba66bd563f5d7947b9a73a6d0c4177",
   "scenarios": {
-    "P8001": {
-      "id": "P8001",
-      "title": "M001 production reference",
+    "P8101": {
+      "id": "P8101",
+      "title": "M001 production healthy_reference",
       "family": "reference",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820001,
+      "seed": 830001,
       "horizon_seconds": 300,
       "episodes": [],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8004": {
-      "id": "P8004",
-      "title": "M004 production reference",
-      "family": "reference",
+    "P8103": {
+      "id": "P8103",
+      "title": "M003 staging staging_fault",
+      "family": "staging",
       "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820004,
+      "stage": "staging",
+      "seed": 830003,
       "horizon_seconds": 300,
-      "episodes": [],
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e1"
+        }
+      ],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8005": {
-      "id": "P8005",
-      "title": "M005 production persistent",
+    "P8104": {
+      "id": "P8104",
+      "title": "M004 production subthreshold_error",
+      "family": "threshold",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830004,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 3,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 3,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8105": {
+      "id": "P8105",
+      "title": "M005 production late_onset",
+      "family": "delayed",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830005,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 150,
+          "end": 300,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8108": {
+      "id": "P8108",
+      "title": "M008 production persistent_error",
       "family": "persistent",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820005,
+      "seed": 830008,
       "horizon_seconds": 300,
       "episodes": [
         {
@@ -51,13 +114,138 @@
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8006": {
-      "id": "P8006",
-      "title": "M006 production persistent",
+    "P8109": {
+      "id": "P8109",
+      "title": "M009 production persistent_error",
       "family": "persistent",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820006,
+      "seed": 830009,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 12,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 12,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8110": {
+      "id": "P8110",
+      "title": "M010 production persistent_error",
+      "family": "persistent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830010,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 15,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 15,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8111": {
+      "id": "P8111",
+      "title": "M011 production persistent_error",
+      "family": "persistent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830011,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 18,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 18,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8112": {
+      "id": "P8112",
+      "title": "M012 production persistent_error",
+      "family": "persistent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830012,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 20,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 20,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8113": {
+      "id": "P8113",
+      "title": "M013 production persistent_error",
+      "family": "persistent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830013,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 25,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 25,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8114": {
+      "id": "P8114",
+      "title": "M014 production persistent_error",
+      "family": "persistent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830014,
       "horizon_seconds": 300,
       "episodes": [
         {
@@ -76,13 +264,113 @@
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8007": {
-      "id": "P8007",
-      "title": "M007 production persistent",
+    "P8115": {
+      "id": "P8115",
+      "title": "M015 production persistent_error",
       "family": "persistent",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820007,
+      "seed": 830015,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 35,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 35,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8116": {
+      "id": "P8116",
+      "title": "M016 production persistent_error",
+      "family": "persistent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830016,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8117": {
+      "id": "P8117",
+      "title": "M017 production persistent_error",
+      "family": "persistent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830017,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8118": {
+      "id": "P8118",
+      "title": "M018 production persistent_error",
+      "family": "persistent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830018,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 50,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 50,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8119": {
+      "id": "P8119",
+      "title": "M019 production persistent_error",
+      "family": "persistent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830019,
       "horizon_seconds": 300,
       "episodes": [
         {
@@ -101,13 +389,113 @@
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8008": {
-      "id": "P8008",
-      "title": "M008 production persistent",
+    "P8120": {
+      "id": "P8120",
+      "title": "M020 production persistent_error",
       "family": "persistent",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820008,
+      "seed": 830020,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 70,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 70,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8121": {
+      "id": "P8121",
+      "title": "M021 production persistent_error",
+      "family": "persistent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830021,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 80,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 80,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8122": {
+      "id": "P8122",
+      "title": "M022 production persistent_error",
+      "family": "persistent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830022,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8123": {
+      "id": "P8123",
+      "title": "M023 production persistent_error",
+      "family": "persistent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830023,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 95,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 95,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8124": {
+      "id": "P8124",
+      "title": "M024 production persistent_error",
+      "family": "persistent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830024,
       "horizon_seconds": 300,
       "episodes": [
         {
@@ -126,17 +514,42 @@
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8009": {
-      "id": "P8009",
-      "title": "M009 production persistent",
-      "family": "persistent",
+    "P8125": {
+      "id": "P8125",
+      "title": "M025 production early_onset",
+      "family": "delayed",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820009,
+      "seed": 830025,
       "horizon_seconds": 300,
       "episodes": [
         {
-          "start": 20,
+          "start": 5,
+          "end": 300,
+          "error_percent": 30,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 30,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8126": {
+      "id": "P8126",
+      "title": "M026 production early_onset",
+      "family": "delayed",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830026,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 7,
           "end": 300,
           "error_percent": 60,
           "delay_ms": 0,
@@ -151,63 +564,388 @@
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8010": {
-      "id": "P8010",
-      "title": "M010 production transient",
-      "family": "transient",
+    "P8127": {
+      "id": "P8127",
+      "title": "M027 production early_onset",
+      "family": "delayed",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820010,
+      "seed": 830027,
       "horizon_seconds": 300,
       "episodes": [
         {
-          "start": 0,
-          "end": 15,
-          "error_percent": 30,
+          "start": 9,
+          "end": 300,
+          "error_percent": 100,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 30,
+          "failure_count": 100,
           "id": "e1"
         }
       ],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8011": {
-      "id": "P8011",
-      "title": "M011 production transient",
+    "P8128": {
+      "id": "P8128",
+      "title": "M028 production early_onset",
+      "family": "delayed",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830028,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 11,
+          "end": 300,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8129": {
+      "id": "P8129",
+      "title": "M029 production early_onset",
+      "family": "delayed",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830029,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 13,
+          "end": 300,
+          "error_percent": 80,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 80,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8130": {
+      "id": "P8130",
+      "title": "M030 production early_onset",
+      "family": "delayed",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830030,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 15,
+          "end": 300,
+          "error_percent": 35,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 35,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8131": {
+      "id": "P8131",
+      "title": "M031 production early_onset",
+      "family": "delayed",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830031,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 17,
+          "end": 300,
+          "error_percent": 70,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 70,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8132": {
+      "id": "P8132",
+      "title": "M032 production early_onset",
+      "family": "delayed",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830032,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 19,
+          "end": 300,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8133": {
+      "id": "P8133",
+      "title": "M033 production early_onset",
+      "family": "delayed",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830033,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 21,
+          "end": 300,
+          "error_percent": 50,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 50,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8134": {
+      "id": "P8134",
+      "title": "M034 production early_onset",
+      "family": "delayed",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830034,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 23,
+          "end": 300,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8135": {
+      "id": "P8135",
+      "title": "M035 production early_onset",
+      "family": "delayed",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830035,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 25,
+          "end": 300,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8136": {
+      "id": "P8136",
+      "title": "M036 production early_onset",
+      "family": "delayed",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830036,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 27,
+          "end": 300,
+          "error_percent": 65,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 65,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8137": {
+      "id": "P8137",
+      "title": "M037 production early_onset",
+      "family": "delayed",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830037,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 30,
+          "end": 300,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8138": {
+      "id": "P8138",
+      "title": "M038 production early_onset",
+      "family": "delayed",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830038,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 33,
+          "end": 300,
+          "error_percent": 55,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 55,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8139": {
+      "id": "P8139",
+      "title": "M039 production transient_outage",
       "family": "transient",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820011,
+      "seed": 830039,
       "horizon_seconds": 300,
       "episodes": [
         {
           "start": 0,
           "end": 30,
-          "error_percent": 60,
+          "error_percent": 100,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 60,
+          "failure_count": 100,
           "id": "e1"
         }
       ],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8012": {
-      "id": "P8012",
-      "title": "M012 production transient",
+    "P8140": {
+      "id": "P8140",
+      "title": "M040 production transient_outage",
       "family": "transient",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820012,
+      "seed": 830040,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 35,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8141": {
+      "id": "P8141",
+      "title": "M041 production transient_outage",
+      "family": "transient",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830041,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 40,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8142": {
+      "id": "P8142",
+      "title": "M042 production transient_outage",
+      "family": "transient",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830042,
       "horizon_seconds": 300,
       "episodes": [
         {
@@ -226,118 +964,268 @@
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8013": {
-      "id": "P8013",
-      "title": "M013 production transient",
+    "P8143": {
+      "id": "P8143",
+      "title": "M043 production transient_outage",
       "family": "transient",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820013,
+      "seed": 830043,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 50,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8144": {
+      "id": "P8144",
+      "title": "M044 production transient_outage",
+      "family": "transient",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830044,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 55,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8145": {
+      "id": "P8145",
+      "title": "M045 production transient_outage",
+      "family": "transient",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830045,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 60,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8146": {
+      "id": "P8146",
+      "title": "M046 production transient_outage",
+      "family": "transient",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830046,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 65,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8147": {
+      "id": "P8147",
+      "title": "M047 production transient_outage",
+      "family": "transient",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830047,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 70,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8148": {
+      "id": "P8148",
+      "title": "M048 production transient_outage",
+      "family": "transient",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830048,
       "horizon_seconds": 300,
       "episodes": [
         {
           "start": 0,
           "end": 75,
-          "error_percent": 60,
+          "error_percent": 100,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 60,
+          "failure_count": 100,
           "id": "e1"
         }
       ],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8014": {
-      "id": "P8014",
-      "title": "M014 production transient",
+    "P8149": {
+      "id": "P8149",
+      "title": "M049 production transient_outage",
       "family": "transient",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820014,
+      "seed": 830049,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 80,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8150": {
+      "id": "P8150",
+      "title": "M050 production transient_outage",
+      "family": "transient",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830050,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 85,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8151": {
+      "id": "P8151",
+      "title": "M051 production transient_outage",
+      "family": "transient",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830051,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 90,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8152": {
+      "id": "P8152",
+      "title": "M052 production transient_outage",
+      "family": "transient",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830052,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 100,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8153": {
+      "id": "P8153",
+      "title": "M053 production transient_outage",
+      "family": "transient",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830053,
       "horizon_seconds": 300,
       "episodes": [
         {
           "start": 0,
           "end": 110,
-          "error_percent": 30,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8015": {
-      "id": "P8015",
-      "title": "M015 production long_transient",
-      "family": "long_transient",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820015,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 145,
-          "error_percent": 30,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8016": {
-      "id": "P8016",
-      "title": "M016 production long_transient",
-      "family": "long_transient",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820016,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 175,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8017": {
-      "id": "P8017",
-      "title": "M017 production long_transient",
-      "family": "long_transient",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820017,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 175,
           "error_percent": 100,
           "delay_ms": 0,
           "mode": "request",
@@ -351,129 +1239,1346 @@
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8018": {
-      "id": "P8018",
-      "title": "M018 production relapse",
-      "family": "relapse",
+    "P8154": {
+      "id": "P8154",
+      "title": "M054 production latency_timeout",
+      "family": "latency",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820018,
+      "seed": 830054,
       "horizon_seconds": 300,
       "episodes": [
         {
           "start": 0,
-          "end": 30,
-          "error_percent": 30,
-          "delay_ms": 0,
+          "end": 300,
+          "error_percent": 0,
+          "delay_ms": 3100,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 30,
+          "failure_count": 0,
           "id": "e1"
-        },
-        {
-          "start": 45,
-          "end": 150,
-          "error_percent": 30,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e2"
         }
       ],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8019": {
-      "id": "P8019",
-      "title": "M019 production relapse",
-      "family": "relapse",
+    "P8155": {
+      "id": "P8155",
+      "title": "M055 production latency_timeout",
+      "family": "latency",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820019,
+      "seed": 830055,
       "horizon_seconds": 300,
       "episodes": [
         {
           "start": 0,
-          "end": 30,
-          "error_percent": 60,
-          "delay_ms": 0,
+          "end": 300,
+          "error_percent": 0,
+          "delay_ms": 3250,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 60,
+          "failure_count": 0,
           "id": "e1"
-        },
-        {
-          "start": 70,
-          "end": 150,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e2"
         }
       ],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8020": {
-      "id": "P8020",
-      "title": "M020 production relapse",
-      "family": "relapse",
+    "P8156": {
+      "id": "P8156",
+      "title": "M056 production latency_timeout",
+      "family": "latency",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820020,
+      "seed": 830056,
       "horizon_seconds": 300,
       "episodes": [
         {
           "start": 0,
-          "end": 30,
-          "error_percent": 100,
-          "delay_ms": 0,
+          "end": 300,
+          "error_percent": 0,
+          "delay_ms": 3400,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 100,
+          "failure_count": 0,
           "id": "e1"
-        },
-        {
-          "start": 50,
-          "end": 150,
-          "error_percent": 100,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 100,
-          "id": "e2"
         }
       ],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8021": {
-      "id": "P8021",
-      "title": "M021 production intermittent",
+    "P8157": {
+      "id": "P8157",
+      "title": "M057 production latency_timeout",
+      "family": "latency",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830057,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 0,
+          "delay_ms": 3550,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 0,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8158": {
+      "id": "P8158",
+      "title": "M058 production latency_timeout",
+      "family": "latency",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830058,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 0,
+          "delay_ms": 3700,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 0,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8159": {
+      "id": "P8159",
+      "title": "M059 production latency_timeout",
+      "family": "latency",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830059,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 0,
+          "delay_ms": 3850,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 0,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8160": {
+      "id": "P8160",
+      "title": "M060 production latency_timeout",
+      "family": "latency",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830060,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 0,
+          "delay_ms": 4000,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 0,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8161": {
+      "id": "P8161",
+      "title": "M061 production latency_timeout",
+      "family": "latency",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830061,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 0,
+          "delay_ms": 4150,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 0,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8162": {
+      "id": "P8162",
+      "title": "M062 production latency_timeout",
+      "family": "latency",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830062,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 0,
+          "delay_ms": 4300,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 0,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8163": {
+      "id": "P8163",
+      "title": "M063 production latency_timeout",
+      "family": "latency",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830063,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 0,
+          "delay_ms": 4450,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 0,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8164": {
+      "id": "P8164",
+      "title": "M064 production latency_slow",
+      "family": "latency",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830064,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 0,
+          "delay_ms": 800,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 0,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8165": {
+      "id": "P8165",
+      "title": "M065 production latency_slow",
+      "family": "latency",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830065,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 0,
+          "delay_ms": 1200,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 0,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8166": {
+      "id": "P8166",
+      "title": "M066 production latency_slow",
+      "family": "latency",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830066,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 0,
+          "delay_ms": 1800,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 0,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8167": {
+      "id": "P8167",
+      "title": "M067 production latency_slow",
+      "family": "latency",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830067,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 0,
+          "delay_ms": 2500,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 0,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8168": {
+      "id": "P8168",
+      "title": "M068 production intermittent",
       "family": "intermittent",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820021,
+      "seed": 830068,
       "horizon_seconds": 300,
       "episodes": [
         {
-          "start": 0,
-          "end": 10,
+          "start": 3,
+          "end": 8,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e1"
+        },
+        {
+          "start": 23,
+          "end": 28,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e2"
+        },
+        {
+          "start": 43,
+          "end": 48,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e3"
+        },
+        {
+          "start": 63,
+          "end": 68,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e4"
+        },
+        {
+          "start": 83,
+          "end": 88,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e5"
+        },
+        {
+          "start": 103,
+          "end": 108,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e6"
+        },
+        {
+          "start": 123,
+          "end": 128,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e7"
+        },
+        {
+          "start": 143,
+          "end": 148,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e8"
+        },
+        {
+          "start": 163,
+          "end": 168,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e9"
+        },
+        {
+          "start": 183,
+          "end": 188,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e10"
+        },
+        {
+          "start": 203,
+          "end": 208,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e11"
+        },
+        {
+          "start": 223,
+          "end": 228,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e12"
+        },
+        {
+          "start": 243,
+          "end": 248,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e13"
+        },
+        {
+          "start": 263,
+          "end": 268,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e14"
+        },
+        {
+          "start": 283,
+          "end": 288,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e15"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8169": {
+      "id": "P8169",
+      "title": "M069 production intermittent",
+      "family": "intermittent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830069,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 4,
+          "end": 12,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e1"
+        },
+        {
+          "start": 24,
+          "end": 32,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e2"
+        },
+        {
+          "start": 44,
+          "end": 52,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e3"
+        },
+        {
+          "start": 64,
+          "end": 72,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e4"
+        },
+        {
+          "start": 84,
+          "end": 92,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e5"
+        },
+        {
+          "start": 104,
+          "end": 112,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e6"
+        },
+        {
+          "start": 124,
+          "end": 132,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e7"
+        },
+        {
+          "start": 144,
+          "end": 152,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e8"
+        },
+        {
+          "start": 164,
+          "end": 172,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e9"
+        },
+        {
+          "start": 184,
+          "end": 192,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e10"
+        },
+        {
+          "start": 204,
+          "end": 212,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e11"
+        },
+        {
+          "start": 224,
+          "end": 232,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e12"
+        },
+        {
+          "start": 244,
+          "end": 252,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e13"
+        },
+        {
+          "start": 264,
+          "end": 272,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e14"
+        },
+        {
+          "start": 284,
+          "end": 292,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e15"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8170": {
+      "id": "P8170",
+      "title": "M070 production intermittent",
+      "family": "intermittent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830070,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 5,
+          "end": 15,
+          "error_percent": 50,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 50,
+          "id": "e1"
+        },
+        {
+          "start": 30,
+          "end": 40,
+          "error_percent": 50,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 50,
+          "id": "e2"
+        },
+        {
+          "start": 55,
+          "end": 65,
+          "error_percent": 50,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 50,
+          "id": "e3"
+        },
+        {
+          "start": 80,
+          "end": 90,
+          "error_percent": 50,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 50,
+          "id": "e4"
+        },
+        {
+          "start": 105,
+          "end": 115,
+          "error_percent": 50,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 50,
+          "id": "e5"
+        },
+        {
+          "start": 130,
+          "end": 140,
+          "error_percent": 50,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 50,
+          "id": "e6"
+        },
+        {
+          "start": 155,
+          "end": 165,
+          "error_percent": 50,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 50,
+          "id": "e7"
+        },
+        {
+          "start": 180,
+          "end": 190,
+          "error_percent": 50,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 50,
+          "id": "e8"
+        },
+        {
+          "start": 205,
+          "end": 215,
+          "error_percent": 50,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 50,
+          "id": "e9"
+        },
+        {
+          "start": 230,
+          "end": 240,
+          "error_percent": 50,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 50,
+          "id": "e10"
+        },
+        {
+          "start": 255,
+          "end": 265,
+          "error_percent": 50,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 50,
+          "id": "e11"
+        },
+        {
+          "start": 280,
+          "end": 290,
+          "error_percent": 50,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 50,
+          "id": "e12"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8171": {
+      "id": "P8171",
+      "title": "M071 production intermittent",
+      "family": "intermittent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830071,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 6,
+          "end": 16,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e1"
+        },
+        {
+          "start": 36,
+          "end": 46,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e2"
+        },
+        {
+          "start": 66,
+          "end": 76,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e3"
+        },
+        {
+          "start": 96,
+          "end": 106,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e4"
+        },
+        {
+          "start": 126,
+          "end": 136,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e5"
+        },
+        {
+          "start": 156,
+          "end": 166,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e6"
+        },
+        {
+          "start": 186,
+          "end": 196,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e7"
+        },
+        {
+          "start": 216,
+          "end": 226,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e8"
+        },
+        {
+          "start": 246,
+          "end": 256,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e9"
+        },
+        {
+          "start": 276,
+          "end": 286,
+          "error_percent": 60,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 60,
+          "id": "e10"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8172": {
+      "id": "P8172",
+      "title": "M072 production intermittent",
+      "family": "intermittent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830072,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 7,
+          "end": 22,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e1"
+        },
+        {
+          "start": 37,
+          "end": 52,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e2"
+        },
+        {
+          "start": 67,
+          "end": 82,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e3"
+        },
+        {
+          "start": 97,
+          "end": 112,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e4"
+        },
+        {
+          "start": 127,
+          "end": 142,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e5"
+        },
+        {
+          "start": 157,
+          "end": 172,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e6"
+        },
+        {
+          "start": 187,
+          "end": 202,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e7"
+        },
+        {
+          "start": 217,
+          "end": 232,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e8"
+        },
+        {
+          "start": 247,
+          "end": 262,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e9"
+        },
+        {
+          "start": 277,
+          "end": 292,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e10"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8173": {
+      "id": "P8173",
+      "title": "M073 production intermittent",
+      "family": "intermittent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830073,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 8,
+          "end": 14,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        },
+        {
+          "start": 32,
+          "end": 38,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e2"
+        },
+        {
+          "start": 56,
+          "end": 62,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e3"
+        },
+        {
+          "start": 80,
+          "end": 86,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e4"
+        },
+        {
+          "start": 104,
+          "end": 110,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e5"
+        },
+        {
+          "start": 128,
+          "end": 134,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e6"
+        },
+        {
+          "start": 152,
+          "end": 158,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e7"
+        },
+        {
+          "start": 176,
+          "end": 182,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e8"
+        },
+        {
+          "start": 200,
+          "end": 206,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e9"
+        },
+        {
+          "start": 224,
+          "end": 230,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e10"
+        },
+        {
+          "start": 248,
+          "end": 254,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e11"
+        },
+        {
+          "start": 272,
+          "end": 278,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e12"
+        },
+        {
+          "start": 296,
+          "end": 300,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e13"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8174": {
+      "id": "P8174",
+      "title": "M074 production intermittent",
+      "family": "intermittent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830074,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 9,
+          "end": 19,
           "error_percent": 30,
           "delay_ms": 0,
           "mode": "request",
@@ -484,8 +2589,8 @@
           "id": "e1"
         },
         {
-          "start": 20,
-          "end": 30,
+          "start": 29,
+          "end": 39,
           "error_percent": 30,
           "delay_ms": 0,
           "mode": "request",
@@ -496,8 +2601,8 @@
           "id": "e2"
         },
         {
-          "start": 40,
-          "end": 50,
+          "start": 49,
+          "end": 59,
           "error_percent": 30,
           "delay_ms": 0,
           "mode": "request",
@@ -508,8 +2613,8 @@
           "id": "e3"
         },
         {
-          "start": 60,
-          "end": 70,
+          "start": 69,
+          "end": 79,
           "error_percent": 30,
           "delay_ms": 0,
           "mode": "request",
@@ -520,8 +2625,8 @@
           "id": "e4"
         },
         {
-          "start": 80,
-          "end": 90,
+          "start": 89,
+          "end": 99,
           "error_percent": 30,
           "delay_ms": 0,
           "mode": "request",
@@ -532,8 +2637,8 @@
           "id": "e5"
         },
         {
-          "start": 100,
-          "end": 110,
+          "start": 109,
+          "end": 119,
           "error_percent": 30,
           "delay_ms": 0,
           "mode": "request",
@@ -544,8 +2649,8 @@
           "id": "e6"
         },
         {
-          "start": 120,
-          "end": 130,
+          "start": 129,
+          "end": 139,
           "error_percent": 30,
           "delay_ms": 0,
           "mode": "request",
@@ -554,1408 +2659,1228 @@
           "block_size": 100,
           "failure_count": 30,
           "id": "e7"
+        },
+        {
+          "start": 149,
+          "end": 159,
+          "error_percent": 30,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 30,
+          "id": "e8"
+        },
+        {
+          "start": 169,
+          "end": 179,
+          "error_percent": 30,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 30,
+          "id": "e9"
+        },
+        {
+          "start": 189,
+          "end": 199,
+          "error_percent": 30,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 30,
+          "id": "e10"
+        },
+        {
+          "start": 209,
+          "end": 219,
+          "error_percent": 30,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 30,
+          "id": "e11"
+        },
+        {
+          "start": 229,
+          "end": 239,
+          "error_percent": 30,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 30,
+          "id": "e12"
+        },
+        {
+          "start": 249,
+          "end": 259,
+          "error_percent": 30,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 30,
+          "id": "e13"
+        },
+        {
+          "start": 269,
+          "end": 279,
+          "error_percent": 30,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 30,
+          "id": "e14"
+        },
+        {
+          "start": 289,
+          "end": 299,
+          "error_percent": 30,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 30,
+          "id": "e15"
         }
       ],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8022": {
-      "id": "P8022",
-      "title": "M022 production intermittent",
+    "P8175": {
+      "id": "P8175",
+      "title": "M075 production intermittent",
       "family": "intermittent",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820022,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 20,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        },
-        {
-          "start": 40,
-          "end": 60,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e2"
-        },
-        {
-          "start": 80,
-          "end": 100,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e3"
-        },
-        {
-          "start": 120,
-          "end": 140,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e4"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8023": {
-      "id": "P8023",
-      "title": "M023 production intermittent",
-      "family": "intermittent",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820023,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 35,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        },
-        {
-          "start": 70,
-          "end": 105,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e2"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8024": {
-      "id": "P8024",
-      "title": "M024 production delayed",
-      "family": "delayed",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820024,
+      "seed": 830075,
       "horizon_seconds": 300,
       "episodes": [
         {
           "start": 10,
-          "end": 300,
-          "error_percent": 60,
+          "end": 17,
+          "error_percent": 80,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8025": {
-      "id": "P8025",
-      "title": "M025 production delayed",
-      "family": "delayed",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820025,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 25,
-          "end": 55,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8026": {
-      "id": "P8026",
-      "title": "M026 production delayed",
-      "family": "delayed",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820026,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 50,
-          "end": 300,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8027": {
-      "id": "P8027",
-      "title": "M027 production delayed",
-      "family": "delayed",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820027,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 100,
-          "end": 130,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8028": {
-      "id": "P8028",
-      "title": "M028 production delayed",
-      "family": "delayed",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820028,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 180,
-          "end": 300,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8029": {
-      "id": "P8029",
-      "title": "M029 production threshold",
-      "family": "threshold",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820029,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 180,
-          "error_percent": 4,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 4,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8030": {
-      "id": "P8030",
-      "title": "M030 production threshold",
-      "family": "threshold",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820030,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 180,
-          "error_percent": 5,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 5,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8031": {
-      "id": "P8031",
-      "title": "M031 production threshold",
-      "family": "threshold",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820031,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 180,
-          "error_percent": 6,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 6,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8032": {
-      "id": "P8032",
-      "title": "M032 production trajectory",
-      "family": "trajectory",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820032,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 25,
-          "error_percent": 4,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 4,
+          "failure_count": 80,
           "id": "e1"
         },
         {
-          "start": 25,
-          "end": 60,
-          "error_percent": 6,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 6,
-          "id": "e2"
-        },
-        {
-          "start": 60,
-          "end": 180,
-          "error_percent": 30,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e3"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8033": {
-      "id": "P8033",
-      "title": "M033 production trajectory",
-      "family": "trajectory",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820033,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 25,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        },
-        {
-          "start": 25,
-          "end": 60,
-          "error_percent": 30,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e2"
-        },
-        {
-          "start": 60,
-          "end": 180,
-          "error_percent": 10,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 10,
-          "id": "e3"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8034": {
-      "id": "P8034",
-      "title": "M034 production trajectory",
-      "family": "trajectory",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820034,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 25,
-          "error_percent": 10,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 10,
-          "id": "e1"
-        },
-        {
-          "start": 25,
-          "end": 60,
-          "error_percent": 30,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e2"
-        },
-        {
-          "start": 60,
-          "end": 180,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e3"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8035": {
-      "id": "P8035",
-      "title": "M035 staging staging",
-      "family": "staging",
-      "version": "memos-phase7-v1",
-      "stage": "staging",
-      "seed": 820035,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 300,
-          "error_percent": 6,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 6,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8036": {
-      "id": "P8036",
-      "title": "M036 staging staging",
-      "family": "staging",
-      "version": "memos-phase7-v1",
-      "stage": "staging",
-      "seed": 820036,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 300,
-          "error_percent": 30,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8037": {
-      "id": "P8037",
-      "title": "M037 staging staging",
-      "family": "staging",
-      "version": "memos-phase7-v1",
-      "stage": "staging",
-      "seed": 820037,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 300,
-          "error_percent": 100,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 100,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8038": {
-      "id": "P8038",
-      "title": "M038 staging staging",
-      "family": "staging",
-      "version": "memos-phase7-v1",
-      "stage": "staging",
-      "seed": 820038,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
+          "start": 38,
           "end": 45,
-          "error_percent": 30,
+          "error_percent": 80,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 30,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8039": {
-      "id": "P8039",
-      "title": "M039 staging staging",
-      "family": "staging",
-      "version": "memos-phase7-v1",
-      "stage": "staging",
-      "seed": 820039,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 90,
-          "error_percent": 100,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 100,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8040": {
-      "id": "P8040",
-      "title": "M040 staging staging",
-      "family": "staging",
-      "version": "memos-phase7-v1",
-      "stage": "staging",
-      "seed": 820040,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 30,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
+          "failure_count": 80,
+          "id": "e2"
         },
         {
-          "start": 50,
-          "end": 130,
-          "error_percent": 60,
+          "start": 66,
+          "end": 73,
+          "error_percent": 80,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 60,
-          "id": "e2"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8041": {
-      "id": "P8041",
-      "title": "M041 staging staging",
-      "family": "staging",
-      "version": "memos-phase7-v1",
-      "stage": "staging",
-      "seed": 820041,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 90,
-          "error_percent": 0,
-          "delay_ms": 500,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 0,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8042": {
-      "id": "P8042",
-      "title": "M042 production latency",
-      "family": "latency",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820042,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 90,
-          "error_percent": 0,
-          "delay_ms": 450,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 0,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8043": {
-      "id": "P8043",
-      "title": "M043 production latency",
-      "family": "latency",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820043,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 90,
-          "error_percent": 0,
-          "delay_ms": 500,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 0,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8044": {
-      "id": "P8044",
-      "title": "M044 production latency",
-      "family": "latency",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820044,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 90,
-          "error_percent": 0,
-          "delay_ms": 550,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 0,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8045": {
-      "id": "P8045",
-      "title": "M045 production latency",
-      "family": "latency",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820045,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 90,
-          "error_percent": 0,
-          "delay_ms": 800,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 0,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8046": {
-      "id": "P8046",
-      "title": "M046 production latency",
-      "family": "latency",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820046,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 90,
-          "error_percent": 0,
-          "delay_ms": 1500,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 0,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8047": {
-      "id": "P8047",
-      "title": "M047 production latency",
-      "family": "latency",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820047,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 90,
-          "error_percent": 0,
-          "delay_ms": 4000,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 0,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8048": {
-      "id": "P8048",
-      "title": "M048 production latency",
-      "family": "latency",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820048,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 25,
-          "end": 150,
-          "error_percent": 0,
-          "delay_ms": 800,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 0,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8049": {
-      "id": "P8049",
-      "title": "M049 production mixed",
-      "family": "mixed",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820049,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 120,
-          "error_percent": 6,
-          "delay_ms": 500,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 6,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8050": {
-      "id": "P8050",
-      "title": "M050 production mixed",
-      "family": "mixed",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820050,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 120,
-          "error_percent": 30,
-          "delay_ms": 800,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8051": {
-      "id": "P8051",
-      "title": "M051 production reference",
-      "family": "reference",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820051,
-      "horizon_seconds": 300,
-      "episodes": [],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8054": {
-      "id": "P8054",
-      "title": "M054 production reference",
-      "family": "reference",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820054,
-      "horizon_seconds": 300,
-      "episodes": [],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8055": {
-      "id": "P8055",
-      "title": "M055 production persistent",
-      "family": "persistent",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820055,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 300,
-          "error_percent": 10,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 10,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8056": {
-      "id": "P8056",
-      "title": "M056 production persistent",
-      "family": "persistent",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820056,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 300,
-          "error_percent": 30,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8057": {
-      "id": "P8057",
-      "title": "M057 production persistent",
-      "family": "persistent",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820057,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 300,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8058": {
-      "id": "P8058",
-      "title": "M058 production persistent",
-      "family": "persistent",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820058,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 300,
-          "error_percent": 100,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 100,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8059": {
-      "id": "P8059",
-      "title": "M059 production persistent",
-      "family": "persistent",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820059,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 25,
-          "end": 300,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8060": {
-      "id": "P8060",
-      "title": "M060 production transient",
-      "family": "transient",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820060,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 20,
-          "error_percent": 30,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8061": {
-      "id": "P8061",
-      "title": "M061 production transient",
-      "family": "transient",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820061,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 40,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8062": {
-      "id": "P8062",
-      "title": "M062 production transient",
-      "family": "transient",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820062,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 60,
-          "error_percent": 100,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 100,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8063": {
-      "id": "P8063",
-      "title": "M063 production transient",
-      "family": "transient",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820063,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 75,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8064": {
-      "id": "P8064",
-      "title": "M064 production transient",
-      "family": "transient",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820064,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 100,
-          "error_percent": 30,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8065": {
-      "id": "P8065",
-      "title": "M065 production long_transient",
-      "family": "long_transient",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820065,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 150,
-          "error_percent": 30,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8066": {
-      "id": "P8066",
-      "title": "M066 production long_transient",
-      "family": "long_transient",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820066,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 175,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8067": {
-      "id": "P8067",
-      "title": "M067 production long_transient",
-      "family": "long_transient",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820067,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 165,
-          "error_percent": 100,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 100,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8068": {
-      "id": "P8068",
-      "title": "M068 production relapse",
-      "family": "relapse",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820068,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 30,
-          "error_percent": 30,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e1"
+          "failure_count": 80,
+          "id": "e3"
         },
         {
-          "start": 50,
-          "end": 150,
-          "error_percent": 30,
+          "start": 94,
+          "end": 101,
+          "error_percent": 80,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 30,
-          "id": "e2"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8069": {
-      "id": "P8069",
-      "title": "M069 production relapse",
-      "family": "relapse",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820069,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 30,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
+          "failure_count": 80,
+          "id": "e4"
         },
         {
-          "start": 70,
-          "end": 150,
-          "error_percent": 60,
+          "start": 122,
+          "end": 129,
+          "error_percent": 80,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 60,
-          "id": "e2"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8070": {
-      "id": "P8070",
-      "title": "M070 production relapse",
-      "family": "relapse",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820070,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 30,
-          "error_percent": 100,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 100,
-          "id": "e1"
+          "failure_count": 80,
+          "id": "e5"
         },
         {
-          "start": 60,
-          "end": 150,
-          "error_percent": 100,
+          "start": 150,
+          "end": 157,
+          "error_percent": 80,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 100,
-          "id": "e2"
+          "failure_count": 80,
+          "id": "e6"
+        },
+        {
+          "start": 178,
+          "end": 185,
+          "error_percent": 80,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 80,
+          "id": "e7"
+        },
+        {
+          "start": 206,
+          "end": 213,
+          "error_percent": 80,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 80,
+          "id": "e8"
+        },
+        {
+          "start": 234,
+          "end": 241,
+          "error_percent": 80,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 80,
+          "id": "e9"
+        },
+        {
+          "start": 262,
+          "end": 269,
+          "error_percent": 80,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 80,
+          "id": "e10"
+        },
+        {
+          "start": 290,
+          "end": 297,
+          "error_percent": 80,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 80,
+          "id": "e11"
         }
       ],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8071": {
-      "id": "P8071",
-      "title": "M071 production intermittent",
+    "P8176": {
+      "id": "P8176",
+      "title": "M076 production intermittent",
       "family": "intermittent",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820071,
+      "seed": 830076,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 11,
+          "end": 24,
+          "error_percent": 35,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 35,
+          "id": "e1"
+        },
+        {
+          "start": 37,
+          "end": 50,
+          "error_percent": 35,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 35,
+          "id": "e2"
+        },
+        {
+          "start": 63,
+          "end": 76,
+          "error_percent": 35,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 35,
+          "id": "e3"
+        },
+        {
+          "start": 89,
+          "end": 102,
+          "error_percent": 35,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 35,
+          "id": "e4"
+        },
+        {
+          "start": 115,
+          "end": 128,
+          "error_percent": 35,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 35,
+          "id": "e5"
+        },
+        {
+          "start": 141,
+          "end": 154,
+          "error_percent": 35,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 35,
+          "id": "e6"
+        },
+        {
+          "start": 167,
+          "end": 180,
+          "error_percent": 35,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 35,
+          "id": "e7"
+        },
+        {
+          "start": 193,
+          "end": 206,
+          "error_percent": 35,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 35,
+          "id": "e8"
+        },
+        {
+          "start": 219,
+          "end": 232,
+          "error_percent": 35,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 35,
+          "id": "e9"
+        },
+        {
+          "start": 245,
+          "end": 258,
+          "error_percent": 35,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 35,
+          "id": "e10"
+        },
+        {
+          "start": 271,
+          "end": 284,
+          "error_percent": 35,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 35,
+          "id": "e11"
+        },
+        {
+          "start": 297,
+          "end": 300,
+          "error_percent": 35,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 35,
+          "id": "e12"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8177": {
+      "id": "P8177",
+      "title": "M077 production intermittent",
+      "family": "intermittent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830077,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 12,
+          "end": 23,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e1"
+        },
+        {
+          "start": 34,
+          "end": 45,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e2"
+        },
+        {
+          "start": 56,
+          "end": 67,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e3"
+        },
+        {
+          "start": 78,
+          "end": 89,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e4"
+        },
+        {
+          "start": 100,
+          "end": 111,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e5"
+        },
+        {
+          "start": 122,
+          "end": 133,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e6"
+        },
+        {
+          "start": 144,
+          "end": 155,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e7"
+        },
+        {
+          "start": 166,
+          "end": 177,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e8"
+        },
+        {
+          "start": 188,
+          "end": 199,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e9"
+        },
+        {
+          "start": 210,
+          "end": 221,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e10"
+        },
+        {
+          "start": 232,
+          "end": 243,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e11"
+        },
+        {
+          "start": 254,
+          "end": 265,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e12"
+        },
+        {
+          "start": 276,
+          "end": 287,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e13"
+        },
+        {
+          "start": 298,
+          "end": 300,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e14"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8178": {
+      "id": "P8178",
+      "title": "M078 production intermittent",
+      "family": "intermittent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830078,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 13,
+          "end": 19,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        },
+        {
+          "start": 43,
+          "end": 49,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e2"
+        },
+        {
+          "start": 73,
+          "end": 79,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e3"
+        },
+        {
+          "start": 103,
+          "end": 109,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e4"
+        },
+        {
+          "start": 133,
+          "end": 139,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e5"
+        },
+        {
+          "start": 163,
+          "end": 169,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e6"
+        },
+        {
+          "start": 193,
+          "end": 199,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e7"
+        },
+        {
+          "start": 223,
+          "end": 229,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e8"
+        },
+        {
+          "start": 253,
+          "end": 259,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e9"
+        },
+        {
+          "start": 283,
+          "end": 289,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e10"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8179": {
+      "id": "P8179",
+      "title": "M079 production intermittent",
+      "family": "intermittent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830079,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 14,
+          "end": 19,
+          "error_percent": 70,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 70,
+          "id": "e1"
+        },
+        {
+          "start": 39,
+          "end": 44,
+          "error_percent": 70,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 70,
+          "id": "e2"
+        },
+        {
+          "start": 64,
+          "end": 69,
+          "error_percent": 70,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 70,
+          "id": "e3"
+        },
+        {
+          "start": 89,
+          "end": 94,
+          "error_percent": 70,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 70,
+          "id": "e4"
+        },
+        {
+          "start": 114,
+          "end": 119,
+          "error_percent": 70,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 70,
+          "id": "e5"
+        },
+        {
+          "start": 139,
+          "end": 144,
+          "error_percent": 70,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 70,
+          "id": "e6"
+        },
+        {
+          "start": 164,
+          "end": 169,
+          "error_percent": 70,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 70,
+          "id": "e7"
+        },
+        {
+          "start": 189,
+          "end": 194,
+          "error_percent": 70,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 70,
+          "id": "e8"
+        },
+        {
+          "start": 214,
+          "end": 219,
+          "error_percent": 70,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 70,
+          "id": "e9"
+        },
+        {
+          "start": 239,
+          "end": 244,
+          "error_percent": 70,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 70,
+          "id": "e10"
+        },
+        {
+          "start": 264,
+          "end": 269,
+          "error_percent": 70,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 70,
+          "id": "e11"
+        },
+        {
+          "start": 289,
+          "end": 294,
+          "error_percent": 70,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 70,
+          "id": "e12"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8180": {
+      "id": "P8180",
+      "title": "M080 production intermittent",
+      "family": "intermittent",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830080,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 15,
+          "end": 19,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e1"
+        },
+        {
+          "start": 35,
+          "end": 39,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e2"
+        },
+        {
+          "start": 55,
+          "end": 59,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e3"
+        },
+        {
+          "start": 75,
+          "end": 79,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e4"
+        },
+        {
+          "start": 95,
+          "end": 99,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e5"
+        },
+        {
+          "start": 115,
+          "end": 119,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e6"
+        },
+        {
+          "start": 135,
+          "end": 139,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e7"
+        },
+        {
+          "start": 155,
+          "end": 159,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e8"
+        },
+        {
+          "start": 175,
+          "end": 179,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e9"
+        },
+        {
+          "start": 195,
+          "end": 199,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e10"
+        },
+        {
+          "start": 215,
+          "end": 219,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e11"
+        },
+        {
+          "start": 235,
+          "end": 239,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e12"
+        },
+        {
+          "start": 255,
+          "end": 259,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e13"
+        },
+        {
+          "start": 275,
+          "end": 279,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e14"
+        },
+        {
+          "start": 295,
+          "end": 299,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e15"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8181": {
+      "id": "P8181",
+      "title": "M081 production relapse",
+      "family": "relapse",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830081,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 10,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        },
+        {
+          "start": 18,
+          "end": 300,
+          "error_percent": 30,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 30,
+          "id": "e2"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8182": {
+      "id": "P8182",
+      "title": "M082 production relapse",
+      "family": "relapse",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830082,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 12,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        },
+        {
+          "start": 22,
+          "end": 300,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e2"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8183": {
+      "id": "P8183",
+      "title": "M083 production relapse",
+      "family": "relapse",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830083,
       "horizon_seconds": 300,
       "episodes": [
         {
           "start": 0,
           "end": 15,
-          "error_percent": 30,
+          "error_percent": 80,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 30,
+          "failure_count": 80,
           "id": "e1"
         },
         {
-          "start": 30,
-          "end": 45,
-          "error_percent": 30,
+          "start": 27,
+          "end": 300,
+          "error_percent": 25,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 30,
+          "failure_count": 25,
           "id": "e2"
-        },
-        {
-          "start": 60,
-          "end": 75,
-          "error_percent": 30,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e3"
-        },
-        {
-          "start": 90,
-          "end": 105,
-          "error_percent": 30,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e4"
-        },
-        {
-          "start": 120,
-          "end": 135,
-          "error_percent": 30,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e5"
         }
       ],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8072": {
-      "id": "P8072",
-      "title": "M072 production intermittent",
-      "family": "intermittent",
+    "P8184": {
+      "id": "P8184",
+      "title": "M084 production relapse",
+      "family": "relapse",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820072,
+      "seed": 830084,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 18,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        },
+        {
+          "start": 32,
+          "end": 300,
+          "error_percent": 50,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 50,
+          "id": "e2"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8185": {
+      "id": "P8185",
+      "title": "M085 production relapse",
+      "family": "relapse",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830085,
       "horizon_seconds": 300,
       "episodes": [
         {
@@ -1971,355 +3896,119 @@
           "id": "e1"
         },
         {
+          "start": 36,
+          "end": 300,
+          "error_percent": 35,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 35,
+          "id": "e2"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8186": {
+      "id": "P8186",
+      "title": "M086 production relapse",
+      "family": "relapse",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830086,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 22,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
+          "id": "e1"
+        },
+        {
           "start": 40,
-          "end": 60,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e2"
-        },
-        {
-          "start": 80,
-          "end": 100,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e3"
-        },
-        {
-          "start": 120,
-          "end": 140,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e4"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8073": {
-      "id": "P8073",
-      "title": "M073 production intermittent",
-      "family": "intermittent",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820073,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 30,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        },
-        {
-          "start": 60,
-          "end": 90,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e2"
-        },
-        {
-          "start": 120,
-          "end": 140,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e3"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8074": {
-      "id": "P8074",
-      "title": "M074 production delayed",
-      "family": "delayed",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820074,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 15,
           "end": 300,
-          "error_percent": 60,
+          "error_percent": 20,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8075": {
-      "id": "P8075",
-      "title": "M075 production delayed",
-      "family": "delayed",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820075,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 30,
-          "end": 60,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8076": {
-      "id": "P8076",
-      "title": "M076 production delayed",
-      "family": "delayed",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820076,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 60,
-          "end": 300,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8077": {
-      "id": "P8077",
-      "title": "M077 production delayed",
-      "family": "delayed",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820077,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 110,
-          "end": 140,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8078": {
-      "id": "P8078",
-      "title": "M078 production delayed",
-      "family": "delayed",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820078,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 180,
-          "end": 300,
-          "error_percent": 60,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8079": {
-      "id": "P8079",
-      "title": "M079 production threshold",
-      "family": "threshold",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820079,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 180,
-          "error_percent": 4,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 4,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8080": {
-      "id": "P8080",
-      "title": "M080 production threshold",
-      "family": "threshold",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820080,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 180,
-          "error_percent": 5,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 5,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8081": {
-      "id": "P8081",
-      "title": "M081 production threshold",
-      "family": "threshold",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820081,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 180,
-          "error_percent": 6,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 6,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8082": {
-      "id": "P8082",
-      "title": "M082 production trajectory",
-      "family": "trajectory",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820082,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 30,
-          "error_percent": 4,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 4,
-          "id": "e1"
-        },
-        {
-          "start": 30,
-          "end": 65,
-          "error_percent": 6,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 6,
+          "failure_count": 20,
           "id": "e2"
-        },
-        {
-          "start": 65,
-          "end": 180,
-          "error_percent": 30,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 30,
-          "id": "e3"
         }
       ],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8083": {
-      "id": "P8083",
-      "title": "M083 production trajectory",
-      "family": "trajectory",
+    "P8187": {
+      "id": "P8187",
+      "title": "M087 production relapse",
+      "family": "relapse",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820083,
+      "seed": 830087,
       "horizon_seconds": 300,
       "episodes": [
         {
           "start": 0,
           "end": 25,
+          "error_percent": 90,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 90,
+          "id": "e1"
+        },
+        {
+          "start": 45,
+          "end": 300,
+          "error_percent": 45,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 45,
+          "id": "e2"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8188": {
+      "id": "P8188",
+      "title": "M088 production relapse",
+      "family": "relapse",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830088,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 14,
+          "error_percent": 70,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 70,
+          "id": "e1"
+        },
+        {
+          "start": 24,
+          "end": 300,
           "error_percent": 60,
           "delay_ms": 0,
           "mode": "request",
@@ -2327,11 +4016,36 @@
           "error_model": "exact_count",
           "block_size": 100,
           "failure_count": 60,
+          "id": "e2"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8189": {
+      "id": "P8189",
+      "title": "M089 production relapse",
+      "family": "relapse",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830089,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 16,
+          "error_percent": 100,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 100,
           "id": "e1"
         },
         {
-          "start": 25,
-          "end": 60,
+          "start": 31,
+          "end": 300,
           "error_percent": 30,
           "delay_ms": 0,
           "mode": "request",
@@ -2340,35 +4054,72 @@
           "block_size": 100,
           "failure_count": 30,
           "id": "e2"
-        },
-        {
-          "start": 60,
-          "end": 180,
-          "error_percent": 10,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 10,
-          "id": "e3"
         }
       ],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8084": {
-      "id": "P8084",
-      "title": "M084 production trajectory",
+    "P8190": {
+      "id": "P8190",
+      "title": "M090 production relapse",
+      "family": "relapse",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830090,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 24,
+          "error_percent": 80,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 80,
+          "id": "e1"
+        },
+        {
+          "start": 36,
+          "end": 300,
+          "error_percent": 40,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 40,
+          "id": "e2"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8191": {
+      "id": "P8191",
+      "title": "M091 production worsening",
       "family": "trajectory",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820084,
+      "seed": 830091,
       "horizon_seconds": 300,
       "episodes": [
         {
           "start": 0,
-          "end": 30,
+          "end": 40,
+          "error_percent": 2,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 2,
+          "id": "e1"
+        },
+        {
+          "start": 40,
+          "end": 90,
           "error_percent": 10,
           "delay_ms": 0,
           "mode": "request",
@@ -2376,23 +4127,60 @@
           "error_model": "exact_count",
           "block_size": 100,
           "failure_count": 10,
-          "id": "e1"
+          "id": "e2"
         },
         {
-          "start": 30,
-          "end": 65,
-          "error_percent": 30,
+          "start": 90,
+          "end": 300,
+          "error_percent": 40,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 30,
+          "failure_count": 40,
+          "id": "e3"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8192": {
+      "id": "P8192",
+      "title": "M092 production worsening",
+      "family": "trajectory",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830092,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 45,
+          "error_percent": 3,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 3,
+          "id": "e1"
+        },
+        {
+          "start": 45,
+          "end": 100,
+          "error_percent": 15,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 15,
           "id": "e2"
         },
         {
-          "start": 65,
-          "end": 180,
+          "start": 100,
+          "end": 300,
           "error_percent": 60,
           "delay_ms": 0,
           "mode": "request",
@@ -2406,93 +4194,42 @@
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8085": {
-      "id": "P8085",
-      "title": "M085 staging staging",
-      "family": "staging",
+    "P8193": {
+      "id": "P8193",
+      "title": "M093 production worsening",
+      "family": "trajectory",
       "version": "memos-phase7-v1",
-      "stage": "staging",
-      "seed": 820085,
+      "stage": "production",
+      "seed": 830093,
       "horizon_seconds": 300,
       "episodes": [
         {
           "start": 0,
-          "end": 300,
-          "error_percent": 4,
+          "end": 35,
+          "error_percent": 1,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 4,
+          "failure_count": 1,
           "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8086": {
-      "id": "P8086",
-      "title": "M086 staging staging",
-      "family": "staging",
-      "version": "memos-phase7-v1",
-      "stage": "staging",
-      "seed": 820086,
-      "horizon_seconds": 300,
-      "episodes": [
+        },
         {
-          "start": 0,
-          "end": 300,
-          "error_percent": 60,
+          "start": 35,
+          "end": 80,
+          "error_percent": 8,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 60,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8087": {
-      "id": "P8087",
-      "title": "M087 staging staging",
-      "family": "staging",
-      "version": "memos-phase7-v1",
-      "stage": "staging",
-      "seed": 820087,
-      "horizon_seconds": 300,
-      "episodes": [
+          "failure_count": 8,
+          "id": "e2"
+        },
         {
-          "start": 0,
+          "start": 80,
           "end": 300,
-          "error_percent": 100,
-          "delay_ms": 0,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 100,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8088": {
-      "id": "P8088",
-      "title": "M088 staging staging",
-      "family": "staging",
-      "version": "memos-phase7-v1",
-      "stage": "staging",
-      "seed": 820088,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 60,
           "error_percent": 30,
           "delay_ms": 0,
           "mode": "request",
@@ -2500,318 +4237,253 @@
           "error_model": "exact_count",
           "block_size": 100,
           "failure_count": 30,
-          "id": "e1"
+          "id": "e3"
         }
       ],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8089": {
-      "id": "P8089",
-      "title": "M089 staging staging",
-      "family": "staging",
+    "P8194": {
+      "id": "P8194",
+      "title": "M094 production worsening",
+      "family": "trajectory",
       "version": "memos-phase7-v1",
-      "stage": "staging",
-      "seed": 820089,
+      "stage": "production",
+      "seed": 830094,
       "horizon_seconds": 300,
       "episodes": [
         {
           "start": 0,
-          "end": 90,
-          "error_percent": 100,
+          "end": 50,
+          "error_percent": 2,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 100,
+          "failure_count": 2,
           "id": "e1"
+        },
+        {
+          "start": 50,
+          "end": 110,
+          "error_percent": 12,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 12,
+          "id": "e2"
+        },
+        {
+          "start": 110,
+          "end": 300,
+          "error_percent": 50,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 50,
+          "id": "e3"
         }
       ],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8090": {
-      "id": "P8090",
-      "title": "M090 staging staging",
-      "family": "staging",
+    "P8195": {
+      "id": "P8195",
+      "title": "M095 production worsening",
+      "family": "trajectory",
       "version": "memos-phase7-v1",
-      "stage": "staging",
-      "seed": 820090,
+      "stage": "production",
+      "seed": 830095,
       "horizon_seconds": 300,
       "episodes": [
         {
           "start": 0,
           "end": 30,
-          "error_percent": 60,
+          "error_percent": 3,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 60,
+          "failure_count": 3,
           "id": "e1"
         },
         {
-          "start": 65,
-          "end": 130,
-          "error_percent": 60,
+          "start": 30,
+          "end": 70,
+          "error_percent": 20,
           "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 60,
+          "failure_count": 20,
           "id": "e2"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8091": {
-      "id": "P8091",
-      "title": "M091 staging staging",
-      "family": "staging",
-      "version": "memos-phase7-v1",
-      "stage": "staging",
-      "seed": 820091,
-      "horizon_seconds": 300,
-      "episodes": [
+        },
         {
-          "start": 0,
-          "end": 90,
-          "error_percent": 0,
-          "delay_ms": 550,
+          "start": 70,
+          "end": 300,
+          "error_percent": 80,
+          "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 0,
-          "id": "e1"
+          "failure_count": 80,
+          "id": "e3"
         }
       ],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8092": {
-      "id": "P8092",
-      "title": "M092 production latency",
-      "family": "latency",
+    "P8196": {
+      "id": "P8196",
+      "title": "M096 production worsening",
+      "family": "trajectory",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820092,
+      "seed": 830096,
       "horizon_seconds": 300,
       "episodes": [
         {
           "start": 0,
-          "end": 90,
-          "error_percent": 0,
-          "delay_ms": 450,
+          "end": 55,
+          "error_percent": 1,
+          "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 0,
+          "failure_count": 1,
           "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8093": {
-      "id": "P8093",
-      "title": "M093 production latency",
-      "family": "latency",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820093,
-      "horizon_seconds": 300,
-      "episodes": [
+        },
         {
-          "start": 0,
-          "end": 90,
-          "error_percent": 0,
-          "delay_ms": 500,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 0,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8094": {
-      "id": "P8094",
-      "title": "M094 production latency",
-      "family": "latency",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820094,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 90,
-          "error_percent": 0,
-          "delay_ms": 550,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 0,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8095": {
-      "id": "P8095",
-      "title": "M095 production latency",
-      "family": "latency",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820095,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 90,
-          "error_percent": 0,
-          "delay_ms": 1000,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 0,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8096": {
-      "id": "P8096",
-      "title": "M096 production latency",
-      "family": "latency",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820096,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 90,
-          "error_percent": 0,
-          "delay_ms": 2000,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 0,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8097": {
-      "id": "P8097",
-      "title": "M097 production latency",
-      "family": "latency",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820097,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
-          "end": 90,
-          "error_percent": 0,
-          "delay_ms": 4000,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 0,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8098": {
-      "id": "P8098",
-      "title": "M098 production latency",
-      "family": "latency",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820098,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 30,
-          "end": 150,
-          "error_percent": 0,
-          "delay_ms": 800,
-          "mode": "request",
-          "status": 503,
-          "error_model": "exact_count",
-          "block_size": 100,
-          "failure_count": 0,
-          "id": "e1"
-        }
-      ],
-      "status": "implemented",
-      "final_matrix_eligible": true
-    },
-    "P8099": {
-      "id": "P8099",
-      "title": "M099 production mixed",
-      "family": "mixed",
-      "version": "memos-phase7-v1",
-      "stage": "production",
-      "seed": 820099,
-      "horizon_seconds": 300,
-      "episodes": [
-        {
-          "start": 0,
+          "start": 55,
           "end": 120,
           "error_percent": 6,
-          "delay_ms": 550,
+          "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
           "failure_count": 6,
+          "id": "e2"
+        },
+        {
+          "start": 120,
+          "end": 300,
+          "error_percent": 25,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 25,
+          "id": "e3"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8197": {
+      "id": "P8197",
+      "title": "M097 production above_threshold",
+      "family": "threshold",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830097,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 7,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 7,
           "id": "e1"
         }
       ],
       "status": "implemented",
       "final_matrix_eligible": true
     },
-    "P8100": {
-      "id": "P8100",
-      "title": "M100 production mixed",
-      "family": "mixed",
+    "P8198": {
+      "id": "P8198",
+      "title": "M098 production above_threshold",
+      "family": "threshold",
       "version": "memos-phase7-v1",
       "stage": "production",
-      "seed": 820100,
+      "seed": 830098,
       "horizon_seconds": 300,
       "episodes": [
         {
           "start": 0,
-          "end": 120,
-          "error_percent": 30,
-          "delay_ms": 800,
+          "end": 300,
+          "error_percent": 8,
+          "delay_ms": 0,
           "mode": "request",
           "status": 503,
           "error_model": "exact_count",
           "block_size": 100,
-          "failure_count": 30,
+          "failure_count": 8,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8199": {
+      "id": "P8199",
+      "title": "M099 production above_threshold",
+      "family": "threshold",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830099,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 9,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 9,
+          "id": "e1"
+        }
+      ],
+      "status": "implemented",
+      "final_matrix_eligible": true
+    },
+    "P8200": {
+      "id": "P8200",
+      "title": "M100 production above_threshold",
+      "family": "threshold",
+      "version": "memos-phase7-v1",
+      "stage": "production",
+      "seed": 830100,
+      "horizon_seconds": 300,
+      "episodes": [
+        {
+          "start": 0,
+          "end": 300,
+          "error_percent": 12,
+          "delay_ms": 0,
+          "mode": "request",
+          "status": 503,
+          "error_model": "exact_count",
+          "block_size": 100,
+          "failure_count": 12,
           "id": "e1"
         }
       ],
